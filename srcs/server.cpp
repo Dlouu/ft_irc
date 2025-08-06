@@ -26,20 +26,20 @@ Server::Server(int port) {
 	if (bind(_socket, (struct sockaddr*)&_address, sizeof(_address))) {
 		std::cerr << "Error: serverSocker: bind()\n";
 		close(_socket);
-		//return (1);
+		return;
 	}
 
 	if (listen(_socket, MAX_EVENTS)) {
 		std::cerr << "Error: serverSocker: listen()\n";
 		close(_socket);
-		//return (1);
+		return;
 	}
 
 	_epoll = epoll_create1(0);
 	if (_epoll < 0) {
 		std::cerr << "Error: epoll_create1()\n";
 		close(_socket);
-		//return (1);
+		return;
 	}
 
 	_event.events = EPOLLIN;
@@ -47,12 +47,12 @@ Server::Server(int port) {
 	if (epoll_ctl(_epoll, EPOLL_CTL_ADD, _socket, &_event)) {
 		std::cerr << "Error: first epoll_ctl()\n";
 		close(_socket);
-		//return (1);
+		return;
 	}
 }
 
 Server::~Server() {
-	
+
 }
 
 void	Server::loop() {
@@ -67,7 +67,7 @@ void	Server::loop() {
 			std::cerr << "Error: epoll_wait()\n";
 			close(_socket);
 			close(clientSocket);
-			//return (1);
+			break;
 		}
 		for (int i = 0; i < n_events; ++i) {
 			if (_events[i].data.fd == _socket) {
@@ -89,7 +89,6 @@ void	Server::loop() {
 					for (std::vector<std::string>::iterator it = messages.begin(); it != messages.end(); ++it) {
 						processIRCMessage(clientFd, *it);
 					}
-					
 				} else if (bytes == 0) {
 					std::cout << "* Client disconnected *\n";
 					clientBuffers.erase(clientFd);
@@ -100,6 +99,7 @@ void	Server::loop() {
 					clientBuffers.erase(clientFd);
 					close(clientFd);
 					epoll_ctl(_epoll, EPOLL_CTL_DEL, clientFd, NULL);
+					break;
 				}
 			}
 		}
