@@ -4,6 +4,7 @@
 #include <iostream>
 #include <unistd.h>
 #include <string>
+#include <fcntl.h>
 #include <cmath>
 
 int	main(int argc, char **argv)
@@ -16,65 +17,90 @@ int	main(int argc, char **argv)
 	int serverSocket = 0;
 	if ((serverSocket = socket(AF_INET, SOCK_STREAM, 6)) == -1)
 		return (std::cerr << "Error during socket creation\n", 1);
+	if (fcntl(serverSocket, F_SETFL, O_NONBLOCK) == -1) {
+		std::cerr << "Error: serverSocker: fnctl()\n";
+	}
+
 	sockaddr_in serverAddress;
 	serverAddress.sin_family = AF_INET;
 	serverAddress.sin_port = htons(port);
 	serverAddress.sin_addr.s_addr = INADDR_ANY;
-	bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
-	listen(serverSocket, 1024);
+	if (bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress))) {
+		std::cerr << "Error: serverSocker: bind()\n";
+		close(serverSocket);
+		exit(EXIT_FAILURE);
+	}
+	if (listen(serverSocket, 1024)) {
+		std::cerr << "Error: serverSocker: listen()\n";
+		close(serverSocket);
+		exit(EXIT_FAILURE);
+	}
 	
-	//int	bufferfd = 0;
-	int epoll = epoll_create(1);
-	epoll_event event, events[10];
+	int epoll = epoll_create1(0);
+	if (epoll < 0) {
+		std::cerr << "Error: epoll_create1()\n";
+		close(serverSocket);
+	}
 
+	epoll_event event, events[10];
 	event.events = EPOLLIN;
 	event.data.fd = serverSocket;
-	epoll_ctl(epoll, EPOLL_CTL_ADD, serverSocket, &event);
-	
-	int client_socket;
+	if (epoll_ctl(epoll, EPOLL_CTL_ADD, serverSocket, &event)) {
+		std::cerr << "Error: first epoll_ctl()\n";
+		close(serverSocket);
+		exit(EXIT_FAILURE);
+	}
+
+	int clientSocket;
 	while (1)
 	{
-		std::string buffer;
+		std::string buffer = "";
 		buffer.resize(1024);
 		int n_events = epoll_wait(epoll, events, 10, -1);
+		if (n_events == -1) {
+			std::cerr << "Error: epoll_wait()\n";
+			close(serverSocket);
+			close(clientSocket);
+			exit(EXIT_FAILURE);
+		}
 		for (int i = 0; i < n_events; ++i) {
 			if (events[i].data.fd == serverSocket) {
-				client_socket = accept(serverSocket, NULL, NULL);
-				epoll_event client_event;
-				client_event.events = EPOLLIN;
-				client_event.data.fd = client_socket;
-				epoll_ctl(epoll, EPOLL_CTL_ADD, client_socket, &client_event);
-				/* int bytes = recv(client_socket, buffer, sizeof(buffer) - 1, 0);
-				if (bytes > 0) {
-					buffer[bytes] = '\0';
-					std::cout << buffer;
-				} else if (bytes == 0) {
-					std::cout << "Client disconnected\n";
-					close(client_socket);
-				} else {
-					std::cout << "recv error1\n";
-				} */
+				clientSocket = accept(serverSocket, NULL, NULL);
+				if (clientSocket != -1) {
+					fcntl(clientSocket, F_SETFL, O_NONBLOCK);
+					epoll_event client_event;
+					client_event.events = EPOLLIN;
+					client_event.data.fd = clientSocket;
+					epoll_ctl(epoll, EPOLL_CTL_ADD, clientSocket, &client_event);
+				}
 			} else {
 				int bytes = recv(events[i].data.fd, &buffer[0], buffer.size() - 1, 0);
 				if (bytes > 0) {
-					buffer.resize(bytes);
-					std::cout << buffer;
-					//TEMPORARIRE !!!! FAIRE PARSING A PARTIR DE LA
-					std::string response;
-					if (buffer == "CAP LS 302") {
-						response = "CAP * LS :";
-						send(events[i].data.fd, response.c_str(), response.length(), 0);
+					if (buffer.size() >= 2 && buffer.substr(buffer.size() - 2) == "\r\n") {
+						buffer = buffer.substr(0, buffer.size() - 2);
 					}
-    				send(events[i].data.fd, response.c_str(), response.length(), 0);
+					std::cout << ">>> "<< buffer;
+					//TEMPORARIRE !!!! FAIRE PARSING A PARTIR DE LA
+					std::string response = "test";
+					if (buffer == "CAP LS") {
+					//	response = "CAP * LS :\r\n";
+						std::cout << "<<< " << response << '\n';
+					//	send(events[i].data.fd, response.c_str(), response.length(), 0);
+					}
+    				//send(events[i].data.fd, response.c_str(), response.length(), 0);
 					//----------------------------------------------------------------
 				} else if (bytes == 0) {
-					std::cout << "Client disconnected\n";
-					close(client_socket);
+					std::cout << "* Client disconnected *\n";
+					close(clientSocket);
+					epoll_ctl(epoll, EPOLL_CTL_DEL, events[i].data.fd, NULL);
 				} else {
-					std::cout << "recv error2\n";
+					std::cout << "Error: recv(\n";
+					close(events[i].data.fd);
+					epoll_ctl(epoll, EPOLL_CTL_DEL, events[i].data.fd, NULL);
 				}
 			}
 		}
 	}
 	close(serverSocket);
+	exit(EXIT_SUCCESS);
 }
