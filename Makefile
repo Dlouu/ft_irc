@@ -45,4 +45,9 @@ fclean : clean
 
 re : fclean all
 
-.PHONY : all clean fclean re
+dlou: fclean
+	git add .
+	git commit -m "Dlou : $(m)"
+	git push origin dlou
+
+.PHONY : all clean fclean re dlou

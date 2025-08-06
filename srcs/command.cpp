@@ -1,8 +1,13 @@
 #include "command.hpp"
 
-Command::Command() {}
+Command::Command() {
+	//faire le tableau de commandes ici
+}
 
-Command::~Command() {}
+Command::~Command() {
+	//laisser en public et delete tous les new
+	//faudra l'appeler dans le main
+}
 
 void	Command::kickCommand( void ) const {
 	std::cout << "KICK command called" << std::endl;
@@ -83,6 +88,13 @@ void	Command::handleCommand( std::string cleanMessage, int fd ) {
 	}
 	// _notaCommand(command);
 	//voir si on fait un attr response
+	/*
+	faire un sigleton pour les commandes avec une fonction
+	getInstance qui renvoie l'instance de la class Command
+	Command::getInstance().handleCommand(command, fd);
+	je pourrais le mettre dans le parsing et avoir acces au this
+	constructeur en privé sinon on peut creer plusieurs instances
+	*/
 	std::string response;
 	if (cleanMessage == "CAP LS") {
 		response = "CAP * LS :\r\n";

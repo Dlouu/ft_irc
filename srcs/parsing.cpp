@@ -2,7 +2,7 @@
 #include "command.hpp"
 #include <algorithm>
 
-void processIRCMessage(int clientFd, const std::string& message) {
+void processIRCMessage( int clientFd, const std::string& message ) {
 	std::cout << ">>> " << message;
 	
 	std::string cleanMessage = message;
