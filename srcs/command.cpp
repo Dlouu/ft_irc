@@ -112,3 +112,9 @@ void	Command::handleCommand( std::string cleanMessage, int fd ) {
 		std::cout << "USER=" << user << std::endl;
 	}
 }
+
+
+/*
+NOTE SINGLETON
+https://refactoring.guru/fr/design-patterns/singleton/cpp/example
+*/
