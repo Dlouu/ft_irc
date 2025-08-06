@@ -16,7 +16,7 @@ Server::Server(int port) {
 		std::cerr << "Error during socket creation\n";
 	if (fcntl(_socket, F_SETFL, O_NONBLOCK) == -1) {
 		std::cerr << "Error: serverSocker: fnctl()\n";
-		//return (1);
+		return;
 	}
 
 	_address.sin_family = AF_INET;
