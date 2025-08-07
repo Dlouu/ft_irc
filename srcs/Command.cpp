@@ -44,20 +44,4 @@ void	Command::handleCommand( const CommandData_t& data ) {
 		(this->*_command[key])(data);
 		std::cout << std::flush;
 	}
-	
-	//voir si on fait un attr response
-	/*
-	faire un sigleton pour les commandes avec une fonction
-	getInstance qui renvoie l'instance de la class Command
-	Command::getInstance().handleCommand(command, fd);
-	je pourrais le mettre dans le parsing et avoir acces au this
-	constructeur en privé sinon on peut creer plusieurs instances
-	*/
-
 }
-
-
-/*
-NOTE Command
-https://refactoring.guru/fr/design-patterns/Command/cpp/example
-*/

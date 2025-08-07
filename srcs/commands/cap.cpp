@@ -8,7 +8,8 @@ void	Command::capCommand( const CommandData_t& data ) const {
 	if (data.message == "CAP LS") {
 		response = "CAP * LS :\r\n";
 		std::cout << "<<< " << response;
-		send(data.fd, response.c_str(), response.length(), 0);
-		//proteger le send ?
+		if (send(data.fd, response.c_str(), response.length(), 0) == -1) {
+			std::cerr << "Error sending response" << std::endl;
+		}
 	}
 }
