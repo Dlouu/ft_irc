@@ -39,8 +39,7 @@ void	Command::handleCommand( const CommandData_t& data ) {
 
 	if (_command.find(key) == _command.end()) {
 		notaCommand();
-	}
-	else {
+	} else {
 		(this->*_command[key])(data);
 		std::cout << std::flush;
 	}

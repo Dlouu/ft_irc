@@ -7,5 +7,4 @@ void	Command::nickCommand( const CommandData_t& data ) const {
 
 	nickname = data.message.substr(5, data.message.length());
 	std::cout << "NICK=" << nickname << std::endl;
-	//faut remove le antislah n ici et dans USER
 }
