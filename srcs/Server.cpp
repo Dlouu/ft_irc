@@ -1,4 +1,4 @@
-#include "server.hpp"
+#include "Server.hpp"
 
 std::vector<std::string> extractMessages(std::string& buffer) {
 	std::vector<std::string> messages;

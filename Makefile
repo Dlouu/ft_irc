@@ -2,7 +2,7 @@ MAKEFLAGS += --silent
 CXX = c++
 CXXFLAGS = -Wall -Werror -Wextra -std=c++98 -g3 -Iincludes
 SRCS =	main.cpp \
-		srcs/server.cpp \
+		srcs/Server.cpp \
 		srcs/parsing.cpp \
 		srcs/commands/cap.cpp \
 		srcs/commands/invite.cpp \

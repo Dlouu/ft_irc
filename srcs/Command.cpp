@@ -1,4 +1,5 @@
 #include "Command.hpp"
+#include "Colors.hpp"
 
 Command* Command::_instance;
 
@@ -31,7 +32,7 @@ void	Command::init( void ) {
 }
 
 void	Command::notaCommand( void ) const {
-	std::cout << "Not a command" << std::endl;
+	std::cout << RED "Not a command" END << std::endl;
 }
 
 void	Command::handleCommand( const CommandData_t& data ) {

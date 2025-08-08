@@ -2,7 +2,6 @@
 
 #include <string>
 #include <iostream>
-#include <netinet/in.h>
 #include <map>
 
 class Client
@@ -14,13 +13,8 @@ class Client
 		std::string	servername;
 		std::string	realname;
 		int			fd;
-	
-		static Client*	_instance;
 
+	public:
 		Client();
 		~Client();
-		
-	public:
-	
-		static Client*	GetInstance( void );
 };
