@@ -7,6 +7,7 @@
 #include <netinet/in.h>
 
 #include "./../colors.hpp"
+#include "./../errors.hpp"
 #include "../Client/Client.hpp"
 #include "../Server/Server.hpp"
 

@@ -1,5 +1,4 @@
-#ifndef COLORS_HPP
-# define COLORS_HPP
+#pragma once
 
 # define RED "\033[0;31m"
 # define PUR "\033[0;34m"
@@ -9,5 +8,3 @@
 # define MAG "\033[0;35m"
 # define BLU "\033[0;36m"
 # define END "\033[m"
-
-#endif
