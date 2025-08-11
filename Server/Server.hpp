@@ -13,6 +13,7 @@
 #include <map>
 
 #include "./../Command/Command.hpp"
+#include "./../Client/Client.hpp"
 
 # define MAX_EVENTS 10 
 
@@ -21,13 +22,18 @@ std::vector<std::string> extractMessages(std::string& buffer);
 class Server
 {
 	private:
-		int	_socket;
-		sockaddr_in	_address;
-		int _epoll;
-		epoll_event _event, _events[MAX_EVENTS];
-
-	public:
-		Server(int port);
+		int						_socket;
+		sockaddr_in				_address;
+		int						_epoll;
+		epoll_event				_event, _events[MAX_EVENTS];
+		static Server			*_instance;
+		
+		Server( void );
 		~Server();
-		void loop();
+		
+		public:
+		std::map<int, Client>	_users;
+		void			loop();
+		void			init( int port );
+		static Server*	GetInstance( void );
 };

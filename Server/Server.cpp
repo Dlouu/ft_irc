@@ -1,5 +1,7 @@
 #include "Server.hpp"
 
+Server	*Server::_instance;
+
 std::vector<std::string> extractMessages(std::string& buffer) {
 	std::vector<std::string> messages;
 	size_t pos = 0;
@@ -11,7 +13,16 @@ std::vector<std::string> extractMessages(std::string& buffer) {
 	return messages;
 }
 
-Server::Server(int port) {
+Server *Server::GetInstance( void ) {
+    if ( Server::_instance == NULL ) {
+        Server::_instance = new Server();
+    }
+    return Server::_instance;
+}
+
+Server::Server( void ) {}
+
+void	Server::init(int port) {
 	if ((_socket = socket(AF_INET, SOCK_STREAM, 6)) == -1)
 		std::cerr << "Error during socket creation\n";
 	if (fcntl(_socket, F_SETFL, O_NONBLOCK) == -1) {
@@ -52,7 +63,7 @@ Server::Server(int port) {
 }
 
 Server::~Server() {
-
+	delete Server::_instance;
 }
 
 void	Server::loop() {

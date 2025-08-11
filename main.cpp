@@ -8,9 +8,9 @@ int	main(int argc, char **argv)
 	int port = atoi(argv[1]);
 	std::string password = argv[2];
 
-	Server serv(port);
+	Server::GetInstance()->init(port);
 
-	serv.loop();
+	Server::GetInstance()->loop();
 	
 	return (EXIT_SUCCESS);
 }

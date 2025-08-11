@@ -1,10 +1,16 @@
 #include "./../../Command/Command.hpp"
 
 void	Command::nickCommand( const CommandData_t& data ) const {
+	Server *server = Server::GetInstance();
 	std::string nickname;
-	std::cout << MAG "NICK command called" END << std::endl;
-	( void )data.fd;
-
 	nickname = data.message.substr( 5, data.message.length() );
-	std::cout << BLU "NICK=" END << nickname << std::endl;
+
+	// if ( nickname.() )
+ 	// 	return ; // ERR_ERRONEUSNICKNAME
+	if ( nickname.empty() )
+		return ; // ERR_NONICKNAMEGIVEN
+	if ( server->_users[ data.fd ].getNickname() == nickname )
+		return ; // ERR_NICKNAMEINUSE
+
+	server->_users[ data.fd ].setNickname( nickname );
 }

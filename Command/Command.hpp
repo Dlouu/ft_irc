@@ -7,6 +7,8 @@
 #include <netinet/in.h>
 
 #include "./../colors.hpp"
+#include "../Client/Client.hpp"
+#include "../Server/Server.hpp"
 
 typedef struct CommandData_s {
 	std::string	message;
