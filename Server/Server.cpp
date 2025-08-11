@@ -20,9 +20,20 @@ Server *Server::GetInstance( void ) {
     return Server::_instance;
 }
 
+void	Server::DestroyInstance( void ) {
+	if (_instance)
+		delete _instance;
+	_instance = NULL;
+	return;
+}
+
 Server::Server( void ) {}
 
 void	Server::init(int port) {
+
+	_socket = -1;
+	_epoll = -1;
+
 	if ((_socket = socket(AF_INET, SOCK_STREAM, 6)) == -1)
 		std::cerr << "Error during socket creation\n";
 	if (fcntl(_socket, F_SETFL, O_NONBLOCK) == -1) {
@@ -63,21 +74,26 @@ void	Server::init(int port) {
 }
 
 Server::~Server() {
-	delete Server::_instance;
+	std::cout << "tu passe ?\n";
+	if (_socket != -1)
+		close(_socket);
+	if (_epoll != -1)
+		close(_epoll);
+	//if (_instance)
+		//delete _instance;
+	//_instance = NULL;
 }
 
 void	Server::loop() {
 	std::map<int, std::string> clientBuffers;
-	int clientSocket;
-	while (1)
+	int clientSocket = -1;
+	while (!sig_caught)
 	{
 		std::string buffer;
 		buffer.resize(1024);
 		int n_events = epoll_wait(_epoll, _events, 10, -1);
 		if (n_events == -1) {
 			std::cerr << "Error: epoll_wait()\n";
-			close(_socket);
-			close(clientSocket);
 			break;
 		}
 		for (int i = 0; i < n_events; ++i) {
@@ -98,7 +114,7 @@ void	Server::loop() {
 					clientBuffers[clientFd] += buffer;
 					std::vector<std::string> messages = extractMessages(clientBuffers[clientFd]);
 					for (std::vector<std::string>::iterator it = messages.begin(); it != messages.end(); ++it) {
-						Command::processIRCMessage(clientFd, *it);
+						//Command::processIRCMessage(clientFd, *it);
 					}
 				} else if (bytes == 0) {
 					std::cout << "* Client disconnected *\n";
@@ -115,5 +131,6 @@ void	Server::loop() {
 			}
 		}
 	}
-	close(_socket);
+	if (clientSocket != -1)
+		close(clientSocket);
 }

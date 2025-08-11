@@ -14,6 +14,7 @@
 
 #include "./../Command/Command.hpp"
 #include "./../Client/Client.hpp"
+#include "signal.hpp"
 
 # define MAX_EVENTS 10 
 
@@ -29,11 +30,13 @@ class Server
 		static Server			*_instance;
 		
 		Server( void );
-		~Server();
+
 		
 		public:
+		~Server();
 		std::map<int, Client>	_users;
 		void			loop();
 		void			init( int port );
 		static Server*	GetInstance( void );
+		static void		DestroyInstance( void );
 };
