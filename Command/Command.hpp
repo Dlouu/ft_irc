@@ -1,9 +1,12 @@
 #pragma once
 
+#include <map>
 #include <string>
 #include <iostream>
+#include <algorithm>
 #include <netinet/in.h>
-#include <map>
+
+#include "./../colors.hpp"
 
 typedef struct CommandData_s {
 	std::string	message;
@@ -15,7 +18,7 @@ class Command
 	private:
 
 		static Command*	_instance;
-		std::map<std::string, void(Command::*)( const CommandData_t& ) const> _command;
+		std::map<std::string, void( Command::* )( const CommandData_t& ) const> _command;
 
 		void	capCommand( const CommandData_t& data ) const;
 		void	kickCommand( const CommandData_t& data ) const;
@@ -39,4 +42,5 @@ class Command
 	
 		static Command*	GetInstance( void );
 		void			handleCommand( const CommandData_t& data );
+		static void		processIRCMessage(int fd, const std::string& message );
 };

@@ -87,7 +87,7 @@ void	Server::loop() {
 					clientBuffers[clientFd] += buffer;
 					std::vector<std::string> messages = extractMessages(clientBuffers[clientFd]);
 					for (std::vector<std::string>::iterator it = messages.begin(); it != messages.end(); ++it) {
-						processIRCMessage(clientFd, *it);
+						Command::processIRCMessage(clientFd, *it);
 					}
 				} else if (bytes == 0) {
 					std::cout << "* Client disconnected *\n";
