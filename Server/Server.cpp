@@ -5,7 +5,7 @@ Server	*Server::_instance;
 std::vector<std::string> extractMessages(std::string& buffer) {
 	std::vector<std::string> messages;
 	size_t pos = 0;
-	
+
 	while ((pos = buffer.find("\r\n")) != std::string::npos) {
 		messages.push_back(buffer.substr(0, pos + 2));
 		buffer.erase(0, pos + 2);
@@ -19,8 +19,6 @@ Server *Server::GetInstance( void ) {
     }
     return Server::_instance;
 }
-
-Server::Server( void ) {}
 
 void	Server::init(int port) {
 	if ((_socket = socket(AF_INET, SOCK_STREAM, 6)) == -1)
@@ -116,4 +114,10 @@ void	Server::loop() {
 		}
 	}
 	close(_socket);
+}
+
+const Client	Server::GetClientByFD( const int fd ) {
+	Server	*server = GetInstance();
+
+	return ( server->_users[ fd ] );
 }
