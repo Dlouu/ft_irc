@@ -11,11 +11,7 @@ int	main(int argc, char **argv)
 	std::string password = argv[2];
 
 	Server::GetInstance()->init(port);
+	Server::GetInstance()->loop();
 
-	//Server::GetInstance()->loop();
-
-	//Server::DestroyInstance();
-	Server *s = Server::GetInstance();
-	delete s;
 	return (EXIT_SUCCESS);
 }

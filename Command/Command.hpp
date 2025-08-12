@@ -39,10 +39,10 @@ class Command
 		void	notaCommand( void ) const;
 
 		Command();
-		~Command();
 		
 	public:
-	
+		
+		~Command();
 		static Command*	GetInstance( void );
 		void			handleCommand( const CommandData_t& data );
 		static void		processIRCMessage(int fd, const std::string& message );

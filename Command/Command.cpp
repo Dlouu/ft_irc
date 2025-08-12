@@ -7,7 +7,7 @@ Command::Command() {
 }
 
 Command::~Command() {
-	delete Command::_instance;
+	//delete Command::_instance;
 }
 
 Command *Command::GetInstance( void ) {

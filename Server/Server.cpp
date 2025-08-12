@@ -74,14 +74,10 @@ void	Server::init(int port) {
 }
 
 Server::~Server() {
-	std::cout << "tu passe ?\n";
 	if (_socket != -1)
 		close(_socket);
 	if (_epoll != -1)
 		close(_epoll);
-	//if (_instance)
-		//delete _instance;
-	//_instance = NULL;
 }
 
 void	Server::loop() {
@@ -114,7 +110,7 @@ void	Server::loop() {
 					clientBuffers[clientFd] += buffer;
 					std::vector<std::string> messages = extractMessages(clientBuffers[clientFd]);
 					for (std::vector<std::string>::iterator it = messages.begin(); it != messages.end(); ++it) {
-						//Command::processIRCMessage(clientFd, *it);
+						Command::processIRCMessage(clientFd, *it);
 					}
 				} else if (bytes == 0) {
 					std::cout << "* Client disconnected *\n";
