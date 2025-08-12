@@ -5,6 +5,7 @@ SRCS =	main.cpp \
 		Server/Server.cpp \
 		Command/commands/cap.cpp \
 		Command/commands/invite.cpp \
+		Command/commands/quit.cpp \
 		Command/commands/join.cpp \
 		Command/commands/kick.cpp \
 		Command/commands/mode.cpp \

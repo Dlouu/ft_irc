@@ -24,6 +24,7 @@ class Command
 		std::map<std::string, void( Command::* )( const CommandData_t& ) const> _command;
 
 		void	capCommand( const CommandData_t& data ) const;
+		void	quitCommand( const CommandData_t& data ) const;
 		void	kickCommand( const CommandData_t& data ) const;
 		void	modeCommand( const CommandData_t& data ) const;
 		void	nickCommand( const CommandData_t& data ) const;

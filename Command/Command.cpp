@@ -29,6 +29,7 @@ void	Command::init( void ) {
 	_command[ "PONG " ]		=	&Command::pongCommand;
 	_command[ "PRIVMSG " ]	=	&Command::privmsgCommand;
 	_command[ "JOIN " ]		= 	&Command::joinCommand;
+	_command[ "QUIT " ]		=	&Command::quitCommand;
 }
 
 void	Command::notaCommand( void ) const {
