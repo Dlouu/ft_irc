@@ -61,4 +61,9 @@ dlou: fclean
 	git commit -m "Dlou : $(m)"
 	git push origin dlou
 
+git: fclean
+	git add .
+	git commit -m "$(m)"
+	git push
+
 .PHONY : all clean fclean re dlou
