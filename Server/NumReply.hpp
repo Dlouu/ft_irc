@@ -16,5 +16,5 @@ enum	NumReply {
 };
 
 static const std::map<int, std::string> replyTemplates = {
-    { 1,  ":{server} 001 {nick} :Welcome to the IRC Network {nick}!{user}@{host}" },
+    { 1,  ":{server} 001 {nick} :Welcome to the IRC Network {nick}!{user}@{host}\r\n" },
 };
