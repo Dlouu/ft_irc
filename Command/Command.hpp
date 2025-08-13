@@ -7,9 +7,9 @@
 #include <netinet/in.h>
 
 #include "./../colors.hpp"
-#include "./../errors.hpp"
 #include "../Client/Client.hpp"
 #include "../Server/Server.hpp"
+#include "../Server/NumReply.hpp"
 
 typedef struct CommandData_s {
 	std::string	message;

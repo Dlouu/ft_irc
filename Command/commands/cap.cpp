@@ -18,6 +18,7 @@ void	Command::capCommand( const CommandData_t& data ) const {
 			std::cerr << RED "Error sending response" END << std::endl;
 		}
 	}
+	std::cout << "MEGA TEST " << RPL_WELCOME << std::endl;
 	std::cout << GRE "<<< " END << response;
 }
 
