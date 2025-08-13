@@ -1,7 +1,6 @@
 #include "./../../Command/Command.hpp"
 
 void	Command::nickCommand( const CommandData_t& data ) const {
-	Server *server = Server::GetInstance();
 	std::string nickname;
 	nickname = data.message.substr( 5, data.message.length() );
 
@@ -11,7 +10,9 @@ void	Command::nickCommand( const CommandData_t& data ) const {
 		return ; // ERR_NONICKNAMEGIVEN
 	std::string	error = "";
 
-	for (std::map<int, Client>::iterator it = server->_users.begin(); it != server->_users.end(); it++) {
+	std::map< int, Client > clients = Server::GetClients();
+
+	for (std::map<int, Client>::iterator it = clients.begin(); it != clients.end(); it++) {
 		std::cout << it->second.getNickname()  << std::endl;
 		if (it->second.getNickname() == nickname) {
 

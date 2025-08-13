@@ -14,7 +14,7 @@ void	Client::setUserInfo( std::string str ) {
 	( void )str;
 }
 
-std::string	Client::getNickname( void ) const {
+std::string	Client::getNickname( void ) {
 	return ( this->_nickname );
 }
 

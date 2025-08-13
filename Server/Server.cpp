@@ -116,8 +116,22 @@ void	Server::loop() {
 	close(_socket);
 }
 
-const Client	Server::GetClientByFD( const int fd ) {
-	Server	*server = GetInstance();
+std::map< int, Client >	Server::GetClients( void ) {
+	return ( GetInstance()->_users );
+}
 
-	return ( server->_users[ fd ] );
+Client	Server::GetClientByFD( const int fd ) {
+	return ( GetInstance()->_users[ fd ] );
+}
+
+Client	Server::GetClientByNickname( const std::string nickname ) {
+	Server *server = GetInstance();
+	std::map< int, Client > clients = server->GetClients();
+
+	for ( std::map< int, Client >::iterator it = clients.begin(); it != clients.end(); it++ ) {
+		if ( it->second.getNickname() == nickname )
+			return ( it->second );
+	}
+
+	return ( Client() );
 }
