@@ -10,8 +10,7 @@ void	Command::capCommand( const CommandData_t& data ) const {
 			std::cerr << RED "Error sending response" END << std::endl;
 		}
 	} else if ( data.message == "CAP END" ) {
-		Server *server = Server::GetInstance();
-		std::string username = server->_users[ data.fd ].getNickname();
+		std::string username = Server::GetClientByFD( data.fd ).getNickname();
 		response = ":localhost 001 " + username + " :Welcome to the Internet Relay Network " + username + "\r\n";
 
 		if ( send( data.fd, response.c_str(), response.length(), 0 ) == -1 ) {

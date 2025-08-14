@@ -5,7 +5,7 @@ Server	*Server::_instance;
 std::vector<std::string> extractMessages(std::string& buffer) {
 	std::vector<std::string> messages;
 	size_t pos = 0;
-	
+
 	while ((pos = buffer.find("\r\n")) != std::string::npos) {
 		messages.push_back(buffer.substr(0, pos + 2));
 		buffer.erase(0, pos + 2);
@@ -129,4 +129,24 @@ void	Server::loop() {
 	}
 	if (clientSocket != -1)
 		close(clientSocket);
+}
+
+std::map< int, Client >	Server::GetClients( void ) {
+	return ( GetInstance()->_users );
+}
+
+Client	Server::GetClientByFD( const int fd ) {
+	return ( GetInstance()->_users[ fd ] );
+}
+
+Client	Server::GetClientByNickname( const std::string nickname ) {
+	Server *server = GetInstance();
+	std::map< int, Client > clients = server->GetClients();
+
+	for ( std::map< int, Client >::iterator it = clients.begin(); it != clients.end(); it++ ) {
+		if ( it->second.getNickname() == nickname )
+			return ( it->second );
+	}
+
+	return ( Client() );
 }
