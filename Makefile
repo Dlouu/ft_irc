@@ -14,6 +14,7 @@ SRCS =	main.cpp \
 		Command/commands/topic.cpp \
 		Command/commands/user.cpp \
 		Command/Command.cpp \
+		NumReply/NumReply.cpp \
 		Client/Client.cpp
 		
 OBJ = $(addprefix $(BIN_DIR)/,$(SRCS:.cpp=.o))

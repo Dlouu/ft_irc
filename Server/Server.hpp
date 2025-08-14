@@ -14,7 +14,7 @@
 
 #include "./../Command/Command.hpp"
 #include "./../Client/Client.hpp"
-#include "NumReply.hpp"
+#include "./../NumReply/NumReply.hpp"
 
 # define MAX_EVENTS 10 
 

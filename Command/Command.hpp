@@ -9,7 +9,7 @@
 #include "./../colors.hpp"
 #include "../Client/Client.hpp"
 #include "../Server/Server.hpp"
-#include "../Server/NumReply.hpp"
+#include "../NumReply/NumReply.hpp"
 
 typedef struct CommandData_s {
 	std::string	message;

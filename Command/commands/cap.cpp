@@ -12,13 +12,12 @@ void	Command::capCommand( const CommandData_t& data ) const {
 	} else if ( data.message == "CAP END" ) {
 		Server *server = Server::GetInstance();
 		std::string username = server->_users[ data.fd ].getNickname();
-		response = ":localhost 001 " + username + " :Welcome to the Internet Relay Network " + username + "\r\n";
+		response = formatReply(1, vars);
 
 		if ( send( data.fd, response.c_str(), response.length(), 0 ) == -1 ) {
 			std::cerr << RED "Error sending response" END << std::endl;
 		}
 	}
-	std::cout << "MEGA TEST " << RPL_WELCOME << std::endl;
 	std::cout << GRE "<<< " END << response;
 }
 
