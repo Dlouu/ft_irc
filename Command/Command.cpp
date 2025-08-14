@@ -28,6 +28,7 @@ void	Command::init( void ) {
 	_command[ "PING " ]		=	&Command::pingCommand;
 	_command[ "PONG " ]		=	&Command::pongCommand;
 	_command[ "PRIVMSG " ]	=	&Command::privmsgCommand;
+	_command[ "JOIN " ]		= 	&Command::joinCommand;
 }
 
 void	Command::notaCommand( void ) const {
@@ -36,7 +37,6 @@ void	Command::notaCommand( void ) const {
 
 void	Command::handleCommand( const CommandData_t& data ) {
 	std::string	key = data.message.substr( 0, data.message.find( " " ) + 1 );
-
 	if ( _command.find( key ) == _command.end() ) {
 		notaCommand();
 	} else {
@@ -46,9 +46,9 @@ void	Command::handleCommand( const CommandData_t& data ) {
 }
 
 void Command::processIRCMessage( int fd, const std::string& message ) {
-	
+
 	std::cout << YEL ">>> " PUR << message << END;
-	
+
 	std::string cleanMessage = message;
 	if ( cleanMessage.size() >= 2 && cleanMessage.substr( cleanMessage.size() - 2 ) == "\r\n" ) {
 		cleanMessage = cleanMessage.substr( 0, cleanMessage.size() - 2 );
