@@ -5,7 +5,7 @@ Server	*Server::_instance;
 std::vector<std::string> extractMessages(std::string& buffer) {
 	std::vector<std::string> messages;
 	size_t pos = 0;
-	
+
 	while ((pos = buffer.find("\r\n")) != std::string::npos) {
 		messages.push_back(buffer.substr(0, pos + 2));
 		buffer.erase(0, pos + 2);
@@ -20,9 +20,20 @@ Server *Server::GetInstance( void ) {
     return Server::_instance;
 }
 
+void	Server::DestroyInstance( void ) {
+	if (_instance)
+		delete _instance;
+	_instance = NULL;
+	return;
+}
+
 Server::Server( void ) {}
 
 void	Server::init(int port) {
+
+	_socket = -1;
+	_epoll = -1;
+
 	if ((_socket = socket(AF_INET, SOCK_STREAM, 6)) == -1)
 		std::cerr << "Error during socket creation\n";
 	if (fcntl(_socket, F_SETFL, O_NONBLOCK) == -1) {
@@ -63,21 +74,22 @@ void	Server::init(int port) {
 }
 
 Server::~Server() {
-	delete Server::_instance;
+	if (_socket != -1)
+		close(_socket);
+	if (_epoll != -1)
+		close(_epoll);
 }
 
 void	Server::loop() {
 	std::map<int, std::string> clientBuffers;
-	int clientSocket;
-	while (1)
+	int clientSocket = -1;
+	while (!sig_caught)
 	{
 		std::string buffer;
 		buffer.resize(1024);
 		int n_events = epoll_wait(_epoll, _events, 10, -1);
 		if (n_events == -1) {
 			std::cerr << "Error: epoll_wait()\n";
-			close(_socket);
-			close(clientSocket);
 			break;
 		}
 		for (int i = 0; i < n_events; ++i) {
@@ -115,5 +127,26 @@ void	Server::loop() {
 			}
 		}
 	}
-	close(_socket);
+	if (clientSocket != -1)
+		close(clientSocket);
+}
+
+std::map< int, Client >	Server::GetClients( void ) {
+	return ( GetInstance()->_users );
+}
+
+Client	Server::GetClientByFD( const int fd ) {
+	return ( GetInstance()->_users[ fd ] );
+}
+
+Client	Server::GetClientByNickname( const std::string nickname ) {
+	Server *server = GetInstance();
+	std::map< int, Client > clients = server->GetClients();
+
+	for ( std::map< int, Client >::iterator it = clients.begin(); it != clients.end(); it++ ) {
+		if ( it->second.getNickname() == nickname )
+			return ( it->second );
+	}
+
+	return ( Client() );
 }

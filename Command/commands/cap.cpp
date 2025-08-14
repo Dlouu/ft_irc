@@ -10,9 +10,8 @@ void	Command::capCommand( const CommandData_t& data ) const {
 			std::cerr << RED "Error sending response" END << std::endl;
 		}
 	} else if ( data.message == "CAP END" ) {
-		Server *server = Server::GetInstance();
-		std::string username = server->_users[ data.fd ].getNickname();
 		response = formatReply(1, vars);
+		std::string username = Server::GetClientByFD( data.fd ).getNickname();
 
 		if ( send( data.fd, response.c_str(), response.length(), 0 ) == -1 ) {
 			std::cerr << RED "Error sending response" END << std::endl;
