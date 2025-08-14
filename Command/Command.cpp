@@ -55,3 +55,6 @@ void Command::processIRCMessage( int fd, const std::string& message ) {
 	}
 	GetInstance()->handleCommand( ( CommandData_t ){ cleanMessage, fd } );
 }
+
+//We need to check if it's the client is connected already. By checking if NICK and USER have been successful
+//Only after that we send the Welcome MOTD
