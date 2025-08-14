@@ -16,6 +16,7 @@ std::vector<std::string> extractMessages(std::string& buffer) {
 Server *Server::GetInstance( void ) {
     if ( Server::_instance == NULL ) {
         Server::_instance = new Server();
+		g_replies = createReplies();
     }
     return Server::_instance;
 }
@@ -136,6 +137,10 @@ std::map< int, Client >	Server::GetClients( void ) {
 }
 
 Client	Server::GetClientByFD( const int fd ) {
+	std::cout << "Bonjour " << fd << GetInstance()->_users[fd].getNickname() << std::endl;
+	if (GetInstance()->_users.find(fd) == GetInstance()->_users.end()) {
+		std::cout << "ca n'existe pas looooool theo\n";
+	}
 	return ( GetInstance()->_users[ fd ] );
 }
 

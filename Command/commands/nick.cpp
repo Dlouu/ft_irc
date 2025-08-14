@@ -15,7 +15,6 @@ void	Command::nickCommand( const CommandData_t& data ) const {
 	for (std::map<int, Client>::iterator it = clients.begin(); it != clients.end(); it++) {
 		std::cout << it->second.getNickname()  << std::endl;
 		if (it->second.getNickname() == nickname) {
-
 			if ( send( data.fd, "<nickname> :Nickname is already in use.", 40, 0 ) == -1 ) {
 				std::cerr << RED "Error sending response" END << std::endl;
 			} // ERR_NICKNAMEINUSE

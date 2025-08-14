@@ -1,7 +1,7 @@
 #include <map>
 #include "NumReply.hpp"
 
-static std::map<int, std::string> createReplies() {
+std::map<int, std::string> createReplies() {
     std::map<int, std::string> num;
 
     num[RPL_WELCOME] =			":{server} 001 {nick} :Welcome to the IRC Network {nick}!{user}@{host}\r\n";
@@ -11,22 +11,20 @@ static std::map<int, std::string> createReplies() {
     return num;
 }
 
-static std::map<std::string, std::string> fillVars() {
+std::map<std::string, std::string> fillVars( int clientFD ) {
 	std::map<std::string, std::string> tab;
 	
-    tab["nick"] =	"Testnick";
-    tab["user"] =	"Testuser";
-	tab["server"] =	"Testserver";
-    tab["host"] =	"Testhost";
+	Client client = Server::GetClientByFD( clientFD );
+    tab["nick"] =	client.getNickname();
+    tab["user"] =	client.getUsername();
+	tab["server"] =	client.getServername();
+    tab["host"] =	client.getHostname();
     return tab;
 }
 
-static std::map<int, std::string> replies = createReplies();
-static std::map<std::string, std::string> vars = fillVars();
-
 std::string formatReply(int code, const std::map<std::string, std::string> &vars) {
-	std::map<int, std::string>::const_iterator templateIt = replies.find(code);
-	if (templateIt == replies.end())
+	std::map<int, std::string>::const_iterator templateIt = g_replies.find(code);
+	if (templateIt == g_replies.end())
         return "";
 	std::string reply = templateIt->second;
 

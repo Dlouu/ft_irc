@@ -15,12 +15,10 @@ typedef enum	e_NumReply {
 	ERR_NICKNAMEINUSE		= 433
 }	t_NumReply;
 
-static std::map<int, std::string>			createReplies( void );
-static std::map<std::string, std::string>	fillVars( void );
+std::map<int, std::string>			createReplies( void );
+std::map<std::string, std::string>	fillVars( int clientFD );
 
-static std::map<int, std::string> replies;
-static std::map<std::string, std::string> vars;
+extern std::map<int, std::string>			g_replies;
+extern std::map<std::string, std::string>	g_vars;
 
 std::string formatReply(int code, const std::map<std::string, std::string> &vars);
-
-//response = formatReply(1, vars);
