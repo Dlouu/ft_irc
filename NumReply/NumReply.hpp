@@ -48,4 +48,5 @@ std::map<std::string, std::string>	fillVars( int clientFD );
 extern std::map<int, std::string>			g_replies;
 extern std::map<std::string, std::string>	g_vars;
 
+void		sendReply( const int fd, int code );
 std::string formatReply(int code, const std::map<std::string, std::string> &vars);

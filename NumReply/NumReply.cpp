@@ -42,49 +42,54 @@ std::map<int, std::string> createReplies() {
 std::map<std::string, std::string> fillVars( int clientFD ) {
 	std::map<std::string, std::string> tab;
 	
-	Client client = Server::getClientByFD( clientFD );
-	tab["server"] =	Server::getServername();
-    tab["nick"] =	client.getNickname();
-    tab["user"] =	client.getUsername();
-    tab["host"] =	client.getHostname();
-    // tab["command"] =;
-    // tab["channel"] =;
-    // tab["message"] =;
-    // tab["target"] =;
-    // tab["reason"] =;
-    // tab["topic"] =;
-    // tab["names"] =;
-    // tab["mask"] =;
-    // tab["version"] =;
-    // tab["created"] =;
-    // tab["usermodes"] =;
-    // tab["chanmodes"] =;
+	Client client	= Server::getClientByFD( clientFD );
+	tab[ "server" ]	= Server::getServername();
+    tab[ "nick" ]	= client.getNickname();
+    tab[ "user" ]	= client.getUsername();
+    tab[ "host" ]	= client.getHostname();
+    // tab[ "command" ] =;
+    // tab[ "channel" ] =;
+    // tab[ "message" ] =;
+    // tab[ "target" ] =;
+    // tab[ "reason" ] =;
+    // tab[ "topic" ] =;
+    // tab[ "names" ] =;
+    // tab[ "mask" ] =;
+    // tab[ "version" ] =;
+    // tab[ "created" ] =;
+    // tab[ "usermodes" ] =;
+    // tab[ "chanmodes" ] =;
     return tab;
 }
 
-std::string formatReply(int code, const std::map<std::string, std::string> &vars) {
-	std::map<int, std::string>::const_iterator templateIt = g_replies.find(code);
-	if (templateIt == g_replies.end())
-        return "";
+std::string formatReply( const int code, const std::map<std::string, std::string> &vars ) {
+	std::map< int, std::string >::const_iterator templateIt = g_replies.find( code );
+	if ( templateIt == g_replies.end() )
+        return ( "" );
 	std::string reply = templateIt->second;
 
 	std::map<std::string, std::string>::const_iterator it;
-    for (it = vars.begin(); it != vars.end(); ++it) {
+    for ( it = vars.begin(); it != vars.end(); ++it ) {
         std::string key = "{" + it->first + "}";
         std::string::size_type pos = 0;
-        
-        while ((pos = reply.find(key, pos)) != std::string::npos) {
-            reply.replace(pos, key.length(), it->second);
+
+        while ( ( pos = reply.find( key, pos ) ) != std::string::npos ) {
+            reply.replace( pos, key.length(), it->second );
             pos += it->second.length();
         }
     }
     return reply;
 }
 
+void sendReply( const int fd, int code ) {
+    g_vars = fillVars( fd );
+	std::string reply = formatReply( code, vars );
+    if ( send( fd, reply.c_str(), reply.length(), 0 ) == -1 ) {
+        std::cerr << RED "Error sending response" END << std::endl;
+    }
+	std::cout << GRE "<<< " END << reply;
+}
+
 /* TO DO DLOU:
-Faire une commande param FD/FLAG qui fill les vars,
-formatReply
-Check send -1
-print
-a voir si je mets dans un buffer sur le client (voir avec Tom ?)
+a voir si je mets le reply dans un buffer sur le client (voir avec Tom ?)
 */
