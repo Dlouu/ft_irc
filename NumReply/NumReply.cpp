@@ -5,13 +5,14 @@ std::map<int, std::string> createReplies() {
 	std::map<int, std::string> num;
 	
 	num[RPL_WELCOME]			= ":{server} 001 {nick} :Welcome to the IRC Network {nick}!{user}@{host}\r\n";
-	
+	num[RPL_YOURHOST]			= ":{server} 002 {nick} :Your host is {server}, running version {version}\r\n";
+	num[RPL_CREATED]			= ":{server} 003 {nick} :This server was created {created}\r\n";
+	num[RPL_MYINFO]				= ":{server} 004 {nick} {server} {version} {usermodes} {chanmodes}\r\n";
 	num[RPL_AWAY]				= ":{server} 301 {nick} {target} :{message}\r\n";
 	num[RPL_NOTOPIC]			= ":{server} 331 {nick} {channel} :No topic is set\r\n";
 	num[RPL_TOPIC]				= ":{server} 332 {nick} {channel} :{topic}\r\n";
 	num[RPL_INVITING]			= ":{server} 341 {nick} {target} {channel}\r\n";
 	num[RPL_NAMREPLY]			= ":{server} 353 {nick} = {channel} :{names}\r\n";
-	
 	num[ERR_NOSUCHNICK]			= ":{server} 401 {nick} {target} :No such nick/channel\r\n";
 	num[ERR_NOSUCHCHANNEL]		= ":{server} 403 {nick} {channel} :No such channel\r\n";
 	num[ERR_CANNOTSENDTOCHAN]	= ":{server} 404 {nick} {channel} :Cannot send to channel\r\n";
@@ -38,15 +39,26 @@ std::map<int, std::string> createReplies() {
     return num;
 }
 
-
 std::map<std::string, std::string> fillVars( int clientFD ) {
 	std::map<std::string, std::string> tab;
 	
 	Client client = Server::GetClientByFD( clientFD );
+	tab["server"] =	client.getServername();
     tab["nick"] =	client.getNickname();
     tab["user"] =	client.getUsername();
-	tab["server"] =	client.getServername();
     tab["host"] =	client.getHostname();
+    // tab["command"] =;
+    // tab["channel"] =;
+    // tab["message"] =;
+    // tab["target"] =;
+    // tab["reason"] =;
+    // tab["topic"] =;
+    // tab["names"] =;
+    // tab["mask"] =;
+    // tab["version"] =;
+    // tab["created"] =;
+    // tab["usermodes"] =;
+    // tab["chanmodes"] =;
     return tab;
 }
 
