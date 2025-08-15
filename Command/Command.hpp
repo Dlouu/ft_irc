@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <netinet/in.h>
 
-#include "./../colors.hpp"
+#include "../colors.hpp"
 #include "../Client/Client.hpp"
 #include "../Server/Server.hpp"
 #include "../NumReply/NumReply.hpp"

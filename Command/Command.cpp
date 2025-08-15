@@ -21,7 +21,6 @@ void	Command::init( void ) {
 	_command[ "INVITE " ]	=	&Command::inviteCommand;
 	_command[ "TOPIC " ]	=	&Command::topicCommand;
 	_command[ "MODE " ]		=	&Command::modeCommand;
-	_command[ "CAP " ]		=	&Command::capCommand;
 	_command[ "NICK " ]		=	&Command::nickCommand;
 	_command[ "USER " ]		=	&Command::userCommand;
 	_command[ "PING " ]		=	&Command::pingCommand;

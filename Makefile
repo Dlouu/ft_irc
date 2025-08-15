@@ -3,8 +3,7 @@ CXX = c++
 CXXFLAGS = -Wall -Werror -Wextra -std=c++98 -g3 -Iincludes
 SRCS =	main.cpp \
 		Server/Server.cpp \
-		Server/signal.cpp\
-		Command/commands/cap.cpp \
+		Server/signal.cpp \
 		Command/commands/invite.cpp \
 		Command/commands/join.cpp \
 		Command/commands/kick.cpp \

@@ -3,7 +3,6 @@
 Server			*Server::_instance;
 std::string		Server::_name;
 
-
 std::vector<std::string> extractMessages(std::string& buffer) {
 	std::vector<std::string> messages;
 	size_t pos = 0;

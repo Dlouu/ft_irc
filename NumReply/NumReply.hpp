@@ -4,7 +4,7 @@
 #include <string>
 #include <sstream>
 
-#include "./../colors.hpp"
+#include "../colors.hpp"
 #include "../Client/Client.hpp"
 #include "../Server/Server.hpp"
 
