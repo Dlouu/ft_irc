@@ -17,11 +17,11 @@ class Client
 		Client();
 		~Client();
 
-		void		setNickname( std::string str );
-		void		setUserInfo( std::string str );
-		std::string	getNickname( void );
-		std::string	getUsername( void );
-		std::string	getHostname( void );
-		std::string	getServername( void );
-		std::string	getRealname( void );
+		void				setNickname( const std::string& str );
+		void				setUserInfo( const std::string& str );
+		const std::string&	getNickname( void );
+		const std::string&	getUsername( void );
+		const std::string&	getHostname( void );
+		const std::string&	getServername( void );
+		const std::string&	getRealname( void );
 };

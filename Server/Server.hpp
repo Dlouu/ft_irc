@@ -25,6 +25,7 @@ class Server
 {
 	private:
 		Server( void );
+		static std::string		_name;
 		int						_socket;
 		sockaddr_in				_address;
 		int						_epoll;
@@ -35,11 +36,16 @@ class Server
 	public:
 		void			loop();
 		void			init( int port );
-		static Server*	GetInstance( void );
+		static Server*	getInstance( void );
 		~Server();
 
-		static void		DestroyInstance( void );
-		static	std::map< int, Client > GetClients( void );
-		static	Client	GetClientByFD( const int fd );
-		static	Client	GetClientByNickname( const std::string nickname );
+		static void					destroyInstance( void );
+		static std::map< int, Client > getClients( void );
+		static Client				getClientByFD( const int fd );
+		static void					setNicknameByFD( const int fd, const std::string& nickname );
+		static void					setHostnameByFD( const int fd, const std::string& hostname );
+		static void					setServernameByFD( const int fd, const std::string& servername );
+		static void					setRealnameByFD( const int fd, const std::string& realname );
+		static void					setUsernameByFD( const int fd, const std::string& username );
+		static const std::string&	getServername( void );
 };

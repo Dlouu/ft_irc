@@ -42,8 +42,8 @@ std::map<int, std::string> createReplies() {
 std::map<std::string, std::string> fillVars( int clientFD ) {
 	std::map<std::string, std::string> tab;
 	
-	Client client = Server::GetClientByFD( clientFD );
-	tab["server"] =	client.getServername();
+	Client client = Server::getClientByFD( clientFD );
+	tab["server"] =	Server::getServername();
     tab["nick"] =	client.getNickname();
     tab["user"] =	client.getUsername();
     tab["host"] =	client.getHostname();
@@ -80,3 +80,11 @@ std::string formatReply(int code, const std::map<std::string, std::string> &vars
     }
     return reply;
 }
+
+/* TO DO DLOU:
+Faire une commande param FD/FLAG qui fill les vars,
+formatReply
+Check send -1
+print
+a voir si je mets dans un buffer sur le client (voir avec Tom ?)
+*/

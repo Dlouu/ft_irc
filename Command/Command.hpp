@@ -43,7 +43,7 @@ class Command
 	public:
 		
 		~Command();
-		static Command*	GetInstance( void );
+		static Command*	getInstance( void );
 		void			handleCommand( const CommandData_t& data );
 		static void		processIRCMessage(int fd, const std::string& message );
 };
