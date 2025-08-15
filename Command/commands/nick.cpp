@@ -3,14 +3,14 @@
 void	Command::nickCommand( const CommandData_t& data ) const {
 	std::string nickname = data.message.substr( 5, data.message.length() );
 
-	std::map< int, Client > clients = Server::getClients();
+	std::map<int, Client> clients = Server::getClients();
 	for (std::map<int, Client>::iterator it = clients.begin(); it != clients.end(); it++) {
 		std::cout << it->second.getNickname()  << std::endl;
 		if (it->second.getNickname() == nickname) {
 			return sendReply( data.fd, ERR_NICKNAMEINUSE );
 		}
 	}
-	if ( nickname.empty() )
+	if (nickname.empty())
 		return sendReply( data.fd, ERR_NONICKNAMEGIVEN );
 	//else if (invalid nickname)
 			// nickname is considered invalid if:
