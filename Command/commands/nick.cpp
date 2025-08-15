@@ -6,7 +6,7 @@ void	Command::nickCommand( const CommandData_t& data ) const {
 	// if ( nickname.() )
  	// 	return ; // ERR_ERRONEUSNICKNAME
 	if ( nickname.empty() )
-		return sendReply( data.fd, ERR_NONICKNAMEGIVEN );
+		return sendReply( data.fd, ERR_NONICKNAMEGIVEN s);
 	std::string	error = "";
 
 	std::map< int, Client > clients = Server::getClients();
