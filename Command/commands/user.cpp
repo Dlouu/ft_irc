@@ -7,6 +7,11 @@ void	Command::userCommand( const CommandData_t& data ) const {
 	user = data.message.substr( 5, data.message.length() );
 	std::cout << BLU "USER=" END << user << std::endl;
 	sendReply( data.fd, RPL_WELCOME );
+	//if (!<username> OR !<hostname> OR !<servername> OR 1<realname>)
+		//ERR_NEEDMOREPARAMS
+	//else if (user already connected)
+		//ERR_ALREADYREGISTRED
+	
 }
 
 // DLOU TO DO:

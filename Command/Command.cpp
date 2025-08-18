@@ -66,3 +66,6 @@ std::vector< std::string > Command::split( const std::string &str, const char de
 
 	return ( container );
 }
+
+//We need to check if it's the client is connected already. By checking if NICK and USER have been successful
+//Only after that we send the Welcome MOTD
