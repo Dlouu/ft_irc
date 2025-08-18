@@ -35,6 +35,7 @@ void	Command::notaCommand( void ) const {
 
 void	Command::handleCommand( const CommandData_t& data ) {
 	std::string	key = data.message.substr( 0, data.message.find( " " ) + 1 );
+
 	if ( _command.find( key ) == _command.end() ) {
 		notaCommand();
 	} else {
@@ -52,4 +53,16 @@ void Command::processIRCMessage( int fd, const std::string& message ) {
 		cleanMessage = cleanMessage.substr( 0, cleanMessage.size() - 2 );
 	}
 	getInstance()->handleCommand( ( CommandData_t ){ cleanMessage, fd } );
+}
+
+std::vector< std::string > Command::split( const std::string &str, const char delimiter ) const {
+	std::vector< std::string >	container;
+	std::string					token;
+	std::istringstream			iss( str );
+
+	while( std::getline( iss, token, delimiter ) ) {
+		container.push_back( token );
+	}
+
+	return ( container );
 }

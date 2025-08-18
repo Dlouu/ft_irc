@@ -3,7 +3,7 @@
 
 std::map<int, std::string> createReplies() {
 	std::map<int, std::string> num;
-	
+
 	num[RPL_WELCOME]			= ":{server} 001 {nick} :Welcome to the IRC Network {nick}!{user}@{host}\r\n";
 	num[RPL_YOURHOST]			= ":{server} 002 {nick} :Your host is {server}, running version {version}\r\n";
 	num[RPL_CREATED]			= ":{server} 003 {nick} :This server was created {created}\r\n";
@@ -41,7 +41,7 @@ std::map<int, std::string> createReplies() {
 
 std::map<std::string, std::string> fillVars( int clientFD ) {
 	std::map<std::string, std::string> tab;
-	
+
 	Client client	= Server::getClientByFD( clientFD );
 	tab[ "server" ]	= Server::getServername();
     tab[ "nick" ]	= client.getNickname();
@@ -83,7 +83,7 @@ std::string formatReply( const int code, const std::map<std::string, std::string
 
 void sendReply( const int fd, int code ) {
     g_vars = fillVars( fd );
-	std::string reply = formatReply( code, vars );
+	std::string reply = formatReply( code, g_vars );
     if ( send( fd, reply.c_str(), reply.length(), 0 ) == -1 ) {
         std::cerr << RED "Error sending response" END << std::endl;
     }

@@ -2,6 +2,7 @@ MAKEFLAGS += --silent
 CXX = c++
 CXXFLAGS = -Wall -Werror -Wextra -std=c++98 -g3 -Iincludes
 SRCS =	main.cpp \
+		Log/Log.cpp \
 		Server/Server.cpp \
 		Server/signal.cpp \
 		Command/commands/invite.cpp \
@@ -16,7 +17,7 @@ SRCS =	main.cpp \
 		Command/Command.cpp \
 		NumReply/NumReply.cpp \
 		Client/Client.cpp
-		
+
 OBJ = $(addprefix $(BIN_DIR)/,$(SRCS:.cpp=.o))
 NAME = ircserv
 SRCS_DIR = .
