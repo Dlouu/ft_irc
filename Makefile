@@ -2,9 +2,9 @@ MAKEFLAGS += --silent
 CXX = c++
 CXXFLAGS = -Wall -Werror -Wextra -std=c++98 -g3 -Iincludes
 SRCS =	main.cpp \
+		Log/Log.cpp \
 		Server/Server.cpp \
-		Server/signal.cpp\
-		Command/commands/cap.cpp \
+		Server/signal.cpp \
 		Command/commands/invite.cpp \
 		Command/commands/join.cpp \
 		Command/commands/kick.cpp \
@@ -15,8 +15,9 @@ SRCS =	main.cpp \
 		Command/commands/topic.cpp \
 		Command/commands/user.cpp \
 		Command/Command.cpp \
+		NumReply/NumReply.cpp \
 		Client/Client.cpp
-		
+
 OBJ = $(addprefix $(BIN_DIR)/,$(SRCS:.cpp=.o))
 NAME = ircserv
 SRCS_DIR = .
@@ -61,5 +62,10 @@ dlou: fclean
 	git add .
 	git commit -m "Dlou : $(m)"
 	git push origin dlou
+
+git: fclean
+	git add .
+	git commit -m "$(m)"
+	git push
 
 .PHONY : all clean fclean re dlou

@@ -1,5 +1,8 @@
 #include "Server/Server.hpp"
 
+std::map<int, std::string> g_replies;
+std::map<std::string, std::string> g_vars;
+
 int	main(int argc, char **argv)
 {
 	if (argc != 3)
@@ -10,8 +13,8 @@ int	main(int argc, char **argv)
 	int port = atoi(argv[1]);
 	std::string password = argv[2];
 
-	Server::GetInstance()->init(port);
-	Server::GetInstance()->loop();
+	Server::getInstance()->init(port);
+	Server::getInstance()->loop();
 
 	return (EXIT_SUCCESS);
 }

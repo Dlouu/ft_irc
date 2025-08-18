@@ -1,6 +1,7 @@
 #include "Server.hpp"
 
-Server	*Server::_instance;
+Server			*Server::_instance;
+std::string		Server::_name;
 
 std::vector<std::string> extractMessages(std::string& buffer) {
 	std::vector<std::string> messages;
@@ -13,14 +14,14 @@ std::vector<std::string> extractMessages(std::string& buffer) {
 	return messages;
 }
 
-Server *Server::GetInstance( void ) {
+Server *Server::getInstance( void ) {
     if ( Server::_instance == NULL ) {
         Server::_instance = new Server();
     }
     return Server::_instance;
 }
 
-void	Server::DestroyInstance( void ) {
+void	Server::destroyInstance( void ) {
 	if (_instance)
 		delete _instance;
 	_instance = NULL;
@@ -33,6 +34,8 @@ void	Server::init(int port) {
 
 	_socket = -1;
 	_epoll = -1;
+	_name = "server.irc.uwu";
+	g_replies = createReplies();
 
 	if ((_socket = socket(AF_INET, SOCK_STREAM, 6)) == -1)
 		std::cerr << "Error during socket creation\n";
@@ -131,22 +134,34 @@ void	Server::loop() {
 		close(clientSocket);
 }
 
-std::map< int, Client >	Server::GetClients( void ) {
-	return ( GetInstance()->_users );
+std::map< int, Client >	Server::getClients( void ) {
+	return ( getInstance()->_users );
 }
 
-Client	Server::GetClientByFD( const int fd ) {
-	return ( GetInstance()->_users[ fd ] );
+Client	Server::getClientByFD( const int fd ) {
+	return ( getInstance()->_users[ fd ] );
 }
 
-Client	Server::GetClientByNickname( const std::string nickname ) {
-	Server *server = GetInstance();
-	std::map< int, Client > clients = server->GetClients();
+void	Server::setNicknameByFD( const int fd, const std::string& nickname ) {
+	getInstance()->_users[ fd ].setNickname( nickname );
+}
 
-	for ( std::map< int, Client >::iterator it = clients.begin(); it != clients.end(); it++ ) {
-		if ( it->second.getNickname() == nickname )
-			return ( it->second );
-	}
+void	Server::setHostnameByFD( const int fd, const std::string& hostname ) {
+	getInstance()->_users[ fd ].setNickname( hostname );
+}
 
-	return ( Client() );
+void	Server::setServernameByFD( const int fd, const std::string& servername ) {
+	getInstance()->_users[ fd ].setNickname( servername );
+}
+
+void	Server::setRealnameByFD( const int fd, const std::string& realname ) {
+	getInstance()->_users[ fd ].setNickname( realname );
+}
+
+void	Server::setUsernameByFD( const int fd, const std::string& username ) {
+	getInstance()->_users[ fd ].setNickname( username );
+}
+
+const std::string&	Server::getServername( void ) {
+	return ( _name );
 }

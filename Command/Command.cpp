@@ -7,10 +7,9 @@ Command::Command() {
 }
 
 Command::~Command() {
-	//delete Command::_instance;
 }
 
-Command *Command::GetInstance( void ) {
+Command *Command::getInstance( void ) {
     if ( Command::_instance == NULL ) {
         Command::_instance = new Command();
     }
@@ -22,7 +21,6 @@ void	Command::init( void ) {
 	_command[ "INVITE " ]	=	&Command::inviteCommand;
 	_command[ "TOPIC " ]	=	&Command::topicCommand;
 	_command[ "MODE " ]		=	&Command::modeCommand;
-	_command[ "CAP " ]		=	&Command::capCommand;
 	_command[ "NICK " ]		=	&Command::nickCommand;
 	_command[ "USER " ]		=	&Command::userCommand;
 	_command[ "PING " ]		=	&Command::pingCommand;
@@ -37,6 +35,7 @@ void	Command::notaCommand( void ) const {
 
 void	Command::handleCommand( const CommandData_t& data ) {
 	std::string	key = data.message.substr( 0, data.message.find( " " ) + 1 );
+
 	if ( _command.find( key ) == _command.end() ) {
 		notaCommand();
 	} else {
@@ -53,5 +52,17 @@ void Command::processIRCMessage( int fd, const std::string& message ) {
 	if ( cleanMessage.size() >= 2 && cleanMessage.substr( cleanMessage.size() - 2 ) == "\r\n" ) {
 		cleanMessage = cleanMessage.substr( 0, cleanMessage.size() - 2 );
 	}
-	GetInstance()->handleCommand( ( CommandData_t ){ cleanMessage, fd } );
+	getInstance()->handleCommand( ( CommandData_t ){ cleanMessage, fd } );
+}
+
+std::vector< std::string > Command::split( const std::string &str, const char delimiter ) const {
+	std::vector< std::string >	container;
+	std::string					token;
+	std::istringstream			iss( str );
+
+	while( std::getline( iss, token, delimiter ) ) {
+		container.push_back( token );
+	}
+
+	return ( container );
 }

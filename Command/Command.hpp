@@ -1,15 +1,18 @@
 #pragma once
 
+#include <vector>
 #include <map>
 #include <string>
 #include <iostream>
+#include <sstream>
 #include <algorithm>
 #include <netinet/in.h>
 
-#include "./../colors.hpp"
-#include "./../errors.hpp"
+#include "../colors.hpp"
 #include "../Client/Client.hpp"
 #include "../Server/Server.hpp"
+#include "../NumReply/NumReply.hpp"
+#include "../Log/Log.hpp"
 
 typedef struct CommandData_s {
 	std::string	message;
@@ -39,11 +42,12 @@ class Command
 		void	notaCommand( void ) const;
 
 		Command();
-		
+
 	public:
-		
+
 		~Command();
-		static Command*	GetInstance( void );
+		static Command*	getInstance( void );
 		void			handleCommand( const CommandData_t& data );
 		static void		processIRCMessage(int fd, const std::string& message );
+		std::vector< std::string > split( const std::string &str, const char delimiter ) const;
 };
