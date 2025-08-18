@@ -62,6 +62,13 @@ Je dois check pour le oldnick et newnick car quand on se connect avec le meme ni
 pour cluby: le nick set = true -> a voir ce que tu entendais par la, est-ce que c'est necessaire
 */
 
+/* CLUBY
+	NICK et USER fonctionne ensemble lors de la connection du client, si l'un a une erreur. 
+	(Hors "already in use" parce que ca le change automatiquement avec une _ a la fin du nick proposer ? A voir si le client irssi le fait pas automatiquement de base, je ne suis plus sur de rien)
+	L'autre ne peut etre bon, mais le server ne doit rien repondre. Donc pour moi la maniere dont j'ai penser pour le faire est un booleen
+	lors de la connection pour NICK et USER et si les 2 booleen sont true on envoie le welcome message sinon rien.
+*/
+
 	//NOTES:
 	//if (nickname param empty)
 		//ERR_NONICKNAMEGIVEN
