@@ -1,6 +1,7 @@
 #include "./../../Command/Command.hpp"
 
 void	Command::kickCommand( const CommandData_t& data ) const {
+	(void)data;
 	//if (no target or no channel)
 		//ERR_NEEDMOREPARAMS
 	//else if (channel name isn't in good format (e.g. no '#' before channel name)) A valid channel name typically:

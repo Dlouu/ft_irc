@@ -1,6 +1,7 @@
 #include "./../../Command/Command.hpp"
 
 void	Command::privmsgCommand( const CommandData_t& data ) const {
+	(void)data;
 	//if (no target)
 		//ERR_NORECIPIENT
 	//else if (not in channel OR client banned from channel OR (channel mode is invite only AND client isn't invited) OR (channel mode is +m AND client IS NOT (+o OR +v)))

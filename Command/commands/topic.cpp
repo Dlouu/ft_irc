@@ -1,6 +1,7 @@
 #include "./../../Command/Command.hpp"
 
 void	Command::topicCommand( const CommandData_t& data ) const {
+	(void)data;
 	//if (<channel> is empty)
 		//ERR_NEEDMOREPARAMS
 	//else if (<topic> empty AND topic data is empty)

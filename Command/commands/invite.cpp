@@ -1,6 +1,7 @@
 #include "./../../Command/Command.hpp"
 
 void	Command::inviteCommand( const CommandData_t& data ) const {
+	(void)data;
 	//if (!invitee || !channel)
 		//ERR_NEEDMOREPARAMS
 	//if (client not on channel)

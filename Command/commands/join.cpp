@@ -1,6 +1,7 @@
 #include "./../../Command/Command.hpp"
 
 void	Command::joinCommand( const CommandData_t& data ) const {
+	(void)data;
 	//if (no client or no channel param)
 		//ERR_NEEDMOREPARAMS
 	//else if (channel mode is +i (invite only))

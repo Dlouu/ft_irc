@@ -1,6 +1,7 @@
 #include "./../../Command/Command.hpp"
 
 void	Command::modeCommand( const CommandData_t& data ) const {
+	(void)data;
 	//if (client isn't in channel database)
 		//ERR_NOTONCHANNEL
 	//else if (only 1 param)

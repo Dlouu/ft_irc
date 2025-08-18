@@ -1,6 +1,7 @@
 #include "./../../Command/Command.hpp"
 
 void	Command::nickCommand( const CommandData_t& data ) const {
+	(void)data;
 	//if (nickname param empty)
 		//ERR_NONICKNAMEGIVEN
 	//else if (nickname param already in database)
