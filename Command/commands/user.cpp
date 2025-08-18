@@ -13,3 +13,8 @@ void	Command::userCommand( const CommandData_t& data ) const {
 // Quand j'aurais fait les 002-004 et le welcome message,
 // je changerai le RPL_WELCOME par un MOTD
 // Y'aura un joli ASCII art Uwuesque
+
+//if (!<username> OR !<hostname> OR !<servername> OR 1<realname>)
+	//ERR_NEEDMOREPARAMS
+//else if (user already connected)
+	//ERR_ALREADYREGISTRED
