@@ -76,7 +76,7 @@ std::string formatReply( const int code, const std::map<std::string, std::string
         while ( ( pos = reply.find( key, pos ) ) != std::string::npos ) {
             reply.replace( pos, key.length(), it->second );
             pos += it->second.length();
-        }
+		}
     }
     return reply;
 }
