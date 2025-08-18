@@ -35,6 +35,7 @@ std::map<int, std::string> createReplies() {
 	num[ERR_BADCHANNELKEY]		= ":{server} 475 {nick} {channel} :Cannot join channel (+k)\r\n";
 	num[ERR_BADCHANMASK]		= ":{server} 476 {nick} {channel} :Bad Channel Mask\r\n";
 	num[ERR_CHANOPRIVSNEEDED]	= ":{server} 482 {nick} {channel} :You're not channel operator\r\n";
+	num[ERR_WTF]				= ":{server} 000 {oldnick}!{user}@{host} NICK:{newnick}\r\n";
 
     return num;
 }
