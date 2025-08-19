@@ -6,7 +6,7 @@
 /*   By: tclaereb <tclaereb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 10:51:35 by tclaereb          #+#    #+#             */
-/*   Updated: 2025/08/18 06:24:56 by tclaereb         ###   ########.fr       */
+/*   Updated: 2025/08/19 11:00:05 by tclaereb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,6 @@ Log::~Log() {
 		return ;
 	}
 
-
 	if ( ( logData & logFile ) && ( logData & logLine ) && ( logData & logFunc ) )
 		os << " - \033[3m(" << this->_file << ":" << this->_line << " " << this->_func << ")\033[0m";
 	else if ( ( logData & logFile ) && ( logData & logLine ) )
@@ -87,5 +86,10 @@ Log::~Log() {
 }
 
 void	Log::displayDebug( enumColors color ) {
-	os << colors[color] << "[LOG] - ";
+	if ( color == SERVER )
+		os << colors[ color ] << "<<< " << colors[ LDEFAULT ];
+	else if ( color == CLIENT )
+		os << colors[ color ] << ">>> " << colors[ LDEFAULT ];
+	else
+		os << colors[ color ] << "[LOG] - ";
 }

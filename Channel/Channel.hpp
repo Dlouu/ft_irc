@@ -6,7 +6,7 @@
 /*   By: tclaereb <tclaereb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/18 08:18:40 by tclaereb          #+#    #+#             */
-/*   Updated: 2025/08/18 12:57:56 by tclaereb         ###   ########.fr       */
+/*   Updated: 2025/08/19 10:59:36 by tclaereb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,11 +24,7 @@ class Channel {
 		unsigned long		_userLimit;
 		std::vector< int >	_operators;
 
-
 		bool				_inviteOnly;
-		bool				_topicOperatorOnly;
-
-
 
 	public:
 		Channel( const std::string &name, const std::string &pass );
@@ -45,5 +41,4 @@ class Channel {
 
 		void						addOperator( const int fd );
 		void						delOperator( const int fd );
-
 };

@@ -6,14 +6,14 @@
 /*   By: tclaereb <tclaereb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/18 12:31:21 by tclaereb          #+#    #+#             */
-/*   Updated: 2025/08/18 13:16:45 by tclaereb         ###   ########.fr       */
+/*   Updated: 2025/08/19 10:59:38 by tclaereb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Channel.hpp"
 
 Channel::Channel( const std::string &name, const std::string &pass ) :
-		_name( name ), _topic( "" ), _password( pass ), _userLimit( 0 ), _inviteOnly( false ), _topicOperatorOnly( true ) {}
+		_name( name ), _topic( "" ), _password( pass ), _userLimit( 0 ), _inviteOnly( false ) {}
 
 const std::string	&Channel::getName( void ) const {
 	return ( this->_name );
