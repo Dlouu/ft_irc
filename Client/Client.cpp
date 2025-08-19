@@ -32,3 +32,12 @@ const std::string&	Client::getServername( void ) {
 const std::string&	Client::getRealname( void ) {
 	return ( this->_realname );
 }
+
+const std::string	Client::getMask( void ) const {
+	std::string mask = this->_nickname + "!" + this->_username + "@" + this->_hostname;
+	return ( mask );
+}
+
+bool	Client::operator==( const Client &other ) const {
+	return ( this->getMask() == other.getMask() );
+}

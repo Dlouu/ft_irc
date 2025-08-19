@@ -9,7 +9,6 @@ int	main(int argc, char **argv)
 		return (1);
 
 	catch_sig();
-
 	int port = atoi(argv[1]);
 	std::string password = argv[2];
 

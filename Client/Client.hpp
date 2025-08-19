@@ -24,4 +24,7 @@ class Client
 		const std::string&	getHostname( void );
 		const std::string&	getServername( void );
 		const std::string&	getRealname( void );
+		const std::string	getMask( void ) const;
+
+		bool				operator==( const Client &other ) const;
 };

@@ -6,14 +6,14 @@
 /*   By: tclaereb <tclaereb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/18 12:31:21 by tclaereb          #+#    #+#             */
-/*   Updated: 2025/08/19 10:59:38 by tclaereb         ###   ########.fr       */
+/*   Updated: 2025/08/19 15:05:49 by tclaereb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Channel.hpp"
 
 Channel::Channel( const std::string &name, const std::string &pass ) :
-		_name( name ), _topic( "" ), _password( pass ), _userLimit( 0 ), _inviteOnly( false ) {}
+		_name( name ), _topic( "" ), _password( pass ), _userLimit( 0 ), _inviteOnly( false ), _topicOperatorOnly( true ) {}
 
 const std::string	&Channel::getName( void ) const {
 	return ( this->_name );
@@ -27,7 +27,7 @@ const unsigned long	&Channel::getUserLimit( void ) const {
 	return ( this->_userLimit );
 }
 
-const std::vector< int >	&Channel::getOperators( void ) const {
+const std::vector< Client >	&Channel::getOperators( void ) const {
 	return ( this->_operators );
 }
 
@@ -40,27 +40,37 @@ void	Channel::setUserLimit( const unsigned long n ) {
 }
 
 void	Channel::setPassword( const std::string password ) {
-	// alpha numeric only
+	for ( std::size_t i = 0; i < password.size(); i++ ) {
+		if ( !std::isalnum( password[ i ] ) )
+			return ;
+	}
 	this->_password = password;
 }
 
-void	Channel::addOperator( const int fd ) {
-	if ( fd <= 1 )
+void	Channel::setTopic( const Client &executor, const std::string topic ) {
+	if ( !this->isClientOperator( executor ) && this->_topicOperatorOnly )
 		return ;
 
-	std::vector< int >::iterator it = std::find( this->_operators.begin(), this->_operators.end(), fd );
-
-	if ( it != this->_operators.end() )
-		return ;
-
-	this->_operators.push_back( fd );
+	this->_topic = topic;
 }
 
-void	Channel::delOperator( const int fd ) {
-	std::vector< int >::iterator it = std::find( this->_operators.begin(), this->_operators.end(), fd );
+void	Channel::addOperator( const Client &executor, const Client &target ) {
+	if ( this->isClientOperator( executor ) && !this->isClientOperator( target ) )
+		this->_operators.push_back( target );
+}
 
-	if ( it == this->_operators.end() )
+void	Channel::delOperator( const Client &executor, const Client &target ) {
+	if ( this->isClientOperator( executor ) && !this->isClientOperator( target ) )
 		return ;
 
+	std::vector< Client >::iterator it = std::find( this->_operators.begin(), this->_operators.end(), target );
 	this->_operators.erase( it );
+}
+
+bool	Channel::isClientOperator( const Client &target ) {
+	std::vector< Client >::iterator it = std::find( this->_operators.begin(), this->_operators.end(), target );
+
+	if ( it == this->_operators.end() )
+		return ( false );
+	return ( true );
 }
