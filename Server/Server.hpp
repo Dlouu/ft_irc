@@ -9,6 +9,7 @@
 #include <iostream>
 #include <sstream>
 #include <cmath>
+#include <ctime>
 #include <vector>
 #include <map>
 
@@ -18,6 +19,8 @@
 #include "signal.hpp"
 
 # define MAX_EVENTS 10
+# define SERVER_VERSION "ft_irc-1.0"
+# define USERMODES "itkol"
 
 std::vector<std::string> extractMessages(std::string& buffer);
 
@@ -32,8 +35,10 @@ class Server
 		epoll_event				_event, _events[MAX_EVENTS];
 		static Server			*_instance;
 		std::map<int, Client>	_users;
-
+		
 	public:
+		std::string				datetime;
+
 		void			loop();
 		void			init( int port );
 		static Server*	getInstance( void );
@@ -50,4 +55,7 @@ class Server
 		static void						setRealnameByFD( const int fd, const std::string& realname );
 		static void						setUsernameByFD( const int fd, const std::string& username );
 		static void						setServernameByFD( const int fd, const std::string& servername );
+		static void						setNickSetByFD( const int fd, bool status );
+		static void						setUserSetByFD( const int fd, bool status );
+		static bool						isUserRegistered( const int fd );
 };

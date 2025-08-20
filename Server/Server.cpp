@@ -37,6 +37,11 @@ void	Server::init(int port) {
 	_name = "server.irc.uwu";
 	g_replies = createReplies();
 
+	time_t now;
+	time(&now);
+	std::string date = ctime(&now);
+	datetime = date.substr(0, date.length() - 1);
+
 	if ((_socket = socket(AF_INET, SOCK_STREAM, 6)) == -1)
 		std::cerr << "Error during socket creation\n";
 	if (fcntl(_socket, F_SETFL, O_NONBLOCK) == -1) {
@@ -147,19 +152,34 @@ void	Server::setNicknameByFD( const int fd, const std::string& nickname ) {
 }
 
 void	Server::setHostnameByFD( const int fd, const std::string& hostname ) {
-	getInstance()->_users[ fd ].setNickname( hostname );
+	getInstance()->_users[ fd ].setHostname( hostname );
 }
 
 void	Server::setServernameByFD( const int fd, const std::string& servername ) {
-	getInstance()->_users[ fd ].setNickname( servername );
+	getInstance()->_users[ fd ].setServername( servername );
 }
 
 void	Server::setRealnameByFD( const int fd, const std::string& realname ) {
-	getInstance()->_users[ fd ].setNickname( realname );
+	getInstance()->_users[ fd ].setRealname( realname );
 }
 
 void	Server::setUsernameByFD( const int fd, const std::string& username ) {
-	getInstance()->_users[ fd ].setNickname( username );
+	getInstance()->_users[ fd ].setUsername( username );
+}
+
+void	Server::setNickSetByFD( const int fd, bool status ) {
+	getInstance()->_users[ fd ].setNickSet( status );
+}
+
+void	Server::setUserSetByFD( const int fd, bool status ) {
+	getInstance()->_users[ fd ].setUserSet( status );
+}
+
+bool	Server::isUserRegistered( const int fd ) {
+	if ((getInstance()->_users[ fd ].isUserSet())
+		&& getInstance()->_users[ fd ].isNickSet())
+		return (true);
+	return (false);
 }
 
 const std::string&	Server::getServername( void ) {

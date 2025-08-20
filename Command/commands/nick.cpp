@@ -31,7 +31,7 @@ static int	invalidNickname( const std::string& nickname ) {
 static int	alreadyRegistered( const std::string& nickname, int fd ) {
 	std::map<int, Client> clients = Server::getClients();
 	for (std::map<int, Client>::iterator it = clients.begin(); it != clients.end(); it++) {
-		std::cout << it->second.getNickname()  << std::endl;
+		// std::cout << it->second.getNickname()  << std::endl;
 		if (it->second.getNickname() == nickname) {
 			sendReply( fd, ERR_NICKNAMEINUSE );
 			return (1);
@@ -50,7 +50,7 @@ void	Command::nickCommand( const CommandData_t& data ) const {
 	} else {
 		if (!alreadyRegistered( nickname, data.fd )) {
 			Server::setNicknameByFD( data.fd, nickname );
-			//client nick set == true
+			Server::setNickSetByFD( data.fd, true );
 		} else {
 			return sendReply( ERR_WTF, data.fd );
 		}

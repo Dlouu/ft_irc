@@ -25,12 +25,13 @@ void	Command::init( void ) {
 	_command[ "USER " ]		=	&Command::userCommand;
 	_command[ "PING " ]		=	&Command::pingCommand;
 	_command[ "PONG " ]		=	&Command::pongCommand;
+	// _command[ "PASS " ]		=	&Command::passCommand;
 	_command[ "PRIVMSG " ]	=	&Command::privmsgCommand;
 	_command[ "JOIN " ]		= 	&Command::joinCommand;
 }
 
 void	Command::notaCommand( void ) const {
-	std::cout << RED "Not a command" END << std::endl;
+	// std::cout << RED "Not a command" END << std::endl;
 }
 
 void	Command::handleCommand( const CommandData_t& data ) {
@@ -66,3 +67,6 @@ std::vector< std::string > Command::split( const std::string &str, const char de
 
 	return ( container );
 }
+
+//We need to check if it's the client is connected already. By checking if NICK and USER have been successful
+//Only after that we send the Welcome MOTD
