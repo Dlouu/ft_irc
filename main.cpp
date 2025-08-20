@@ -16,5 +16,7 @@ int	main(int argc, char **argv)
 	Server::getInstance()->init(port);
 	Server::getInstance()->loop();
 
-	return (EXIT_SUCCESS);
+
+	Server::destroyInstance();
+	return (0);
 }
