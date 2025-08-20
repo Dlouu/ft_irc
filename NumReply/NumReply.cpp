@@ -6,13 +6,18 @@ std::map<int, std::string> createReplies() {
 
 	num[RPL_WELCOME]			= ":{server} 001 {nick} :Welcome to the IRC Network {nick}!{user}@{host}\r\n";
 	num[RPL_YOURHOST]			= ":{server} 002 {nick} :Your host is {server}, running version {version}\r\n";
-	num[RPL_CREATED]			= ":{server} 003 {nick} :This server was created {created}\r\n";
-	num[RPL_MYINFO]				= ":{server} 004 {nick} {server} {version} {usermodes} {chanmodes}\r\n";
+	num[RPL_CREATED]			= ":{server} 003 {nick} :This server was created {datetime}\r\n";
+	num[RPL_MYINFO]				= ":{server} 004 {nick} {server} {version} {usermodes}\r\n";
 	num[RPL_AWAY]				= ":{server} 301 {nick} {target} :{message}\r\n";
 	num[RPL_NOTOPIC]			= ":{server} 331 {nick} {channel} :No topic is set\r\n";
 	num[RPL_TOPIC]				= ":{server} 332 {nick} {channel} :{topic}\r\n";
 	num[RPL_INVITING]			= ":{server} 341 {nick} {target} {channel}\r\n";
 	num[RPL_NAMREPLY]			= ":{server} 353 {nick} = {channel} :{names}\r\n";
+
+	num[RPL_MOTDSTART]			= ":{server} 375 {nick} :- {server} Message of the day -\r\n";
+	num[RPL_MOTD]				= ":{server} 372 {nick} :- {motd}\r\n";
+	num[RPL_ENDOFMOTD]			= ":{server} 376 {nick} :End of /MOTD command\r\n";
+
 	num[ERR_NOSUCHNICK]			= ":{server} 401 {nick} {target} :No such nick/channel\r\n";
 	num[ERR_NOSUCHCHANNEL]		= ":{server} 403 {nick} {channel} :No such channel\r\n";
 	num[ERR_CANNOTSENDTOCHAN]	= ":{server} 404 {nick} {channel} :Cannot send to channel\r\n";
@@ -35,6 +40,7 @@ std::map<int, std::string> createReplies() {
 	num[ERR_BADCHANNELKEY]		= ":{server} 475 {nick} {channel} :Cannot join channel (+k)\r\n";
 	num[ERR_BADCHANMASK]		= ":{server} 476 {nick} {channel} :Bad Channel Mask\r\n";
 	num[ERR_CHANOPRIVSNEEDED]	= ":{server} 482 {nick} {channel} :You're not channel operator\r\n";
+
 	num[ERR_WTF]				= ":{server} 000 {oldnick}!{user}@{host} NICK:{newnick}\r\n";
 
     return num;
@@ -45,9 +51,27 @@ std::map<std::string, std::string> fillVars( int clientFD ) {
 
 	Client client	= Server::getClientByFD( clientFD );
 	tab[ "server" ]	= Server::getServername();
+    tab[ "datetime" ] = Server::getInstance()->datetime;
+    tab[ "version" ] = SERVER_VERSION;
+    tab[ "usermodes" ] = USERMODES;
     tab[ "nick" ]	= client.getNickname();
     tab[ "user" ]	= client.getUsername();
     tab[ "host" ]	= client.getHostname();
+    tab[ "motd" ]	= 	"attention les yeux !\n\n" \
+						"⡆⣐⢕⢕⢕⢕⢕⢕⢕⢕⠅⢗⢕⢕⢕⢕⢕⢕⢕⠕⠕⢕⢕⢕⢕⢕⢕⢕⢕⢕\n" \
+						"⢐⢕⢕⢕⢕⢕⣕⢕⢕⠕⠁⢕⢕⢕⢕⢕⢕⢕⢕⠅⡄⢕⢕⢕⢕⢕⢕⢕⢕⢕\n" \
+						"⢕⢕⢕⢕⢕⠅⢗⢕⠕⣠⠄⣗⢕⢕⠕⢕⢕⢕⠕⢠⣿⠐⢕⢕⢕⠑⢕⢕⠵⢕\n" \
+						"⢕⢕⢕⢕⠁⢜⠕⢁⣴⣿⡇⢓⢕⢵⢐⢕⢕⠕⢁⣾⢿⣧⠑⢕⢕⠄⢑⢕⠅⢕\n" \
+						"⢕⢕⠵⢁⠔⢁⣤⣤⣶⣶⣶⡐⣕⢽⠐⢕⠕⣡⣾⣶⣶⣶⣤⡁⢓⢕⠄⢑⢅⢑\n" \
+						"⠍⣧⠄⣶⣾⣿⣿⣿⣿⣿⣿⣷⣔⢕⢄⢡⣾⣿⣿⣿⣿⣿⣿⣿⣦⡑⢕⢤⠱⢐\n" \
+						"⢠⢕⠅⣾⣿⠋⢿⣿⣿⣿⠉⣿⣿⣷⣦⣶⣽⣿⣿⠈⣿⣿⣿⣿⠏⢹⣷⣷⡅⢐\n" \
+						"⣔⢕⢥⢻⣿⡀⠈⠛⠛⠁⢠⣿⣿⣿⣿⣿⣿⣿⣿⡀⠈⠛⠛⠁⠄⣼⣿⣿⡇⢔\n" \
+						"⢕⢕⢽⢸⢟⢟⢖⢖⢤⣶⡟⢻⣿⡿⠻⣿⣿⡟⢀⣿⣦⢤⢤⢔⢞⢿⢿⣿⠁⢕\n" \
+						"⢕⢕⠅⣐⢕⢕⢕⢕⢕⣿⣿⡄⠛⢀⣦⠈⠛⢁⣼⣿⢗⢕⢕⢕⢕⢕⢕⡏⣘⢕\n" \
+						"⢕⢕⠅⢓⣕⣕⣕⣕⣵⣿⣿⣿⣾⣿⣿⣿⣿⣿⣿⣿⣷⣕⢕⢕⢕⢕⡵⢀⢕⢕\n" \
+						"⢑⢕⠃⡈⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢃⢕⢕⢕\n" \
+						"⣆⢕⠄⢱⣄⠛⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⢁⢕⢕⠕⢁\n" \
+						"⣿⣦⡀⣿⣿⣷⣶⣬⣍⣛⣛⣛⡛⠿⠿⠿⠛⠛⢛⣛⣉⣭⣤⣂⢜⠕⢑⣡⣴⣿\n";
     // tab[ "command" ] =;
     // tab[ "channel" ] =;
     // tab[ "message" ] =;
@@ -56,10 +80,6 @@ std::map<std::string, std::string> fillVars( int clientFD ) {
     // tab[ "topic" ] =;
     // tab[ "names" ] =;
     // tab[ "mask" ] =;
-    // tab[ "version" ] =;
-    // tab[ "created" ] =;
-    // tab[ "usermodes" ] =;
-    // tab[ "chanmodes" ] =;
     return tab;
 }
 
