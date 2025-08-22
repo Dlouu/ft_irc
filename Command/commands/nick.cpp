@@ -29,11 +29,13 @@ static int	invalidNickname( const std::string& nickname ) {
 }
 
 static int	alreadyRegistered( const std::string& nickname, int fd ) {
+	(void)fd;
 	std::map<int, Client> clients = Server::getClients();
 	for (std::map<int, Client>::iterator it = clients.begin(); it != clients.end(); it++) {
 		// std::cout << it->second.getNickname()  << std::endl;
 		if (it->second.getNickname() == nickname) {
-			sendReply( fd, ERR_NICKNAMEINUSE );
+			// sendReply( fd, ERR_NICKNAMEINUSE );
+			//verifier si faut garder ca ou pas
 			return (1);
 		}
 	}
@@ -48,12 +50,13 @@ void	Command::nickCommand( const CommandData_t& data ) const {
 	} else if (invalidNickname( nickname )) {
 		return sendReply( data.fd, ERR_ERRONEUSNICKNAME );
 	} else {
-		if (!alreadyRegistered( nickname, data.fd )) {
-			Server::setNicknameByFD( data.fd, nickname );
-			Server::setNickSetByFD( data.fd, true );
-		} else {
-			return sendReply( ERR_WTF, data.fd );
+		while (alreadyRegistered( nickname, data.fd )) {
+			nickname = nickname + "_";
+			sendReply( data.fd, ERR_NICKNAMEINUSE );
+			//ou le remettre que dans already registred
 		}
+		Server::setNicknameByFD( data.fd, nickname );
+		Server::setNickSetByFD( data.fd, true );
 	}
 }
 
