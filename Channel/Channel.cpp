@@ -6,7 +6,7 @@
 /*   By: tclaereb <tclaereb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/18 12:31:21 by tclaereb          #+#    #+#             */
-/*   Updated: 2025/08/19 15:05:49 by tclaereb         ###   ########.fr       */
+/*   Updated: 2025/08/23 13:30:18 by tclaereb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,17 +54,38 @@ void	Channel::setTopic( const Client &executor, const std::string topic ) {
 	this->_topic = topic;
 }
 
+void	Channel::addUser( const Client &executor, const Client &target ) {
+	if ( this->isClientOperator( executor ) && !this->isClientUser( target ) )
+		this->_users.push_back( target );
+}
+
+void	Channel::delUser( const Client &executor, const Client &target ) {
+	if ( !this->isClientOperator( executor ) || this->isClientUser( target ) )
+		return;
+
+	std::vector< Client >::iterator it = std::find(this->_users.begin(), this->_users.end(), target );
+	this->_users.erase( it );
+}
+
 void	Channel::addOperator( const Client &executor, const Client &target ) {
 	if ( this->isClientOperator( executor ) && !this->isClientOperator( target ) )
 		this->_operators.push_back( target );
 }
 
 void	Channel::delOperator( const Client &executor, const Client &target ) {
-	if ( this->isClientOperator( executor ) && !this->isClientOperator( target ) )
+	if ( !this->isClientOperator( executor ) || this->isClientOperator( target ) )
 		return ;
 
 	std::vector< Client >::iterator it = std::find( this->_operators.begin(), this->_operators.end(), target );
 	this->_operators.erase( it );
+}
+
+bool	Channel::isClientUser( const Client &target ) {
+	std::vector< Client >::iterator it = std::find( this->_users.begin(), this->_users.end(), target );
+
+	if ( it == this->_users.end() )
+		return ( false );
+	return ( true );
 }
 
 bool	Channel::isClientOperator( const Client &target ) {

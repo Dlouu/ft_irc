@@ -52,6 +52,7 @@ void Command::processIRCMessage( int fd, const std::string& message ) {
 	if ( cleanMessage.size() >= 2 && cleanMessage.substr( cleanMessage.size() - 2 ) == "\r\n" ) {
 		cleanMessage = cleanMessage.substr( 0, cleanMessage.size() - 2 );
 	}
+	LOGC( INFO ) << message;
 	getInstance()->handleCommand( ( CommandData_t ){ cleanMessage, fd } );
 }
 

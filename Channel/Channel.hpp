@@ -6,7 +6,7 @@
 /*   By: tclaereb <tclaereb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/18 08:18:40 by tclaereb          #+#    #+#             */
-/*   Updated: 2025/08/19 15:07:51 by tclaereb         ###   ########.fr       */
+/*   Updated: 2025/08/23 13:27:08 by tclaereb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,8 +44,12 @@ class Channel {
 		void						setPassword( const std::string password );
 		void						setTopic( const Client &executor, const std::string topic );
 
+		void						addUser( const Client &executor, const Client &target );
+		void						delUser( const Client &executor, const Client &target );
+
 		void						addOperator( const Client &executor, const Client &target );
 		void						delOperator( const Client &executor, const Client &target );
 
+		bool						isClientUser( const Client &target );
 		bool						isClientOperator( const Client &target );
 };
