@@ -1,4 +1,3 @@
-#include <map>
 #include "NumReply.hpp"
 
 std::map<int, std::string> createReplies() {

@@ -1,6 +1,6 @@
 MAKEFLAGS += --silent
 CXX = c++
-CXXFLAGS = -Wall -Werror -Wextra -std=c++98 -g3 -Iincludes
+CXXFLAGS = -Wall -Werror -Wextra -std=c++98 -g3 -IClient -ICommand -ILog -IServer -INumReply
 SRCS =	main.cpp \
 		Log/Log.cpp \
 		Server/Server.cpp \
