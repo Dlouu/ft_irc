@@ -9,6 +9,7 @@ class Client
 	private:
 		bool		_nickSet;
 		bool		_userSet;
+		bool		_welcomed;
 		std::string	_nickname;
 		std::string	_username;
 		std::string	_hostname;
@@ -32,6 +33,7 @@ class Client
 		const std::string&	getRealname( void );
 		void				setNickSet( bool status );
 		void				setUserSet( bool status );
+		void				SetWelcomeStatus( bool status );
 		bool				isNickSet( void );
 		bool				isUserSet( void );
 		void				setUserInfo( const std::string& str );
@@ -45,4 +47,5 @@ class Client
 		const int&			getFD( void ) const;
 
 		bool				operator==( const Client &other ) const;
+		bool				isWelcomed( void );
 };

@@ -29,7 +29,7 @@ std::map<int, std::string> createReplies() {
 	num[ERR_WILDTOPLEVEL]		= ":{server} 414 {nick} {mask} :Wildcard in toplevel domain\r\n";
 	num[ERR_NONICKNAMEGIVEN]	= ":{server} 431 {nick} :No nickname given\r\n";
 	num[ERR_ERRONEUSNICKNAME]	= ":{server} 432 {nick} :Erroneous nickname\r\n";
-	num[ERR_NICKNAMEINUSE]		= ":{server} 433 {nick} :Nickname is already in use\r\n";
+	num[ERR_NICKNAMEINUSE]		= ":{server} 433 {nick} :Nickname is already in use\r\n"; //irssi already write  "{nick} is already in use"
 	num[ERR_NOTONCHANNEL]		= ":{server} 442 {nick} {channel} :You're not on that channel\r\n";
 	num[ERR_USERONCHANNEL]		= ":{server} 443 {nick} {target} {channel} :is already on channel\r\n";
 	num[ERR_NEEDMOREPARAMS]		= ":{server} 461 {nick} {command} :Not enough parameters\r\n";
@@ -41,23 +41,18 @@ std::map<int, std::string> createReplies() {
 	num[ERR_BADCHANMASK]		= ":{server} 476 {nick} {channel} :Bad Channel Mask\r\n";
 	num[ERR_CHANOPRIVSNEEDED]	= ":{server} 482 {nick} {channel} :You're not channel operator\r\n";
 
-	num[ERR_WTF]				= ":{server} 000 {oldnick}!{user}@{host} NICK:{newnick}\r\n";
-
     return num;
 }
 
-std::map<std::string, std::string> fillVars( int clientFD ) {
+std::map<std::string, std::string> fillPermanentVars( void ) {
 	std::map<std::string, std::string> tab;
 
 	Client *client	= Server::getClientByFD( clientFD );
 	tab[ "server" ]	= Server::getServername();
-    tab[ "datetime" ] = Server::getInstance()->datetime;
-    tab[ "version" ] = SERVER_VERSION;
-    tab[ "usermodes" ] = USERMODES;
-    tab[ "nick" ]	= client.getNickname();
-    tab[ "user" ]	= client.getUsername();
-    tab[ "host" ]	= client.getHostname();
-    tab[ "motd" ]	= 	"attention les yeux !\n\n" \
+	tab[ "datetime" ] = Server::getInstance()->datetime;
+	tab[ "version" ] = SERVER_VERSION;
+	tab[ "usermodes" ] = USERMODES;
+	tab[ "motd" ]	= 	"attention les yeux !\n\n" \
 						"⡆⣐⢕⢕⢕⢕⢕⢕⢕⢕⠅⢗⢕⢕⢕⢕⢕⢕⢕⠕⠕⢕⢕⢕⢕⢕⢕⢕⢕⢕\n" \
 						"⢐⢕⢕⢕⢕⢕⣕⢕⢕⠕⠁⢕⢕⢕⢕⢕⢕⢕⢕⠅⡄⢕⢕⢕⢕⢕⢕⢕⢕⢕\n" \
 						"⢕⢕⢕⢕⢕⠅⢗⢕⠕⣠⠄⣗⢕⢕⠕⢕⢕⢕⠕⢠⣿⠐⢕⢕⢕⠑⢕⢕⠵⢕\n" \
@@ -72,41 +67,40 @@ std::map<std::string, std::string> fillVars( int clientFD ) {
 						"⢑⢕⠃⡈⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢃⢕⢕⢕\n" \
 						"⣆⢕⠄⢱⣄⠛⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⢁⢕⢕⠕⢁\n" \
 						"⣿⣦⡀⣿⣿⣷⣶⣬⣍⣛⣛⣛⡛⠿⠿⠿⠛⠛⢛⣛⣉⣭⣤⣂⢜⠕⢑⣡⣴⣿\n";
-    tab[ "nick" ]	= client->getNickname();
-    tab[ "user" ]	= client->getUsername();
-    tab[ "host" ]	= client->getHostname();
-    // tab[ "command" ] =;
-    // tab[ "channel" ] =;
-    // tab[ "message" ] =;
-    // tab[ "target" ] =;
-    // tab[ "reason" ] =;
-    // tab[ "topic" ] =;
-    // tab[ "names" ] =;
-    // tab[ "mask" ] =;
+    return tab;
+}
+
+std::map<std::string, std::string> fillVars( int clientFD, std::map<std::string, std::string> tab ) {
+
+	Client client	= Server::getClientByFD( clientFD );
+	tab[ "nick" ]	= client.getNickname();
+	tab[ "user" ]	= client.getUsername();
+	tab[ "host" ]	= client.getHostname();
     return tab;
 }
 
 std::string formatReply( const int code, const std::map<std::string, std::string> &vars ) {
 	std::map< int, std::string >::const_iterator templateIt = g_replies.find( code );
 	if ( templateIt == g_replies.end() )
-        return ( "" );
+		return ( "" );
 	std::string reply = templateIt->second;
-
+	std::string	value = it->second;
+	
 	std::map<std::string, std::string>::const_iterator it;
-    for ( it = vars.begin(); it != vars.end(); ++it ) {
-        std::string key = "{" + it->first + "}";
-        std::string::size_type pos = 0;
+	for ( it = vars.begin(); it != vars.end(); ++it ) {
+		std::string key = "{" + it->first + "}";
 
-        while ( ( pos = reply.find( key, pos ) ) != std::string::npos ) {
-            reply.replace( pos, key.length(), it->second );
-            pos += it->second.length();
+		std::string::size_type pos = 0;
+		while ( ( pos = reply.find( key, pos ) ) != std::string::npos ) {
+			reply.replace( pos, key.length(), value );
+			pos += value.length();
 		}
-    }
-    return reply;
+	}
+	return reply;
 }
 
 void sendReply( const int fd, int code ) {
-    g_vars = fillVars( fd );
+    g_vars = fillVars( fd , g_vars );
 	std::string reply = formatReply( code, g_vars );
     if ( send( fd, reply.c_str(), reply.length(), 0 ) == -1 ) {
         std::cerr << RED "Error sending response" END << std::endl;

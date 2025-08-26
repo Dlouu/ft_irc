@@ -29,11 +29,10 @@ static int	invalidNickname( const std::string& nickname ) {
 }
 
 static int	alreadyRegistered( const std::string& nickname, int fd ) {
+	(void)fd;
 	std::map<int, Client> clients = Server::getClients();
 	for (std::map<int, Client>::iterator it = clients.begin(); it != clients.end(); it++) {
-		// std::cout << it->second.getNickname()  << std::endl;
 		if (it->second.getNickname() == nickname) {
-			sendReply( fd, ERR_NICKNAMEINUSE );
 			return (1);
 		}
 	}
@@ -42,25 +41,43 @@ static int	alreadyRegistered( const std::string& nickname, int fd ) {
 
 void	Command::nickCommand( const CommandData_t& data ) const {
 	std::string nickname = data.message.substr( 5, data.message.length() );
+	std::string	oldnick = Server::getClientByFD(data.fd).getNickname();
 
 	if (nickname.empty()) {
 		return sendReply( data.fd, ERR_NONICKNAMEGIVEN );
 	} else if (invalidNickname( nickname )) {
 		return sendReply( data.fd, ERR_ERRONEUSNICKNAME );
 	} else {
-		if (!alreadyRegistered( nickname, data.fd )) {
-			Server::setNicknameByFD( data.fd, nickname );
-			Server::setNickSetByFD( data.fd, true );
+		while (alreadyRegistered( nickname, data.fd )) {
+			Server::setNicknameByFD( data.fd, "* " + nickname );
+			return (sendReply( data.fd, ERR_NICKNAMEINUSE ));
+			//ou le remettre que dans already registred
+		}
+		Server::setNicknameByFD( data.fd, nickname );
+		Server::setNickSetByFD( data.fd, true );
+	}
+	if (Server::isClientRegistered( data.fd )) {
+		if (Server::isClientWelcomed( data.fd ) == false) {
+			sendReply( data.fd, RPL_WELCOME );
+			sendReply( data.fd, RPL_YOURHOST );
+			sendReply( data.fd, RPL_CREATED );
+			sendReply( data.fd, RPL_MYINFO );
+
+			// Send MOTD
+			sendReply( data.fd, RPL_MOTDSTART );
+			sendReply( data.fd, RPL_MOTD );
+			sendReply( data.fd, RPL_ENDOFMOTD );
+			Server::setWelcomeStatusByFD( data.fd, true );
 		} else {
-			return sendReply( ERR_WTF, data.fd );
+			std::string	reply = ":" + oldnick
+				+ "!" + Server::getClientByFD( data.fd ).getUsername()
+				+ "@" + Server::getClientByFD( data.fd ).getHostname()
+				+ " NICK " + Server::getClientByFD( data.fd ).getNickname() + "\r\n";
+			send( data.fd, reply.c_str(), reply.size(), 0 );
+			std::cout << GRE "<<< " END << reply;
 		}
 	}
 }
-
-/*	DLOU
-Je dois check pour le oldnick et newnick car quand on se connect avec le meme nickname ca fout la merde
-pour cluby: le nick set = true -> a voir ce que tu entendais par la, est-ce que c'est necessaire
-*/
 
 	//NOTES:
 	//if (nickname param empty)

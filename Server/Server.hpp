@@ -75,5 +75,7 @@ class Server
 		static void						setServernameByFD( const int fd, const std::string& servername );
 		static void						setNickSetByFD( const int fd, bool status );
 		static void						setUserSetByFD( const int fd, bool status );
-		static bool						isUserRegistered( const int fd );
+		static void						setWelcomeStatusByFD( const int fd, bool status );
+		static bool						isClientRegistered( const int fd );
+		static bool						isClientWelcomed( const int fd );
 };

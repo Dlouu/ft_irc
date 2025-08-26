@@ -39,6 +39,7 @@ void	Server::init(int port) {
 	time(&now);
 	std::string date = ctime(&now);
 	datetime = date.substr(0, date.length() - 1);
+	g_vars = fillPermanentVars();
 
 	if ((_socket = socket(AF_INET, SOCK_STREAM, 6)) == -1)
 		std::cerr << "Error during socket creation\n";
@@ -177,9 +178,19 @@ void	Server::setUserSetByFD( const int fd, bool status ) {
 	getInstance()->_users[ fd ].setUserSet( status );
 }
 
-bool	Server::isUserRegistered( const int fd ) {
+void	Server::setWelcomeStatusByFD( const int fd, bool status ) {
+	getInstance()->_users[ fd ].SetWelcomeStatus( status );
+}
+
+bool	Server::isClientRegistered( const int fd ) {
 	if ((getInstance()->_users[ fd ].isUserSet())
 		&& getInstance()->_users[ fd ].isNickSet())
+		return (true);
+	return (false);
+}
+
+bool	Server::isClientWelcomed( const int fd ) {
+	if (getInstance()->_users[ fd ].isWelcomed())
 		return (true);
 	return (false);
 }
