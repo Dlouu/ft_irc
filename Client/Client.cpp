@@ -2,6 +2,7 @@
 
 Client::Client() :	_nickSet( false ),
 					_userSet( false ),
+					_welcomed( false ),
 					_nickname( "" ),
 					_username( "" ),
 					_hostname( "" ),
@@ -58,10 +59,18 @@ void	Client::setUserSet( bool status ) {
 	this->_userSet = status;
 }
 
+void	Client::SetWelcomeStatus( bool status ) {
+	this->_welcomed = status;
+}
+
 bool	Client::isNickSet( void ) {
 	return ( this->_nickSet );
 }
 
 bool	Client::isUserSet( void ) {
 	return ( this->_userSet );
+}
+
+bool	Client::isWelcomed( void ) {
+	return ( this->_welcomed );
 }

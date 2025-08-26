@@ -9,7 +9,6 @@
 #include "../Server/Server.hpp"
 
 typedef enum e_NumReply {
-	ERR_WTF					= 0,
 
 	RPL_WELCOME				= 1,
 	RPL_YOURHOST			= 2,
@@ -50,7 +49,8 @@ typedef enum e_NumReply {
 } t_NumReply;
 
 std::map<int, std::string>			createReplies( void );
-std::map<std::string, std::string>	fillVars( int clientFD );
+std::map<std::string, std::string>	fillVars( int clientFD, std::map<std::string, std::string> tab, std::string nick );
+std::map<std::string, std::string>	fillPermanentVars( void );
 
 extern std::map<int, std::string>			g_replies;
 extern std::map<std::string, std::string>	g_vars;

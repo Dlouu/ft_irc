@@ -8,7 +8,7 @@ void	Command::userCommand( const CommandData_t& data ) const {
 
 	user = data.message.substr( 5, data.message.length() );
 
-	if (Server::isUserRegistered( data.fd ))
+	if (Server::isClientRegistered( data.fd ))
 		return sendReply( data.fd, ERR_ALREADYREGISTRED );
 
 	// Set Realname
@@ -30,16 +30,19 @@ void	Command::userCommand( const CommandData_t& data ) const {
 	Server::setServernameByFD( data.fd, param[2] );
 	Server::setUserSetByFD( data.fd, true );
 
-	if (Server::isUserRegistered( data.fd )) {
-		sendReply( data.fd, RPL_WELCOME );
-		sendReply( data.fd, RPL_YOURHOST );
-		sendReply( data.fd, RPL_CREATED );
-		sendReply( data.fd, RPL_MYINFO );
+	if (Server::isClientRegistered( data.fd )) {
+		if (Server::isClientWelcomed( data.fd ) == false) {
+			sendReply( data.fd, RPL_WELCOME );
+			sendReply( data.fd, RPL_YOURHOST );
+			sendReply( data.fd, RPL_CREATED );
+			sendReply( data.fd, RPL_MYINFO );
 
-		// Send MOTD
-		sendReply( data.fd, RPL_MOTDSTART );
-		sendReply( data.fd, RPL_MOTD );
-		sendReply( data.fd, RPL_ENDOFMOTD );
+			// Send MOTD
+			sendReply( data.fd, RPL_MOTDSTART );
+			sendReply( data.fd, RPL_MOTD );
+			sendReply( data.fd, RPL_ENDOFMOTD );
+			Server::setWelcomeStatusByFD( data.fd, true );
+		}
 	}
 }
 
