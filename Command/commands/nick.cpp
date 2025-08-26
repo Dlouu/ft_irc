@@ -28,8 +28,7 @@ static int	invalidNickname( const std::string& nickname ) {
 	return (0);
 }
 
-static int	alreadyRegistered( const std::string& nickname, int fd ) {
-	(void)fd;
+static int	alreadyRegistered( const std::string& nickname ) {
 	std::map<int, Client> clients = Server::getClients();
 	for (std::map<int, Client>::iterator it = clients.begin(); it != clients.end(); it++) {
 		if (it->second.getNickname() == nickname) {
@@ -41,19 +40,20 @@ static int	alreadyRegistered( const std::string& nickname, int fd ) {
 
 void	Command::nickCommand( const CommandData_t& data ) const {
 	std::string nickname = data.message.substr( 5, data.message.length() );
-	std::string	oldnick = Server::getClientByFD(data.fd).getNickname();
+	std::string	oldnick = (*Server::getClientByFD(data.fd)).getNickname();
 
 	if (nickname.empty()) {
 		return sendReply( data.fd, ERR_NONICKNAMEGIVEN );
 	} else if (invalidNickname( nickname )) {
 		return sendReply( data.fd, ERR_ERRONEUSNICKNAME );
 	} else {
-		while (alreadyRegistered( nickname, data.fd )) {
+		while (alreadyRegistered( nickname )) {
 			Server::setNicknameByFD( data.fd, "* " + nickname );
 			return (sendReply( data.fd, ERR_NICKNAMEINUSE ));
 			//ou le remettre que dans already registred
 		}
 		Server::setNicknameByFD( data.fd, nickname );
+		Server::getClientByFD( data.fd )->setFD( data.fd );
 		Server::setNickSetByFD( data.fd, true );
 	}
 	if (Server::isClientRegistered( data.fd )) {
@@ -70,9 +70,9 @@ void	Command::nickCommand( const CommandData_t& data ) const {
 			Server::setWelcomeStatusByFD( data.fd, true );
 		} else {
 			std::string	reply = ":" + oldnick
-				+ "!" + Server::getClientByFD( data.fd ).getUsername()
-				+ "@" + Server::getClientByFD( data.fd ).getHostname()
-				+ " NICK " + Server::getClientByFD( data.fd ).getNickname() + "\r\n";
+				+ "!" + (*Server::getClientByFD( data.fd )).getUsername()
+				+ "@" + (*Server::getClientByFD( data.fd )).getHostname()
+				+ " NICK " + (*Server::getClientByFD( data.fd )).getNickname() + "\r\n";
 			send( data.fd, reply.c_str(), reply.size(), 0 );
 			std::cout << GRE "<<< " END << reply;
 		}
@@ -99,7 +99,3 @@ void	Command::nickCommand( const CommandData_t& data ) const {
 			//register nickname in database
 			//client nick set == true
 		//else (server 000 :<oldnick>!<user>@<host> NICK :<newnick>)
-
-	Server::setNicknameByFD( data.fd, nickname );
-	Server::getClientByFD( data.fd )->setFD( data.fd );
-}

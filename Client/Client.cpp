@@ -73,6 +73,7 @@ bool	Client::isNickSet( void ) {
 
 bool	Client::isUserSet( void ) {
 	return ( this->_userSet );
+}
 
 const int&	Client::getFD( void ) const {
 	return ( this->_fd );

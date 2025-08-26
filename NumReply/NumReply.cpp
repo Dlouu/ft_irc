@@ -47,7 +47,6 @@ std::map<int, std::string> createReplies() {
 std::map<std::string, std::string> fillPermanentVars( void ) {
 	std::map<std::string, std::string> tab;
 
-	Client *client	= Server::getClientByFD( clientFD );
 	tab[ "server" ]	= Server::getServername();
 	tab[ "datetime" ] = Server::getInstance()->datetime;
 	tab[ "version" ] = SERVER_VERSION;
@@ -72,7 +71,7 @@ std::map<std::string, std::string> fillPermanentVars( void ) {
 
 std::map<std::string, std::string> fillVars( int clientFD, std::map<std::string, std::string> tab ) {
 
-	Client client	= Server::getClientByFD( clientFD );
+	Client client	= *Server::getClientByFD( clientFD );
 	tab[ "nick" ]	= client.getNickname();
 	tab[ "user" ]	= client.getUsername();
 	tab[ "host" ]	= client.getHostname();
@@ -84,11 +83,11 @@ std::string formatReply( const int code, const std::map<std::string, std::string
 	if ( templateIt == g_replies.end() )
 		return ( "" );
 	std::string reply = templateIt->second;
-	std::string	value = it->second;
-	
+
 	std::map<std::string, std::string>::const_iterator it;
 	for ( it = vars.begin(); it != vars.end(); ++it ) {
 		std::string key = "{" + it->first + "}";
+		std::string	value = it->second;
 
 		std::string::size_type pos = 0;
 		while ( ( pos = reply.find( key, pos ) ) != std::string::npos ) {

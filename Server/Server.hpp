@@ -31,14 +31,7 @@ class Server
 {
 	private:
 		Server( void );
-		static std::string		_name;
-		int						_socket;
-		sockaddr_in				_address;
-		int						_epoll;
-		epoll_event				_event, _events[MAX_EVENTS];
-		static Server			*_instance;
-		std::map<int, Client>	_users;
-		
+
 		static std::string					_name;
 		int									_socket;
 		sockaddr_in							_address;
@@ -73,6 +66,7 @@ class Server
 		static void						setRealnameByFD( const int fd, const std::string& realname );
 		static void						setUsernameByFD( const int fd, const std::string& username );
 		static void						setServernameByFD( const int fd, const std::string& servername );
+
 		static void						setNickSetByFD( const int fd, bool status );
 		static void						setUserSetByFD( const int fd, bool status );
 		static void						setWelcomeStatusByFD( const int fd, bool status );

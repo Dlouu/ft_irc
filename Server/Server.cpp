@@ -28,6 +28,8 @@ void	Server::destroyInstance( void ) {
 	return;
 }
 
+Server::Server( void ) {}
+
 void	Server::init(int port) {
 
 	_socket = -1;
