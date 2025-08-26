@@ -49,7 +49,7 @@ std::map<int, std::string> createReplies() {
 std::map<std::string, std::string> fillVars( int clientFD ) {
 	std::map<std::string, std::string> tab;
 
-	Client client	= Server::getClientByFD( clientFD );
+	Client *client	= Server::getClientByFD( clientFD );
 	tab[ "server" ]	= Server::getServername();
     tab[ "datetime" ] = Server::getInstance()->datetime;
     tab[ "version" ] = SERVER_VERSION;
@@ -72,6 +72,9 @@ std::map<std::string, std::string> fillVars( int clientFD ) {
 						"⢑⢕⠃⡈⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢃⢕⢕⢕\n" \
 						"⣆⢕⠄⢱⣄⠛⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⢁⢕⢕⠕⢁\n" \
 						"⣿⣦⡀⣿⣿⣷⣶⣬⣍⣛⣛⣛⡛⠿⠿⠿⠛⠛⢛⣛⣉⣭⣤⣂⢜⠕⢑⣡⣴⣿\n";
+    tab[ "nick" ]	= client->getNickname();
+    tab[ "user" ]	= client->getUsername();
+    tab[ "host" ]	= client->getHostname();
     // tab[ "command" ] =;
     // tab[ "channel" ] =;
     // tab[ "message" ] =;
@@ -97,7 +100,7 @@ std::string formatReply( const int code, const std::map<std::string, std::string
         while ( ( pos = reply.find( key, pos ) ) != std::string::npos ) {
             reply.replace( pos, key.length(), it->second );
             pos += it->second.length();
-        }
+		}
     }
     return reply;
 }

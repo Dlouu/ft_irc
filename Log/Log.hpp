@@ -6,7 +6,7 @@
 /*   By: tclaereb <tclaereb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 10:51:39 by tclaereb          #+#    #+#             */
-/*   Updated: 2025/08/18 06:24:28 by tclaereb         ###   ########.fr       */
+/*   Updated: 2025/08/19 10:57:24 by tclaereb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include <string>
 #include <sstream>
 #include <iomanip>
+
 
 #ifdef _WIN32
 	#define LEND "\r\n"
@@ -53,11 +54,10 @@ enum	enumColors {
 	LDEFAULT,
 };
 
-#define WARNING LYELLOW
-#define CRITICAL LRED
-#define SUCCESS LGREEN
 #define INFO LCYAN
+#define SERVER LGREEN
 #define DEBUG LBLUE
+#define CLIENT LYELLOW
 
 class Log {
 	private:

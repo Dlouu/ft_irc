@@ -16,6 +16,7 @@
 #include "../Command/Command.hpp"
 #include "../Client/Client.hpp"
 #include "../NumReply/NumReply.hpp"
+#include "../Channel/Channel.hpp"
 #include "signal.hpp"
 
 # define MAX_EVENTS 10
@@ -23,6 +24,8 @@
 # define USERMODES "itkol"
 
 std::vector<std::string> extractMessages(std::string& buffer);
+
+class Channel;
 
 class Server
 {
@@ -36,6 +39,15 @@ class Server
 		static Server			*_instance;
 		std::map<int, Client>	_users;
 		
+		static std::string					_name;
+		int									_socket;
+		sockaddr_in							_address;
+		int									_epoll;
+		epoll_event							_event, _events[MAX_EVENTS];
+		static Server						*_instance;
+		std::map<int, Client>				_users;
+		std::map< std::string, Channel >	_channels;
+
 	public:
 		std::string				datetime;
 
@@ -45,10 +57,16 @@ class Server
 
 		~Server();
 		static void						destroyInstance( void );
-	
+
 		static std::map<int, Client>	getClients( void );
-		static Client					getClientByFD( const int fd );
+		static Client					*getClientByFD( const int fd );
 		static const std::string&		getServername( void );
+		static Channel					*getChannel( const std::string &name );
+
+		void							addChannel( Channel& channel );
+		void							delChannel( Channel& channel );
+		bool							isChannelExist( const Channel& channel );
+		bool							isChannelExist( const std::string& name );
 
 		static void						setNicknameByFD( const int fd, const std::string& nickname );
 		static void						setHostnameByFD( const int fd, const std::string& hostname );

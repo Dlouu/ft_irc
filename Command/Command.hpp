@@ -14,6 +14,7 @@
 #include "../Server/Server.hpp"
 #include "../NumReply/NumReply.hpp"
 #include "../Log/Log.hpp"
+#include "../Channel/Channel.hpp"
 
 typedef struct CommandData_s {
 	std::string	message;

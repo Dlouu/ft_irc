@@ -75,8 +75,14 @@ pour cluby: le nick set = true -> a voir ce que tu entendais par la, est-ce que 
 			// It exceeds the maximum length (commonly 9 or 30 characters, depending on server config).
 			// It violates server-specific nickname rules. 
 		//ERR_ERRONEUSNICKNAME
+			// It violates server-specific nickname rules.
+		//return sendReply( data.fd, ERR_ERRONEUSNICKNAME );
 	//else
-		//if (client was not already registered) 
+		//if (client was not already registered)
 			//register nickname in database
 			//client nick set == true
 		//else (server 000 :<oldnick>!<user>@<host> NICK :<newnick>)
+
+	Server::setNicknameByFD( data.fd, nickname );
+	Server::getClientByFD( data.fd )->setFD( data.fd );
+}

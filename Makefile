@@ -16,7 +16,8 @@ SRCS =	main.cpp \
 		Command/commands/user.cpp \
 		Command/Command.cpp \
 		NumReply/NumReply.cpp \
-		Client/Client.cpp
+		Client/Client.cpp \
+		Channel/Channel.cpp
 
 OBJ = $(addprefix $(BIN_DIR)/,$(SRCS:.cpp=.o))
 NAME = ircserv
