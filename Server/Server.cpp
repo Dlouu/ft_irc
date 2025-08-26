@@ -28,8 +28,6 @@ void	Server::destroyInstance( void ) {
 	return;
 }
 
-Server::Server( void ) {}
-
 void	Server::init(int port) {
 
 	_socket = -1;
@@ -138,8 +136,12 @@ std::map< int, Client >	Server::getClients( void ) {
 	return ( getInstance()->_users );
 }
 
-Client	Server::getClientByFD( const int fd ) {
-	return ( getInstance()->_users[ fd ] );
+Client	*Server::getClientByFD( const int fd ) {
+	try {
+		return ( &( getInstance()->_users[ fd ] ) );
+	} catch ( std::logic_error &e ) {
+		return ( NULL );
+	}
 }
 
 void	Server::setNicknameByFD( const int fd, const std::string& nickname ) {
@@ -164,4 +166,44 @@ void	Server::setUsernameByFD( const int fd, const std::string& username ) {
 
 const std::string&	Server::getServername( void ) {
 	return ( _name );
+}
+
+Channel	*Server::getChannel( const std::string &name ) {
+	try {
+		return ( &( getInstance()->_channels[ name ] ) );
+	} catch ( std::logic_error &e ) {
+		return ( NULL );
+	}
+}
+
+void	Server::addChannel( Channel& channel ) {
+	std::string	name = channel.getName();
+	for( std::map< std::string, Channel >::iterator it = this->_channels.begin(); it != this->_channels.end(); it++ ) {
+		if ( it->first == name ) {
+			return ;
+		}
+	}
+	this->_channels[ name ] = channel;
+	LOGC( INFO ) << "New channel added to the server: " << channel;
+}
+
+void	Server::delChannel( Channel& channel ) {
+	for( std::map< std::string, Channel >::iterator it = this->_channels.begin(); it != this->_channels.end(); it++ ) {
+		if ( it->first == channel.getName() ) {
+			this->_channels.erase( it );
+			return ;
+		}
+	}
+}
+
+bool	Server::isChannelExist( const Channel& channel ) {
+	if ( this->_channels.find( channel.getName() ) != this->_channels.end() )
+		return ( true );
+	return ( false );
+}
+
+bool	Server::isChannelExist( const std::string& name ) {
+	if ( this->_channels.find( name ) != this->_channels.end() )
+		return ( true );
+	return ( false );
 }

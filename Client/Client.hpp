@@ -12,6 +12,7 @@ class Client
 		std::string	_hostname;
 		std::string	_servername;
 		std::string	_realname;
+		int			_fd;
 
 	public:
 		Client();
@@ -19,12 +20,14 @@ class Client
 
 		void				setNickname( const std::string& str );
 		void				setUserInfo( const std::string& str );
-		const std::string&	getNickname( void );
-		const std::string&	getUsername( void );
-		const std::string&	getHostname( void );
-		const std::string&	getServername( void );
-		const std::string&	getRealname( void );
+		void				setFD( const int &fd );
+		const std::string&	getNickname( void ) const;
+		const std::string&	getUsername( void ) const;
+		const std::string&	getHostname( void ) const;
+		const std::string&	getServername( void ) const;
+		const std::string&	getRealname( void ) const;
 		const std::string	getMask( void ) const;
+		const int&			getFD( void ) const;
 
 		bool				operator==( const Client &other ) const;
 };

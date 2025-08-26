@@ -14,23 +14,31 @@ void	Client::setUserInfo( const std::string& str ) {
 	( void )str;
 }
 
-const std::string&	Client::getNickname( void ) {
+void	Client::setFD( const int &fd ) {
+	this->_fd = fd;
+}
+
+const std::string&	Client::getNickname( void ) const {
 	return ( this->_nickname );
 }
 
-const std::string&	Client::getUsername( void ) {
+const std::string&	Client::getUsername( void ) const {
 	return ( this->_username );
 }
 
-const std::string&	Client::getHostname( void ) {
+const std::string&	Client::getHostname( void ) const {
 	return ( this->_hostname );
 }
-const std::string&	Client::getServername( void ) {
+const std::string&	Client::getServername( void ) const {
 	return ( this->_servername );
 }
 
-const std::string&	Client::getRealname( void ) {
+const std::string&	Client::getRealname( void ) const {
 	return ( this->_realname );
+}
+
+const int&	Client::getFD( void ) const {
+	return ( this->_fd );
 }
 
 const std::string	Client::getMask( void ) const {

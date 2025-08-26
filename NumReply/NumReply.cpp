@@ -42,11 +42,11 @@ std::map<int, std::string> createReplies() {
 std::map<std::string, std::string> fillVars( int clientFD ) {
 	std::map<std::string, std::string> tab;
 
-	Client client	= Server::getClientByFD( clientFD );
+	Client *client	= Server::getClientByFD( clientFD );
 	tab[ "server" ]	= Server::getServername();
-    tab[ "nick" ]	= client.getNickname();
-    tab[ "user" ]	= client.getUsername();
-    tab[ "host" ]	= client.getHostname();
+    tab[ "nick" ]	= client->getNickname();
+    tab[ "user" ]	= client->getUsername();
+    tab[ "host" ]	= client->getHostname();
     // tab[ "command" ] =;
     // tab[ "channel" ] =;
     // tab[ "message" ] =;
