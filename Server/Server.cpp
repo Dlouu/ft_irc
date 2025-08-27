@@ -181,7 +181,7 @@ void	Server::setUserSetByFD( const int fd, bool status ) {
 }
 
 void	Server::setWelcomeStatusByFD( const int fd, bool status ) {
-	getInstance()->_users[ fd ].SetWelcomeStatus( status );
+	getInstance()->_users[ fd ].setWelcomeStatus( status );
 }
 
 bool	Server::isClientRegistered( const int fd ) {

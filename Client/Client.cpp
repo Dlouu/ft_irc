@@ -7,7 +7,8 @@ Client::Client() :	_nickSet( false ),
 					_username( "" ),
 					_hostname( "" ),
 					_servername( "" ),
-					_realname( "" ) {}
+					_realname( "" ),
+					_fd (0) {}
 
 Client::~Client() {}
 
@@ -63,7 +64,7 @@ void	Client::setUserSet( bool status ) {
 	this->_userSet = status;
 }
 
-void	Client::SetWelcomeStatus( bool status ) {
+void	Client::setWelcomeStatus( bool status ) {
 	this->_welcomed = status;
 }
 

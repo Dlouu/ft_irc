@@ -26,13 +26,12 @@ class Client
 		void				setServername( const std::string& str );
 		void				setHostname( const std::string& str );
 		void				setRealname( const std::string& str );
+		void				setFD( const int &fd );
+
 		void				setNickSet( bool status );
 		void				setUserSet( bool status );
-		void				SetWelcomeStatus( bool status );
+		void				setWelcomeStatus( bool status );
 
-		bool				isNickSet( void );
-		bool				isUserSet( void );
-		void				setFD( const int &fd );
 		const std::string&	getNickname( void ) const;
 		const std::string&	getUsername( void ) const;
 		const std::string&	getHostname( void ) const;
@@ -41,6 +40,9 @@ class Client
 		const std::string	getMask( void ) const;
 		const int&			getFD( void ) const;
 
-		bool				operator==( const Client &other ) const;
+		bool				isNickSet( void );
+		bool				isUserSet( void );
 		bool				isWelcomed( void );
+
+		bool				operator==( const Client &other ) const;
 };
