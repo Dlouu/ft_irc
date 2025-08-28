@@ -24,7 +24,6 @@ void	Command::privmsgCommand( const CommandData_t& data ) const {
 				//send(RPLY_AWAY to client);
 		//}
 	//}
-	std::cout << MAG "PRIVMSG command called" END << std::endl;
 
 	Client	*executor = Server::getClientByFD( data.fd );
 	std::string	cleanMsg = data.message.substr( 8, data.message.size() - 8 );

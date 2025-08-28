@@ -1,7 +1,6 @@
 #include "Command.hpp"
 
 void	Command::joinCommand( const CommandData_t& data ) const {
-	std::cout << MAG "JOIN command called" END << std::endl;
 
 	Server	*server = Server::getInstance();
 	Client	*executor = server->getClientByFD( data.fd );
@@ -43,11 +42,11 @@ void	Command::joinCommand( const CommandData_t& data ) const {
 	//else if (channel doesn't exit)
 		//ERR_NOSUCHCHANNEL
 	//else if (channel name isn't in good format (e.g. no '#' before channel name)) A valid channel name typically:
-		//ERR_BADCHANMASK														// Begins with # or &
-																				// Has 1–200 characters
-																				// Cannot contain spaces, ASCII BEL (0x07), comma ,, or the channel type prefixes # / & / + / ! inside
-																				// Wildcards (*, ?) are generally not allowed unless specifically implemented for masks 
-																				//source : chat gpt t'inquiete
+		//ERR_BADCHANMASK	// Begins with # or &
+							// Has 1–200 characters
+							// Cannot contain spaces, ASCII BEL (0x07), comma ,, or the channel type prefixes # / & / + / ! inside
+							// Wildcards (*, ?) are generally not allowed unless specifically implemented for masks 
+							//source : chat gpt t'inquiete
 	//else if (channel is full)
 		//ERR_CHANNELISFULL
 	//else if (client is in ban list of the channel)

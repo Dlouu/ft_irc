@@ -35,6 +35,7 @@ class Command
 		void	pingCommand( const CommandData_t& data ) const;
 		void	passCommand( const CommandData_t& data ) const;
 		void	joinCommand( const CommandData_t& data ) const;
+		void	partCommand( const CommandData_t& data ) const;
 		void	topicCommand( const CommandData_t& data ) const;
 		void	inviteCommand( const CommandData_t& data ) const;
 		void	privmsgCommand( const CommandData_t& data ) const;

@@ -24,8 +24,9 @@ void	Command::init( void ) {
 	_command[ "NICK " ]		=	&Command::nickCommand;
 	_command[ "USER " ]		=	&Command::userCommand;
 	_command[ "PING " ]		=	&Command::pingCommand;
-	_command[ "PRIVMSG " ]	=	&Command::privmsgCommand;
+	_command[ "PART " ]		=	&Command::partCommand;
 	_command[ "JOIN " ]		= 	&Command::joinCommand;
+	_command[ "PRIVMSG " ]	=	&Command::privmsgCommand;
 }
 
 void	Command::notaCommand( void ) const {
@@ -51,7 +52,7 @@ void Command::processIRCMessage( int fd, const std::string& message ) {
 	if ( cleanMessage.size() >= 2 && cleanMessage.substr( cleanMessage.size() - 2 ) == "\r\n" ) {
 		cleanMessage = cleanMessage.substr( 0, cleanMessage.size() - 2 );
 	}
-	LOGC( INFO ) << message;
+	// LOGC( INFO ) << message;
 	getInstance()->handleCommand( ( CommandData_t ){ cleanMessage, fd } );
 }
 
@@ -66,6 +67,3 @@ std::vector< std::string > Command::split( const std::string &str, const char de
 
 	return ( container );
 }
-
-//We need to check if it's the client is connected already. By checking if NICK and USER have been successful
-//Only after that we send the Welcome MOTD

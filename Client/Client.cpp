@@ -8,7 +8,7 @@ Client::Client() :	_nickSet( false ),
 					_hostname( "" ),
 					_servername( "" ),
 					_realname( "" ),
-					_fd (0) {}
+					_fd (-1) {}
 
 Client::~Client() {}
 
