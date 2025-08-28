@@ -7,7 +7,8 @@ Client::Client() :	_nickSet( false ),
 					_username( "" ),
 					_hostname( "" ),
 					_servername( "" ),
-					_realname( "" ) {}
+					_realname( "" ),
+					_fd (0) {}
 
 Client::~Client() {}
 
@@ -54,6 +55,15 @@ const std::string&	Client::getRealname( void ) const {
 	return ( this->_realname );
 }
 
+const int&	Client::getFD( void ) const {
+	return ( this->_fd );
+}
+
+const std::string	Client::getMask( void ) const {
+	std::string mask = this->_nickname + "!" + this->_username + "@" + this->_hostname;
+	return ( mask );
+}
+
 // Nick and User Set Status
 void	Client::setNickSet( bool status ) {
 	this->_nickSet = status;
@@ -63,7 +73,7 @@ void	Client::setUserSet( bool status ) {
 	this->_userSet = status;
 }
 
-void	Client::SetWelcomeStatus( bool status ) {
+void	Client::setWelcomeStatus( bool status ) {
 	this->_welcomed = status;
 }
 
@@ -75,19 +85,11 @@ bool	Client::isUserSet( void ) {
 	return ( this->_userSet );
 }
 
-const int&	Client::getFD( void ) const {
-	return ( this->_fd );
-}
-
-const std::string	Client::getMask( void ) const {
-	std::string mask = this->_nickname + "!" + this->_username + "@" + this->_hostname;
-	return ( mask );
+bool	Client::isWelcomed( void ) {
+	return ( this->_welcomed );
 }
 
 bool	Client::operator==( const Client &other ) const {
 	return ( this->getMask() == other.getMask() );
 }
 
-bool	Client::isWelcomed( void ) {
-	return ( this->_welcomed );
-}
