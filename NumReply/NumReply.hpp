@@ -5,8 +5,8 @@
 #include <sstream>
 
 #include "../colors.hpp"
-#include "../Client/Client.hpp"
-#include "../Server/Server.hpp"
+#include "Client.hpp"
+#include "Server.hpp"
 
 typedef enum e_NumReply {
 

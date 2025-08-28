@@ -6,9 +6,8 @@ static void	sigHandler(int sig) {
 	sig_caught = true;
 
 	Command *CommandInstance = Command::getInstance();
-	Server *ServerInstance = Server::getInstance();
-	delete ServerInstance;
 	delete CommandInstance;
+	Server::destroyInstance();
 
 	std::cout << "Server closed manually: " << sig << std::endl;
 }

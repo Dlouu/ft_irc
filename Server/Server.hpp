@@ -13,10 +13,9 @@
 #include <vector>
 #include <map>
 
-#include "../Command/Command.hpp"
-#include "../Client/Client.hpp"
-#include "../NumReply/NumReply.hpp"
-#include "../Channel/Channel.hpp"
+#include "Command.hpp"
+#include "Client.hpp"
+#include "NumReply.hpp"
 #include "signal.hpp"
 
 # define MAX_EVENTS 10

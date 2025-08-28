@@ -1,4 +1,4 @@
-#include "Server/Server.hpp"
+#include "Server.hpp"
 
 std::map<int, std::string> g_replies;
 std::map<std::string, std::string> g_vars;
@@ -15,5 +15,6 @@ int	main(int argc, char **argv)
 	Server::getInstance()->init(port);
 	Server::getInstance()->loop();
 
-	return (EXIT_SUCCESS);
+	Server::destroyInstance();
+	return (0);
 }
