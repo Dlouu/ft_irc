@@ -1,4 +1,4 @@
-#include "./../../Command/Command.hpp"
+#include "Command.hpp"
 
 void	Command::passCommand(const CommandData_t& data) const {
 	(void)data;

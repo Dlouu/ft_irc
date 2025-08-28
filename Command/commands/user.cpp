@@ -1,4 +1,4 @@
-#include "./../../Command/Command.hpp"
+#include "Command.hpp"
 
 void	Command::userCommand( const CommandData_t& data ) const {
 	std::string	user;

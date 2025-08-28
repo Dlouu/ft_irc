@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tclaereb <tclaereb@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cluby <cluby@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/18 08:18:40 by tclaereb          #+#    #+#             */
-/*   Updated: 2025/08/26 17:37:42 by tclaereb         ###   ########.fr       */
+/*   Updated: 2025/08/28 16:04:28 by cluby            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,8 @@
 #include <cctype>
 #include <vector>
 #include <algorithm>
-#include "../Client/Client.hpp"
-#include "../Server/Server.hpp"
+#include "Client.hpp"
+#include "Server.hpp"
 
 class Server;
 

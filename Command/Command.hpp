@@ -10,11 +10,11 @@
 #include <netinet/in.h>
 
 #include "../colors.hpp"
-#include "../Client/Client.hpp"
-#include "../Server/Server.hpp"
-#include "../NumReply/NumReply.hpp"
-#include "../Log/Log.hpp"
-#include "../Channel/Channel.hpp"
+#include "Client.hpp"
+#include "Server.hpp"
+#include "NumReply.hpp"
+#include "Log.hpp"
+#include "Channel.hpp"
 
 typedef struct CommandData_s {
 	std::string	message;

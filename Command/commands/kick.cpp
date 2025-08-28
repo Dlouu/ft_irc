@@ -1,4 +1,4 @@
-#include "./../../Command/Command.hpp"
+#include "Command.hpp"
 
 void	Command::kickCommand( const CommandData_t& data ) const {
 	(void)data;

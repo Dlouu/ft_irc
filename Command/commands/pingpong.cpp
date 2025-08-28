@@ -1,4 +1,4 @@
-#include "./../../Command/Command.hpp"
+#include "Command.hpp"
 
 void	Command::pingCommand( const CommandData_t& data ) const {
 	std::string answer = "PONG " + data.message.substr(5) + "\r\n";

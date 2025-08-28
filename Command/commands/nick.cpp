@@ -1,4 +1,4 @@
-#include "./../../Command/Command.hpp"
+#include "Command.hpp"
 
 static int	invalidChar( const char *nickname ) {
 	for (int i = 0; nickname[i]; i++) {
