@@ -9,6 +9,7 @@
 #include "../Server/Server.hpp"
 
 typedef enum e_NumReply {
+
 	RPL_WELCOME				= 1,
 	RPL_YOURHOST			= 2,
 	RPL_CREATED				= 3,
@@ -18,6 +19,11 @@ typedef enum e_NumReply {
 	RPL_TOPIC				= 332,
 	RPL_INVITING			= 341,
 	RPL_NAMREPLY			= 353,
+
+	RPL_MOTDSTART			= 375,
+	RPL_MOTD				= 372,
+	RPL_ENDOFMOTD			= 376,
+
 	ERR_NOSUCHNICK			= 401,
 	ERR_NOSUCHCHANNEL		= 403,
 	ERR_CANNOTSENDTOCHAN	= 404,
@@ -43,7 +49,8 @@ typedef enum e_NumReply {
 } t_NumReply;
 
 std::map<int, std::string>			createReplies( void );
-std::map<std::string, std::string>	fillVars( int clientFD );
+std::map<std::string, std::string>	fillVars( int clientFD, std::map<std::string, std::string> tab, std::string nick );
+std::map<std::string, std::string>	fillPermanentVars( void );
 
 extern std::map<int, std::string>			g_replies;
 extern std::map<std::string, std::string>	g_vars;

@@ -6,13 +6,18 @@ std::map<int, std::string> createReplies() {
 
 	num[RPL_WELCOME]			= ":{server} 001 {nick} :Welcome to the IRC Network {nick}!{user}@{host}\r\n";
 	num[RPL_YOURHOST]			= ":{server} 002 {nick} :Your host is {server}, running version {version}\r\n";
-	num[RPL_CREATED]			= ":{server} 003 {nick} :This server was created {created}\r\n";
-	num[RPL_MYINFO]				= ":{server} 004 {nick} {server} {version} {usermodes} {chanmodes}\r\n";
+	num[RPL_CREATED]			= ":{server} 003 {nick} :This server was created {datetime}\r\n";
+	num[RPL_MYINFO]				= ":{server} 004 {nick} {server} {version} {usermodes}\r\n";
 	num[RPL_AWAY]				= ":{server} 301 {nick} {target} :{message}\r\n";
 	num[RPL_NOTOPIC]			= ":{server} 331 {nick} {channel} :No topic is set\r\n";
 	num[RPL_TOPIC]				= ":{server} 332 {nick} {channel} :{topic}\r\n";
 	num[RPL_INVITING]			= ":{server} 341 {nick} {target} {channel}\r\n";
 	num[RPL_NAMREPLY]			= ":{server} 353 {nick} = {channel} :{names}\r\n";
+
+	num[RPL_MOTDSTART]			= ":{server} 375 {nick} :- {server} Message of the day -\r\n";
+	num[RPL_MOTD]				= ":{server} 372 {nick} :- {motd}\r\n";
+	num[RPL_ENDOFMOTD]			= ":{server} 376 {nick} :End of /MOTD command\r\n";
+
 	num[ERR_NOSUCHNICK]			= ":{server} 401 {nick} {target} :No such nick/channel\r\n";
 	num[ERR_NOSUCHCHANNEL]		= ":{server} 403 {nick} {channel} :No such channel\r\n";
 	num[ERR_CANNOTSENDTOCHAN]	= ":{server} 404 {nick} {channel} :Cannot send to channel\r\n";
@@ -24,7 +29,7 @@ std::map<int, std::string> createReplies() {
 	num[ERR_WILDTOPLEVEL]		= ":{server} 414 {nick} {mask} :Wildcard in toplevel domain\r\n";
 	num[ERR_NONICKNAMEGIVEN]	= ":{server} 431 {nick} :No nickname given\r\n";
 	num[ERR_ERRONEUSNICKNAME]	= ":{server} 432 {nick} :Erroneous nickname\r\n";
-	num[ERR_NICKNAMEINUSE]		= ":{server} 433 {nick} :Nickname is already in use\r\n";
+	num[ERR_NICKNAMEINUSE]		= ":{server} 433 {nick} :Nickname is already in use\r\n"; //irssi already write  "{nick} is already in use"
 	num[ERR_NOTONCHANNEL]		= ":{server} 442 {nick} {channel} :You're not on that channel\r\n";
 	num[ERR_USERONCHANNEL]		= ":{server} 443 {nick} {target} {channel} :is already on channel\r\n";
 	num[ERR_NEEDMOREPARAMS]		= ":{server} 461 {nick} {command} :Not enough parameters\r\n";
@@ -39,50 +44,62 @@ std::map<int, std::string> createReplies() {
     return num;
 }
 
-std::map<std::string, std::string> fillVars( int clientFD ) {
+std::map<std::string, std::string> fillPermanentVars( void ) {
 	std::map<std::string, std::string> tab;
 
-	Client *client	= Server::getClientByFD( clientFD );
 	tab[ "server" ]	= Server::getServername();
-    tab[ "nick" ]	= client->getNickname();
-    tab[ "user" ]	= client->getUsername();
-    tab[ "host" ]	= client->getHostname();
-    // tab[ "command" ] =;
-    // tab[ "channel" ] =;
-    // tab[ "message" ] =;
-    // tab[ "target" ] =;
-    // tab[ "reason" ] =;
-    // tab[ "topic" ] =;
-    // tab[ "names" ] =;
-    // tab[ "mask" ] =;
-    // tab[ "version" ] =;
-    // tab[ "created" ] =;
-    // tab[ "usermodes" ] =;
-    // tab[ "chanmodes" ] =;
+	tab[ "datetime" ] = Server::getInstance()->datetime;
+	tab[ "version" ] = SERVER_VERSION;
+	tab[ "usermodes" ] = USERMODES;
+	tab[ "motd" ]	= 	"attention les yeux !\n\n" \
+						"⡆⣐⢕⢕⢕⢕⢕⢕⢕⢕⠅⢗⢕⢕⢕⢕⢕⢕⢕⠕⠕⢕⢕⢕⢕⢕⢕⢕⢕⢕\n" \
+						"⢐⢕⢕⢕⢕⢕⣕⢕⢕⠕⠁⢕⢕⢕⢕⢕⢕⢕⢕⠅⡄⢕⢕⢕⢕⢕⢕⢕⢕⢕\n" \
+						"⢕⢕⢕⢕⢕⠅⢗⢕⠕⣠⠄⣗⢕⢕⠕⢕⢕⢕⠕⢠⣿⠐⢕⢕⢕⠑⢕⢕⠵⢕\n" \
+						"⢕⢕⢕⢕⠁⢜⠕⢁⣴⣿⡇⢓⢕⢵⢐⢕⢕⠕⢁⣾⢿⣧⠑⢕⢕⠄⢑⢕⠅⢕\n" \
+						"⢕⢕⠵⢁⠔⢁⣤⣤⣶⣶⣶⡐⣕⢽⠐⢕⠕⣡⣾⣶⣶⣶⣤⡁⢓⢕⠄⢑⢅⢑\n" \
+						"⠍⣧⠄⣶⣾⣿⣿⣿⣿⣿⣿⣷⣔⢕⢄⢡⣾⣿⣿⣿⣿⣿⣿⣿⣦⡑⢕⢤⠱⢐\n" \
+						"⢠⢕⠅⣾⣿⠋⢿⣿⣿⣿⠉⣿⣿⣷⣦⣶⣽⣿⣿⠈⣿⣿⣿⣿⠏⢹⣷⣷⡅⢐\n" \
+						"⣔⢕⢥⢻⣿⡀⠈⠛⠛⠁⢠⣿⣿⣿⣿⣿⣿⣿⣿⡀⠈⠛⠛⠁⠄⣼⣿⣿⡇⢔\n" \
+						"⢕⢕⢽⢸⢟⢟⢖⢖⢤⣶⡟⢻⣿⡿⠻⣿⣿⡟⢀⣿⣦⢤⢤⢔⢞⢿⢿⣿⠁⢕\n" \
+						"⢕⢕⠅⣐⢕⢕⢕⢕⢕⣿⣿⡄⠛⢀⣦⠈⠛⢁⣼⣿⢗⢕⢕⢕⢕⢕⢕⡏⣘⢕\n" \
+						"⢕⢕⠅⢓⣕⣕⣕⣕⣵⣿⣿⣿⣾⣿⣿⣿⣿⣿⣿⣿⣷⣕⢕⢕⢕⢕⡵⢀⢕⢕\n" \
+						"⢑⢕⠃⡈⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢃⢕⢕⢕\n" \
+						"⣆⢕⠄⢱⣄⠛⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⢁⢕⢕⠕⢁\n" \
+						"⣿⣦⡀⣿⣿⣷⣶⣬⣍⣛⣛⣛⡛⠿⠿⠿⠛⠛⢛⣛⣉⣭⣤⣂⢜⠕⢑⣡⣴⣿\n";
+    return tab;
+}
+
+std::map<std::string, std::string> fillVars( int clientFD, std::map<std::string, std::string> tab ) {
+
+	Client client	= *Server::getClientByFD( clientFD );
+	tab[ "nick" ]	= client.getNickname();
+	tab[ "user" ]	= client.getUsername();
+	tab[ "host" ]	= client.getHostname();
     return tab;
 }
 
 std::string formatReply( const int code, const std::map<std::string, std::string> &vars ) {
 	std::map< int, std::string >::const_iterator templateIt = g_replies.find( code );
 	if ( templateIt == g_replies.end() )
-        return ( "" );
+		return ( "" );
 	std::string reply = templateIt->second;
 
 	std::map<std::string, std::string>::const_iterator it;
-    for ( it = vars.begin(); it != vars.end(); ++it ) {
-        std::string key = "{" + it->first + "}";
-        std::string::size_type pos = 0;
+	for ( it = vars.begin(); it != vars.end(); ++it ) {
+		std::string key = "{" + it->first + "}";
+		std::string	value = it->second;
 
-        while ( ( pos = reply.find( key, pos ) ) != std::string::npos ) {
-            reply.replace( pos, key.length(), it->second );
-            pos += it->second.length();
+		std::string::size_type pos = 0;
+		while ( ( pos = reply.find( key, pos ) ) != std::string::npos ) {
+			reply.replace( pos, key.length(), value );
+			pos += value.length();
 		}
-    }
-    return reply;
+	}
+	return reply;
 }
 
 void sendReply( const int fd, int code ) {
-    g_vars = fillVars( fd );
+    g_vars = fillVars( fd , g_vars );
 	std::string reply = formatReply( code, g_vars );
     if ( send( fd, reply.c_str(), reply.length(), 0 ) == -1 ) {
         std::cerr << RED "Error sending response" END << std::endl;

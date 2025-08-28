@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <map>
+#include <ctype.h>
 #include <string>
 #include <iostream>
 #include <sstream>
@@ -27,12 +28,12 @@ class Command
 		static Command*	_instance;
 		std::map<std::string, void( Command::* )( const CommandData_t& ) const> _command;
 
-		void	capCommand( const CommandData_t& data ) const;
 		void	kickCommand( const CommandData_t& data ) const;
 		void	modeCommand( const CommandData_t& data ) const;
 		void	nickCommand( const CommandData_t& data ) const;
 		void	userCommand( const CommandData_t& data ) const;
 		void	pingCommand( const CommandData_t& data ) const;
+		void	passCommand( const CommandData_t& data ) const;
 		void	pongCommand( const CommandData_t& data ) const;
 		void	joinCommand( const CommandData_t& data ) const;
 		void	topicCommand( const CommandData_t& data ) const;
