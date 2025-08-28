@@ -7,7 +7,10 @@ std::map<int, std::string> createReplies() {
 	num[RPL_YOURHOST]			= ":{server} 002 {nick} :Your host is {server}, running version {version}\r\n";
 	num[RPL_CREATED]			= ":{server} 003 {nick} :This server was created {datetime}\r\n";
 	num[RPL_MYINFO]				= ":{server} 004 {nick} {server} {version} {usermodes}\r\n";
+
+	num[RPL_UMODEIS]			= ":{server} 221 {nick} {modes}\r\n";
 	num[RPL_AWAY]				= ":{server} 301 {nick} {target} :{message}\r\n";
+	num[RPL_CHANNELMODEIS]		= ":{server} 324 {nick} {channel} {modes} {params}\r\n";
 	num[RPL_NOTOPIC]			= ":{server} 331 {nick} {channel} :No topic is set\r\n";
 	num[RPL_TOPIC]				= ":{server} 332 {nick} {channel} :{topic}\r\n";
 	num[RPL_INVITING]			= ":{server} 341 {nick} {target} {channel}\r\n";
@@ -26,6 +29,7 @@ std::map<int, std::string> createReplies() {
 	num[ERR_NOTEXTTOSEND]		= ":{server} 412 {nick} :No text to send\r\n";
 	num[ERR_NOTOPLEVEL]			= ":{server} 413 {nick} {mask} :No toplevel domain specified\r\n";
 	num[ERR_WILDTOPLEVEL]		= ":{server} 414 {nick} {mask} :Wildcard in toplevel domain\r\n";
+
 	num[ERR_NONICKNAMEGIVEN]	= ":{server} 431 {nick} :No nickname given\r\n";
 	num[ERR_ERRONEUSNICKNAME]	= ":{server} 432 {nick} :Erroneous nickname\r\n";
 	num[ERR_NICKNAMEINUSE]		= ":{server} 433 {nick} :Nickname is already in use\r\n"; //irssi already write  "{nick} is already in use"
@@ -33,19 +37,21 @@ std::map<int, std::string> createReplies() {
 	num[ERR_USERONCHANNEL]		= ":{server} 443 {nick} {target} {channel} :is already on channel\r\n";
 	num[ERR_NEEDMOREPARAMS]		= ":{server} 461 {nick} {command} :Not enough parameters\r\n";
 	num[ERR_ALREADYREGISTRED]	= ":{server} 462 {nick} :You may not reregister\r\n";
+	num[ERR_KEYSET]				= ":{server} 467 {nick} {channel} :Channel key already set\r\n";
 	num[ERR_CHANNELISFULL]		= ":{server} 471 {nick} {channel} :Cannot join channel (+l)\r\n";
 	num[ERR_INVITEONLYCHAN]		= ":{server} 473 {nick} {channel} :Cannot join channel (+i)\r\n";
 	num[ERR_BANNEDFROMCHAN]		= ":{server} 474 {nick} {channel} :Cannot join channel (+b)\r\n";
 	num[ERR_BADCHANNELKEY]		= ":{server} 475 {nick} {channel} :Cannot join channel (+k)\r\n";
 	num[ERR_BADCHANMASK]		= ":{server} 476 {nick} {channel} :Bad Channel Mask\r\n";
 	num[ERR_CHANOPRIVSNEEDED]	= ":{server} 482 {nick} {channel} :You're not channel operator\r\n";
-
+	num[ERR_UMODEUNKNOWNFLAG]	= ":{server} 501 {nick} :Unknown MODE flag\r\n";
+	
     return num;
 }
 
 std::map<std::string, std::string> fillPermanentVars( void ) {
 	std::map<std::string, std::string> tab;
-
+	
 	tab[ "server" ]	= Server::getServername();
 	tab[ "datetime" ] = Server::getInstance()->datetime;
 	tab[ "version" ] = SERVER_VERSION;
