@@ -56,7 +56,6 @@ void	Command::modeCommand( const CommandData_t& data ) const {
 			case 'o':
 				std::cout << "Give/take operator privilege to -target- " << (sign == '+' ? "on" : "off") << std::endl;
 				flagsApplied += 'o';
-				std::string target;
 				if (sign == '+') {
 					std::cout << "Promoting user to OP:" << std::endl;
 				} else if (sign == '-') {
