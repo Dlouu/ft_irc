@@ -18,6 +18,7 @@ void	Command::modeCommand( const CommandData_t& data ) const {
 	//if (channel->isClientUser( client )) {
 	//	return sendReply( data.fd, ERR_NOTONCHANNEL );
 	//}
+	(void)client;
 
 	const std::string &modeString = params[2];
 	std::string flagsApplied;
