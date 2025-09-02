@@ -1,11 +1,11 @@
 #include "Command.hpp"
 
 void	Command::modeCommand( const CommandData_t& data ) const {
-	//Client &client = *Server::getClientByFD( data.fd );
+	Client &client = *Server::getClientByFD( data.fd );
 	Server	*server = Server::getInstance();
 	Channel	*channel;
 	std::vector<std::string> params = split( data.message, ' ' );
-
+	
 	if (params.size() < 2) {
 		return sendReply( data.fd, ERR_NEEDMOREPARAMS );
 	}
@@ -13,15 +13,16 @@ void	Command::modeCommand( const CommandData_t& data ) const {
 		return sendReply( data.fd, ERR_NOSUCHCHANNEL );
 	}
 	else {
-		channel = server->getChannel(params[1]);
+		channel = server->getChannel( params[1] );
+	}
+	if (client.isInChannelDatabase( channel )) {
+		return sendReply( data.fd, ERR_NOTONCHANNEL );
 	}
 
 	const std::string &modeString = params[2];
 	std::string flagsApplied;
 	char sign = '+';
-	//std::vector<std::string> usedParams;
-	size_t paramIdx = 1;
-	(void)channel;
+	size_t paramIdx = 3;
 
 	for (size_t i = 0; i < modeString.size(); ++i) {
 		char c = modeString[i];
@@ -45,22 +46,42 @@ void	Command::modeCommand( const CommandData_t& data ) const {
 			case 'k':
 				std::cout << "Setting channel key " << (sign == '+' ? "on" : "off") << std::endl;
 				flagsApplied += 'k';
-				std::string key = (sign == '+' && params.size() > paramIdx) ? params[paramIdx] : "";
-				paramIdx++;
+				if (sign == '+' && params.size() > paramIdx) {
+					std::string key = params[paramIdx];
+					paramIdx++;
+					std::cout << "New key: " << key << std::endl;
+				}
 				break;
 
 			case 'o':
 				std::cout << "Give/take operator privilege to -target- " << (sign == '+' ? "on" : "off") << std::endl;
 				flagsApplied += 'o';
-				std::string target = (sign == '+' && params.size() > paramIdx) ? params[paramIdx] : "";
-				paramIdx++;
+				std::string target;
+				if (sign == '+' && params.size() > paramIdx) {
+					target = params[paramIdx];
+					paramIdx++;
+					std::cout << "Target to promote: " << target << std::endl;
+				} else if (sign == '-' && params.size() > paramIdx) {
+					target = params[paramIdx];
+					paramIdx++;
+					std::cout << "Target to demote: " << target << std::endl;
+				} else {
+					return sendReply( data.fd, ERR_NEEDMOREPARAMS );
+				}
 				break;
 
 			case 'l':
 				std::cout << "Setting user limit to -limit- " << (sign == '+' ? "on" : "off") << std::endl;
 				flagsApplied += 'l';
-				std::string limit = (sign == '+' && params.size() > paramIdx) ? params[paramIdx] : "";
-				paramIdx++;
+				if (sign == '+' && params.size() > paramIdx) {
+					std::string limit = params[paramIdx];
+					paramIdx++;
+					//check atoi
+					std::cout << "New limit: " << limit << std::endl;
+				}
+				else {
+					return sendReply( data.fd, ERR_NEEDMOREPARAMS );
+				}
 				break;
 
 			default:
