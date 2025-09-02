@@ -1,61 +1,51 @@
 #include "Command.hpp"
 
 void	Command::modeCommand( const CommandData_t& data ) const {
-	Client &client = *Server::getClientByFD( data.fd );
+	//Client &client = *Server::getClientByFD( data.fd );
+	Server	*server = Server::getInstance();
+	Channel	*channel;
 	std::vector<std::string> params = split( data.message, ' ' );
-	std::cout << "param0" << params[0] << std::endl;
-	std::cout << "param1" << params[1] << std::endl;
-	std::cout << "param2" << params[2] << std::endl;
-	std::cout << "param3" << params[3] << std::endl;
-
-	
-	/*const std::string &modeString = data.params[1];
-	if (isChannelExist(data.params[0]))
-		Channel	*channel = Server::getChannelByName( data.params[0] );
-	else
+	if (params.size() < 2) {
+		return sendReply( data.fd, ERR_NEEDMOREPARAMS );
+	}
+	if (params[1].empty() || params[1][0] != '#' || !isChannelExist(params[1])) {
 		return sendReply( data.fd, ERR_NOSUCHCHANNEL );
-    std::string flagsApplied;             // ex: "+kol"
-    std::vector<std::string> usedParams;  // ex: {"secret", "user42", "15"}
-    char sign = '+';
-    size_t paramIdx = 0;
-
-    for (size_t i = 0; i < modeString.size(); ++i) {
-        char c = modeString[i];
-        if (c == '+' || c == '-') {
-            sign = c;
-            flagsApplied += c;
-            continue;
-        }
-
-	char sign = '+';                      // dernier signe vu
-    size_t paramIdx = 0;
-
-    for (size_t i = 0; i < modeString.size(); ++i) {
-        char c = modeString[i];
-        if (c == '+' || c == '-') {
-            sign = c;
-            flagsApplied += c;
-            continue;
-        }
-
-        switch (c) {
-            case 'i':
-                channel.setInviteOnly(sign == '+');
-                flagsApplied += 'i';
-                break;
-
-            case 't':
-                channel.setTopicRestricted(sign == '+');
-                flagsApplied += 't';
-                break;
-
-            default:
-                return sendReply(client, ERR_UMODEUNKNOWNFLAG);*/
+	}
+	else {
+		channel = server->getChannelByName(params[1]);
+	}
+	const std::string &modeString = params[2];
 	
-}
+	std::string flagsApplied;
+	std::vector<std::string> usedParams;
+	char sign = '+';
+	size_t paramIdx = 0;
 
+	for (size_t i = 0; i < modeString.size(); ++i) {
+		char c = modeString[i];
+		if (c == '+' || c == '-') {
+			sign = c;
+			flagsApplied += c;
+			continue;
+		}
 
+		switch (c) {
+			case 'i':
+				channel.setInviteOnly(sign == '+');
+				flagsApplied += 'i';
+				break;
 
+			case 't':
+				channel.setTopicRestricted(sign == '+');
+				flagsApplied += 't';
+				break;
+
+			default:
+				return sendReply(client, ERR_UMODEUNKNOWNFLAG);
+
+		}
+
+	}
 	// if (client isn't in channel database)
 	// 	return sendReply( data.fd, ERR_NOTONCHANNEL );
 	// else if (only 1 param)
