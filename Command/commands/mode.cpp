@@ -37,16 +37,28 @@ void	Command::modeCommand( const CommandData_t& data ) const {
 		switch (c) {
 			case 'i':
 				std::cout << "Setting invite-only " << (sign == '+' ? "on" : "off") << std::endl;
+				//channel->setInviteOnly(sign == '+');
 				flagsApplied += 'i';
 				break;
 
 			case 't':
 				std::cout << "Setting topic-restricted " << (sign == '+' ? "on" : "off") << std::endl;
+				//channel->setTopicRestricted(sign == '+');
 				flagsApplied += 't';
 				break;
 
 			case 'k':
 				std::cout << "Setting channel key " << (sign == '+' ? "on" : "off") << std::endl;
+				// if (sign == '+') {
+				//	if (paramIdx >= params.size())
+				//		return sendReply(client, ERR_NEEDMOREPARAMS);
+				//	std::string newKey = params[paramIdx++];
+				//	if (channel.getKey() == newKey)
+				//		return sendReply(client, ERR_KEYSET);
+				//	channel.setKey(newKey);
+				//	usedParams.push_back(newKey);
+				// } else { // -k remove key
+				//     channel.setKey("");
 				flagsApplied += 'k';
 				if (sign == '+' && params.size() > paramIdx) {
 					std::string key = params[paramIdx];
@@ -56,6 +68,19 @@ void	Command::modeCommand( const CommandData_t& data ) const {
 				break;
 
 			case 'o':
+			// if (paramIdx >= params.size())
+			// 	return sendReply(client, ERR_NEEDMOREPARAMS);
+			// {
+			// besoin d'un GetClientByNick je pense
+			// 	std::string targetNick = params[paramIdx++];
+			// 	if (!channel->isClientUser(targetNick))
+			// 		return sendReply(client, ERR_NOTONCHANNEL);
+			// 	if (sign == '+')
+			// 		channel.promoteOp(targetNick);
+			// 	else
+			// 		channel.demoteOp(targetNick);
+			// 	usedParams.push_back(targetNick);
+			// }
 				std::cout << "Give/take operator privilege to -target- " << (sign == '+' ? "on" : "off") << std::endl;
 				flagsApplied += 'o';
 				if (sign == '+') {
@@ -72,6 +97,15 @@ void	Command::modeCommand( const CommandData_t& data ) const {
 				break;
 
 			case 'l':
+				// if (sign == '+') {
+				// 	if (paramIdx >= params.size())
+				// 		return sendReply(client, ERR_NEEDMOREPARAMS);
+				// 	std::string limit = params[paramIdx++];
+				// 	channel.setUserLimit(std::atoi(limit.c_str()));
+				// 	usedParams.push_back(limit);
+				// } else {
+				// 	channel.removeUserLimit();
+				// }
 				std::cout << "Setting user limit to -limit- " << (sign == '+' ? "on" : "off") << std::endl;
 				flagsApplied += 'l';
 				if (sign == '+' && params.size() > paramIdx) {
@@ -89,6 +123,15 @@ void	Command::modeCommand( const CommandData_t& data ) const {
 				return sendReply( data.fd, ERR_UMODEUNKNOWNFLAG );
 		}
 	}
+	// faire la reponse serveur > client
+	// std::ostringstream oss;
+	// oss << ":" << -mask- << " MODE "
+	// 	<< channel.getName() << " " << flagsApplied;
+	// for (size_t i = 0; i < usedParams.size(); ++i)
+	// 	oss << " " << usedParams[i];
+	// oss << "\r\n";
+	// creer fonction broadcast pour diffuser à tous les utilisateurs du channel
+	// channel.broadcast(oss.str());
 }
 
 	//NOTES :
