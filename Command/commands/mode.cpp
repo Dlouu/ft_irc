@@ -15,7 +15,7 @@ void	Command::modeCommand( const CommandData_t& data ) const {
 	else {
 		channel = server->getChannel( params[1] );
 	}
-	if (client.isInChannelDatabase( channel )) {
+	if (channel->isClientUser( client )) {
 		return sendReply( data.fd, ERR_NOTONCHANNEL );
 	}
 
@@ -57,14 +57,15 @@ void	Command::modeCommand( const CommandData_t& data ) const {
 				std::cout << "Give/take operator privilege to -target- " << (sign == '+' ? "on" : "off") << std::endl;
 				flagsApplied += 'o';
 				std::string target;
-				if (sign == '+' && params.size() > paramIdx) {
+				if (sign == '+') {
+					std::cout << "Promoting user to OP:" << std::endl;
+				} else if (sign == '-') {
+					std::cout << "Demoting user from OP:" << std::endl;
+				}
+				if (params.size() > paramIdx) {
 					target = params[paramIdx];
 					paramIdx++;
-					std::cout << "Target to promote: " << target << std::endl;
-				} else if (sign == '-' && params.size() > paramIdx) {
-					target = params[paramIdx];
-					paramIdx++;
-					std::cout << "Target to demote: " << target << std::endl;
+					std::cout << target << std::endl;
 				} else {
 					return sendReply( data.fd, ERR_NEEDMOREPARAMS );
 				}
