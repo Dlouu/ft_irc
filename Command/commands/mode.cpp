@@ -5,21 +5,22 @@ void	Command::modeCommand( const CommandData_t& data ) const {
 	Server	*server = Server::getInstance();
 	Channel	*channel;
 	std::vector<std::string> params = split( data.message, ' ' );
+
 	if (params.size() < 2) {
 		return sendReply( data.fd, ERR_NEEDMOREPARAMS );
 	}
-	if (params[1].empty() || params[1][0] != '#' || !isChannelExist(params[1])) {
+	else if (params[1].empty() || params[1][0] != '#') { // || !isChannelExist(params[1])
 		return sendReply( data.fd, ERR_NOSUCHCHANNEL );
 	}
 	else {
 		channel = server->getChannelByName(params[1]);
 	}
+
 	const std::string &modeString = params[2];
-	
 	std::string flagsApplied;
-	std::vector<std::string> usedParams;
 	char sign = '+';
-	size_t paramIdx = 0;
+	//std::vector<std::string> usedParams;
+	size_t paramIdx = 1;
 
 	for (size_t i = 0; i < modeString.size(); ++i) {
 		char c = modeString[i];
@@ -31,13 +32,31 @@ void	Command::modeCommand( const CommandData_t& data ) const {
 
 		switch (c) {
 			case 'i':
-				channel.setInviteOnly(sign == '+');
+				std::cout << "Setting invite-only " << (sign == '+' ? "on" : "off") << std::endl;
 				flagsApplied += 'i';
 				break;
 
 			case 't':
-				channel.setTopicRestricted(sign == '+');
+				std::cout << "Setting topic-restricted " << (sign == '+' ? "on" : "off") << std::endl;
 				flagsApplied += 't';
+				break;
+
+			case 'k':
+				std::cout << "Setting channel key " << (sign == '+' ? "on" : "off") << std::endl;
+				flagsApplied += 'k';
+				std::string key = (sign == '+' && params.size() > paramIdx) ? params[paramIdx++] : "";
+				break;
+
+			case 'o':
+				std::cout << "Setting channel operator " << (sign == '+' ? "on" : "off") << std::endl;
+				flagsApplied += 'o';
+				std::string target = (sign == '+' && params.size() > paramIdx) ? params[paramIdx++] : "";
+				break;
+
+			case 'l':
+				std::cout << "Setting user limit " << (sign == '+' ? "on" : "off") << std::endl;
+				flagsApplied += 'l';
+				std::string limit = (sign == '+' && params.size() > paramIdx) ? params[paramIdx++] : "";
 				break;
 
 			default:
@@ -91,9 +110,6 @@ void	Command::modeCommand( const CommandData_t& data ) const {
 	// 		set user limit to limit : :irc.example.net MODE #chatroom +l 10
 	// 	else
 	// 		remove set limit 
-
-	// ERR_NOSUCHNICK ??
-	// ERR_UNKNOWNMODE meh
 }
 
 	//NOTES :
