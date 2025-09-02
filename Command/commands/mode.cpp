@@ -13,14 +13,15 @@ void	Command::modeCommand( const CommandData_t& data ) const {
 		return sendReply( data.fd, ERR_NOSUCHCHANNEL );
 	}
 	else {
-		channel = server->getChannelByName(params[1]);
+		channel = server->getChannel(params[1]);
 	}
 
 	const std::string &modeString = params[2];
 	std::string flagsApplied;
 	char sign = '+';
 	//std::vector<std::string> usedParams;
-	size_t paramIdx = 1;
+	//size_t paramIdx = 1;
+	(void)channel;
 
 	for (size_t i = 0; i < modeString.size(); ++i) {
 		char c = modeString[i];
@@ -44,23 +45,23 @@ void	Command::modeCommand( const CommandData_t& data ) const {
 			case 'k':
 				std::cout << "Setting channel key " << (sign == '+' ? "on" : "off") << std::endl;
 				flagsApplied += 'k';
-				std::string key = (sign == '+' && params.size() > paramIdx) ? params[paramIdx++] : "";
+				//std::string key = (sign == '+' && params.size() > paramIdx) ? params[paramIdx++] : "";
 				break;
 
 			case 'o':
-				std::cout << "Setting channel operator " << (sign == '+' ? "on" : "off") << std::endl;
+				std::cout << "Give/take operator privilege to -target-" << (sign == '+' ? "on" : "off") << std::endl;
 				flagsApplied += 'o';
-				std::string target = (sign == '+' && params.size() > paramIdx) ? params[paramIdx++] : "";
+				//std::string target = (sign == '+' && params.size() > paramIdx) ? params[paramIdx++] : "";
 				break;
 
 			case 'l':
-				std::cout << "Setting user limit " << (sign == '+' ? "on" : "off") << std::endl;
+				std::cout << "Setting user limit to -limit-" << (sign == '+' ? "on" : "off") << std::endl;
 				flagsApplied += 'l';
-				std::string limit = (sign == '+' && params.size() > paramIdx) ? params[paramIdx++] : "";
+				//std::string limit = (sign == '+' && params.size() > paramIdx) ? params[paramIdx++] : "";
 				break;
 
 			default:
-				return sendReply(client, ERR_UMODEUNKNOWNFLAG);
+				return sendReply( data.fd, ERR_UMODEUNKNOWNFLAG );
 
 		}
 
