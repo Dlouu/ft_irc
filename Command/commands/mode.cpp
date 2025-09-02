@@ -20,7 +20,7 @@ void	Command::modeCommand( const CommandData_t& data ) const {
 	std::string flagsApplied;
 	char sign = '+';
 	//std::vector<std::string> usedParams;
-	//size_t paramIdx = 1;
+	size_t paramIdx = 1;
 	(void)channel;
 
 	for (size_t i = 0; i < modeString.size(); ++i) {
@@ -45,19 +45,22 @@ void	Command::modeCommand( const CommandData_t& data ) const {
 			case 'k':
 				std::cout << "Setting channel key " << (sign == '+' ? "on" : "off") << std::endl;
 				flagsApplied += 'k';
-				//std::string key = (sign == '+' && params.size() > paramIdx) ? params[paramIdx++] : "";
+				std::string key = (sign == '+' && params.size() > paramIdx) ? params[paramIdx] : "";
+				paramIdx++;
 				break;
 
 			case 'o':
-				std::cout << "Give/take operator privilege to -target-" << (sign == '+' ? "on" : "off") << std::endl;
+				std::cout << "Give/take operator privilege to -target- " << (sign == '+' ? "on" : "off") << std::endl;
 				flagsApplied += 'o';
-				//std::string target = (sign == '+' && params.size() > paramIdx) ? params[paramIdx++] : "";
+				std::string target = (sign == '+' && params.size() > paramIdx) ? params[paramIdx] : "";
+				paramIdx++;
 				break;
 
 			case 'l':
-				std::cout << "Setting user limit to -limit-" << (sign == '+' ? "on" : "off") << std::endl;
+				std::cout << "Setting user limit to -limit- " << (sign == '+' ? "on" : "off") << std::endl;
 				flagsApplied += 'l';
-				//std::string limit = (sign == '+' && params.size() > paramIdx) ? params[paramIdx++] : "";
+				std::string limit = (sign == '+' && params.size() > paramIdx) ? params[paramIdx] : "";
+				paramIdx++;
 				break;
 
 			default:
