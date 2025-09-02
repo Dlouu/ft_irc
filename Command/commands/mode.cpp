@@ -62,9 +62,8 @@ void	Command::modeCommand( const CommandData_t& data ) const {
 					std::cout << "Demoting user from OP:" << std::endl;
 				}
 				if (params.size() > paramIdx) {
-					target = params[paramIdx];
+					std::cout << params[paramIdx] << std::endl;
 					paramIdx++;
-					std::cout << target << std::endl;
 				} else {
 					return sendReply( data.fd, ERR_NEEDMOREPARAMS );
 				}
