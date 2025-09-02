@@ -10,6 +10,7 @@ class Client
 		bool		_nickSet;
 		bool		_userSet;
 		bool		_welcomed;
+		bool		_isPassOk;
 		std::string	_nickname;
 		std::string	_username;
 		std::string	_hostname;
@@ -27,7 +28,8 @@ class Client
 		void				setHostname( const std::string& str );
 		void				setRealname( const std::string& str );
 		void				setFD( const int &fd );
-
+		
+		void				setPass(bool status);
 		void				setNickSet( bool status );
 		void				setUserSet( bool status );
 		void				setWelcomeStatus( bool status );
@@ -40,6 +42,7 @@ class Client
 		const std::string	getMask( void ) const;
 		const int&			getFD( void ) const;
 
+		bool				isPassOk( void );
 		bool				isNickSet( void );
 		bool				isUserSet( void );
 		bool				isWelcomed( void );

@@ -42,6 +42,8 @@ void	Command::nickCommand( const CommandData_t& data ) const {
 	std::string nickname = data.message.substr( 5, data.message.length() );
 	std::string	oldnick = (*Server::getClientByFD(data.fd)).getNickname();
 
+	if (!Server::isClientPass(data.fd))
+		return;
 	if (nickname.empty()) {
 		return sendReply( data.fd, ERR_NONICKNAMEGIVEN );
 	} else if (invalidNickname( nickname )) {

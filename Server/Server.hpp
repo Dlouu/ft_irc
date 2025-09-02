@@ -32,6 +32,7 @@ class Server
 		Server( void );
 
 		static std::string					_name;
+		static std::string					_password;
 		int									_socket;
 		sockaddr_in							_address;
 		int									_epoll;
@@ -44,7 +45,7 @@ class Server
 		std::string				datetime;
 
 		void			loop();
-		void			init( int port );
+		void			init( int port, std::string password );
 		static Server*	getInstance( void );
 
 		~Server();
@@ -53,6 +54,7 @@ class Server
 		static std::map<int, Client>	getClients( void );
 		static Client					*getClientByFD( const int fd );
 		static const std::string&		getServername( void );
+		static const std::string&		getServPass( void );
 		static Channel					*getChannel( const std::string &name );
 
 		void							addChannel( Channel& channel );
@@ -66,9 +68,11 @@ class Server
 		static void						setUsernameByFD( const int fd, const std::string& username );
 		static void						setServernameByFD( const int fd, const std::string& servername );
 
+		static void						setPassByFD( const int fd, bool status );
 		static void						setNickSetByFD( const int fd, bool status );
 		static void						setUserSetByFD( const int fd, bool status );
 		static void						setWelcomeStatusByFD( const int fd, bool status );
+		static bool						isClientPass( const int fd );
 		static bool						isClientRegistered( const int fd );
 		static bool						isClientWelcomed( const int fd );
 };

@@ -12,7 +12,7 @@ int	main(int argc, char **argv)
 	int port = atoi(argv[1]);
 	std::string password = argv[2];
 
-	Server::getInstance()->init(port);
+	Server::getInstance()->init(port, password);
 	Server::getInstance()->loop();
 
 	Server::destroyInstance();

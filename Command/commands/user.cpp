@@ -8,6 +8,8 @@ void	Command::userCommand( const CommandData_t& data ) const {
 
 	user = data.message.substr( 5, data.message.length() );
 
+	if (!Server::isClientPass(data.fd))
+		return;
 	if (Server::isClientRegistered( data.fd ))
 		return sendReply( data.fd, ERR_ALREADYREGISTRED );
 

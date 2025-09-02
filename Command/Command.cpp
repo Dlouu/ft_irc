@@ -25,6 +25,7 @@ void	Command::init( void ) {
 	_command[ "USER " ]		=	&Command::userCommand;
 	_command[ "PING " ]		=	&Command::pingCommand;
 	_command[ "PART " ]		=	&Command::partCommand;
+	_command[ "PASS " ]		=	&Command::passCommand;
 	_command[ "JOIN " ]		= 	&Command::joinCommand;
 	_command[ "PRIVMSG " ]	=	&Command::privmsgCommand;
 }
