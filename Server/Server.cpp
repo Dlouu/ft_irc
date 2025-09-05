@@ -122,6 +122,11 @@ void	Server::loop() {
 					std::vector<std::string> messages = extractMessages(clientBuffers[clientFd]);
 					for (std::vector<std::string>::iterator it = messages.begin(); it != messages.end(); ++it) {
 						Command::processIRCMessage(clientFd, *it);
+						if (!getInstance()->_users[clientFd].isPassOk()) {
+							std::cout << "* Client fd closed: bad password *\n";
+							close(clientFd);
+							break;
+						}
 					}
 				} else if (bytes == 0) {
 					std::cout << "* Client disconnected *\n";
