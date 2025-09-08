@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cluby <cluby@student.42.fr>                +#+  +:+       +#+        */
+/*   By: mbaumgar <mbaumgar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/18 08:18:40 by tclaereb          #+#    #+#             */
-/*   Updated: 2025/08/28 16:04:28 by cluby            ###   ########.fr       */
+/*   Updated: 2025/09/08 23:26:58 by mbaumgar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,11 +40,17 @@ class Channel {
 		Channel						&operator=( const Channel &other );
 
 		const std::string			&getName( void ) const;
+		const std::string			&getPassword( void ) const;
 		const bool					&getInviteOnly( void ) const;
 		const unsigned long			&getUserLimit( void ) const;
 		const std::vector< Client >	&getOperators( void ) const;
+		const bool					&getTopicRestricted( void ) const;
+		bool						getPasswordStatus( void ) const;
+		std::string					getChannelModes( void ) const;
+		std::string					getChannelParams( void ) const;
 
 		void						setInviteOnly( const bool state );
+		void						setTopicRestricted( const bool state );
 		void						setUserLimit( const unsigned long n );
 		void						setPassword( const std::string password );
 		void						setTopic( const Client &executor, const std::string topic );

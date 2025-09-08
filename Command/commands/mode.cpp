@@ -5,27 +5,41 @@ void	Command::modeCommand( const CommandData_t& data ) const {
 	Server	*server = Server::getInstance();
 	Channel	*channel;
 	std::vector<std::string> params = split( data.message, ' ' );
-	
+	g_vars[ "command" ]	= params[0];
+
 	if (params.size() < 2) {
 		return sendReply( data.fd, ERR_NEEDMOREPARAMS );
-	}
-	else if (params[1].empty() || params[1][0] != '#') { 	// || !isChannelExist(params[1]) a add
-		return sendReply( data.fd, ERR_NOSUCHCHANNEL );
-	}
-	else {
+	} else if (params.size() == 3 && params[1] == Server::getClientByFD( data.fd )->getNickname() && params[2] == "+i") {
+		return (sendMessage( data.fd, ":{server} :{nick}!{user}@{host} MODE {nick} :+i" ));
+	// } else if (params[1].empty() || params[1][0] != '#') {	// || !isChannelExist(params[1]) a add
+	// 	g_vars[ "channel" ]	= params[1];
+	// 	return sendReply( data.fd, ERR_NOSUCHCHANNEL );
+	} else {
 		channel = server->getChannel( params[1] );
+		if (!channel->getName().empty()) {
+			g_vars[ "channel" ]	= channel->getName();
+			if (params.size() == 2) {
+				g_vars[ "channel" ]	= params[1];
+				g_vars[ "modes" ]	= channel->getChannelModes();
+				g_vars[ "params" ]	= channel->getChannelParams();
+				return sendReply( data.fd, RPL_CHANNELMODEIS );
+			}
+		} else {
+			g_vars[ "channel" ]	= params[1];
+			return sendReply( data.fd, ERR_NOSUCHCHANNEL );
+		}
 	}
 	//if (channel->isClientUser( client )) {
 	//	return sendReply( data.fd, ERR_NOTONCHANNEL );
 	//}
 	(void)client;
-	(void)channel;
 
-	const std::string &modeString = params[2];
-	std::string flagsApplied;
-	char sign = '+';
-	size_t paramIdx = 3;
-
+	const std::string			modeString = params[2];
+	std::string					flagsApplied;
+	char						sign = '+';
+	size_t						paramIdx = 3;
+	std::vector<std::string>	usedParams;
+	
 	for (size_t i = 0; i < modeString.size(); ++i) {
 		char c = modeString[i];
 		if (c == '+' || c == '-') {
@@ -33,38 +47,32 @@ void	Command::modeCommand( const CommandData_t& data ) const {
 			flagsApplied += c;
 			continue;
 		}
-
+		
 		switch (c) {
 			case 'i':
-				std::cout << "Setting invite-only " << (sign == '+' ? "on" : "off") << std::endl;
-				//channel->setInviteOnly(sign == '+');
+				channel->setInviteOnly(sign == '+');
 				flagsApplied += 'i';
 				break;
 
 			case 't':
-				std::cout << "Setting topic-restricted " << (sign == '+' ? "on" : "off") << std::endl;
-				//channel->setTopicRestricted(sign == '+');
+				channel->setTopicRestricted(sign == '+');
 				flagsApplied += 't';
 				break;
 
 			case 'k':
-				std::cout << "Setting channel key " << (sign == '+' ? "on" : "off") << std::endl;
-				// if (sign == '+') {
-				//	if (paramIdx >= params.size())
-				//		return sendReply(client, ERR_NEEDMOREPARAMS);
-				//	std::string newKey = params[paramIdx++];
-				//	if (channel.getKey() == newKey)
-				//		return sendReply(client, ERR_KEYSET);
-				//	channel.setKey(newKey);
-				//	usedParams.push_back(newKey);
-				// } else { // -k remove key
-				//     channel.setKey("");
-				flagsApplied += 'k';
-				if (sign == '+' && params.size() > paramIdx) {
+				if (sign == '+') {
+					if (paramIdx >= params.size())
+						return sendReply( data.fd, ERR_NEEDMOREPARAMS );
 					std::string key = params[paramIdx];
 					paramIdx++;
-					std::cout << "New key: " << key << std::endl;
+					if (channel->getPassword() == key)
+						return sendReply( data.fd, ERR_KEYSET );
+					channel->setPassword( key );
+					usedParams.push_back( key );
+				} else {
+				    channel->setPassword("");
 				}
+				flagsApplied += 'k';
 				break;
 
 			case 'o':
@@ -97,25 +105,16 @@ void	Command::modeCommand( const CommandData_t& data ) const {
 				break;
 
 			case 'l':
-				// if (sign == '+') {
-				// 	if (paramIdx >= params.size())
-				// 		return sendReply(client, ERR_NEEDMOREPARAMS);
-				// 	std::string limit = params[paramIdx++];
-				// 	channel.setUserLimit(std::atoi(limit.c_str()));
-				// 	usedParams.push_back(limit);
-				// } else {
-				// 	channel.removeUserLimit();
-				// }
-				std::cout << "Setting user limit to -limit- " << (sign == '+' ? "on" : "off") << std::endl;
-				flagsApplied += 'l';
-				if (sign == '+' && params.size() > paramIdx) {
+				if (sign == '+') {
+					if (paramIdx >= params.size())
+						return sendReply( data.fd, ERR_NEEDMOREPARAMS);
 					std::string limit = params[paramIdx];
 					paramIdx++;
-					//check atoi
-					std::cout << "New limit: " << limit << std::endl;
-				}
-				else {
-					return sendReply( data.fd, ERR_NEEDMOREPARAMS );
+					channel->setUserLimit(std::atoll( limit.c_str() ));
+					usedParams.push_back(limit);
+					flagsApplied += 'l';
+				} else {
+					channel->setUserLimit(0);
 				}
 				break;
 

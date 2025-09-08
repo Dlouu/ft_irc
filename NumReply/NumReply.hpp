@@ -55,7 +55,7 @@ typedef enum e_NumReply {
 } t_NumReply;
 
 std::map<int, std::string>			createReplies( void );
-std::map<std::string, std::string>	fillVars( int clientFD, std::map<std::string, std::string> tab, std::string nick );
+std::map<std::string, std::string>	fillVars( int clientFD, std::map<std::string, std::string> tab );
 std::map<std::string, std::string>	fillPermanentVars( void );
 
 extern std::map<int, std::string>			g_replies;
@@ -63,3 +63,5 @@ extern std::map<std::string, std::string>	g_vars;
 
 void		sendReply( const int fd, int code );
 std::string formatReply(int code, const std::map<std::string, std::string> &vars);
+void		sendMessage( const int fd, std::string str );
+std::string	formatMessage( std::string message, const std::map<std::string, std::string> &vars );

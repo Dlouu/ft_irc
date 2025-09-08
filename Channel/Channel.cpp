@@ -6,7 +6,7 @@
 /*   By: mbaumgar <mbaumgar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/18 12:31:21 by tclaereb          #+#    #+#             */
-/*   Updated: 2025/08/26 18:49:04 by mbaumgar         ###   ########.fr       */
+/*   Updated: 2025/09/08 23:26:43 by mbaumgar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,49 @@ const std::string	&Channel::getName( void ) const {
 	return ( this->_name );
 }
 
+const std::string	&Channel::getPassword( void ) const {
+	return ( this->_password );
+}
+
 const bool	&Channel::getInviteOnly( void ) const {
 	return ( this->_inviteOnly );
+}
+
+const bool	&Channel::getTopicRestricted( void ) const {
+	return ( this->_topicOperatorOnly );
+}
+
+bool	Channel::getPasswordStatus( void ) const {
+	if (this->_password == "")
+		return ( false );
+	return ( true );
+}
+
+std::string	Channel::getChannelModes( void ) const {
+	std::string	modes = "";
+	if (this->getInviteOnly())
+		modes.append("i");
+	if (this->getTopicRestricted())
+		modes.append("t");
+	if (this->getUserLimit() > 0)
+		modes.append("l");
+	if (this->getPasswordStatus())
+		modes.append("k");
+	return ( modes );
+}
+
+std::string	Channel::getChannelParams( void ) const {
+	std::stringstream	params;
+	if (this->getUserLimit() > 0) {
+		params << _userLimit;
+		if (this->getPasswordStatus()) {
+			params << " " << _password;
+		}
+	}
+	else if (this->getPasswordStatus()) {
+		params << _password;
+	}
+	return ( params.str() );
 }
 
 const unsigned long	&Channel::getUserLimit( void ) const {
@@ -35,6 +76,10 @@ const std::vector< Client >	&Channel::getOperators( void ) const {
 
 void	Channel::setInviteOnly( const bool state ) {
 	this->_inviteOnly = state;
+}
+
+void	Channel::setTopicRestricted( const bool state ) {
+	this->_topicOperatorOnly = state;
 }
 
 void	Channel::setUserLimit( const unsigned long n ) {

@@ -10,7 +10,7 @@ std::map<int, std::string> createReplies() {
 
 	num[RPL_UMODEIS]			= ":{server} 221 {nick} {modes}\r\n";
 	num[RPL_AWAY]				= ":{server} 301 {nick} {target} :{message}\r\n";
-	num[RPL_CHANNELMODEIS]		= ":{server} 324 {nick} {channel} {modes} {params}\r\n";
+	num[RPL_CHANNELMODEIS]		= ":{server} 324 {nick} {channel} +{modes} {params}\r\n";
 	num[RPL_NOTOPIC]			= ":{server} 331 {nick} {channel} :No topic is set\r\n";
 	num[RPL_TOPIC]				= ":{server} 332 {nick} {channel} :{topic}\r\n";
 	num[RPL_INVITING]			= ":{server} 341 {nick} {target} {channel}\r\n";
@@ -52,25 +52,29 @@ std::map<int, std::string> createReplies() {
 std::map<std::string, std::string> fillPermanentVars( void ) {
 	std::map<std::string, std::string> tab;
 	
-	tab[ "server" ]	= Server::getServername();
-	tab[ "datetime" ] = Server::getInstance()->datetime;
-	tab[ "version" ] = SERVER_VERSION;
-	tab[ "usermodes" ] = USERMODES;
-	tab[ "motd" ]	= 	"attention les yeux !\n\n" \
-						"⡆⣐⢕⢕⢕⢕⢕⢕⢕⢕⠅⢗⢕⢕⢕⢕⢕⢕⢕⠕⠕⢕⢕⢕⢕⢕⢕⢕⢕⢕\n" \
-						"⢐⢕⢕⢕⢕⢕⣕⢕⢕⠕⠁⢕⢕⢕⢕⢕⢕⢕⢕⠅⡄⢕⢕⢕⢕⢕⢕⢕⢕⢕\n" \
-						"⢕⢕⢕⢕⢕⠅⢗⢕⠕⣠⠄⣗⢕⢕⠕⢕⢕⢕⠕⢠⣿⠐⢕⢕⢕⠑⢕⢕⠵⢕\n" \
-						"⢕⢕⢕⢕⠁⢜⠕⢁⣴⣿⡇⢓⢕⢵⢐⢕⢕⠕⢁⣾⢿⣧⠑⢕⢕⠄⢑⢕⠅⢕\n" \
-						"⢕⢕⠵⢁⠔⢁⣤⣤⣶⣶⣶⡐⣕⢽⠐⢕⠕⣡⣾⣶⣶⣶⣤⡁⢓⢕⠄⢑⢅⢑\n" \
-						"⠍⣧⠄⣶⣾⣿⣿⣿⣿⣿⣿⣷⣔⢕⢄⢡⣾⣿⣿⣿⣿⣿⣿⣿⣦⡑⢕⢤⠱⢐\n" \
-						"⢠⢕⠅⣾⣿⠋⢿⣿⣿⣿⠉⣿⣿⣷⣦⣶⣽⣿⣿⠈⣿⣿⣿⣿⠏⢹⣷⣷⡅⢐\n" \
-						"⣔⢕⢥⢻⣿⡀⠈⠛⠛⠁⢠⣿⣿⣿⣿⣿⣿⣿⣿⡀⠈⠛⠛⠁⠄⣼⣿⣿⡇⢔\n" \
-						"⢕⢕⢽⢸⢟⢟⢖⢖⢤⣶⡟⢻⣿⡿⠻⣿⣿⡟⢀⣿⣦⢤⢤⢔⢞⢿⢿⣿⠁⢕\n" \
-						"⢕⢕⠅⣐⢕⢕⢕⢕⢕⣿⣿⡄⠛⢀⣦⠈⠛⢁⣼⣿⢗⢕⢕⢕⢕⢕⢕⡏⣘⢕\n" \
-						"⢕⢕⠅⢓⣕⣕⣕⣕⣵⣿⣿⣿⣾⣿⣿⣿⣿⣿⣿⣿⣷⣕⢕⢕⢕⢕⡵⢀⢕⢕\n" \
-						"⢑⢕⠃⡈⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢃⢕⢕⢕\n" \
-						"⣆⢕⠄⢱⣄⠛⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⢁⢕⢕⠕⢁\n" \
-						"⣿⣦⡀⣿⣿⣷⣶⣬⣍⣛⣛⣛⡛⠿⠿⠿⠛⠛⢛⣛⣉⣭⣤⣂⢜⠕⢑⣡⣴⣿\n";
+	tab[ "server" ]		= Server::getServername();
+	tab[ "datetime" ]	= Server::getInstance()->datetime;
+	tab[ "version" ]	= SERVER_VERSION;
+	tab[ "usermodes" ]	= USERMODES;
+	tab[ "command" ]	= "";
+	tab[ "channel" ]	= "";
+	tab[ "modes" ]		= "";
+	tab[ "params" ]		= "";
+	tab[ "motd" ]		= 	"attention les yeux !\n\n" \
+							"⡆⣐⢕⢕⢕⢕⢕⢕⢕⢕⠅⢗⢕⢕⢕⢕⢕⢕⢕⠕⠕⢕⢕⢕⢕⢕⢕⢕⢕⢕\n" \
+							"⢐⢕⢕⢕⢕⢕⣕⢕⢕⠕⠁⢕⢕⢕⢕⢕⢕⢕⢕⠅⡄⢕⢕⢕⢕⢕⢕⢕⢕⢕\n" \
+							"⢕⢕⢕⢕⢕⠅⢗⢕⠕⣠⠄⣗⢕⢕⠕⢕⢕⢕⠕⢠⣿⠐⢕⢕⢕⠑⢕⢕⠵⢕\n" \
+							"⢕⢕⢕⢕⠁⢜⠕⢁⣴⣿⡇⢓⢕⢵⢐⢕⢕⠕⢁⣾⢿⣧⠑⢕⢕⠄⢑⢕⠅⢕\n" \
+							"⢕⢕⠵⢁⠔⢁⣤⣤⣶⣶⣶⡐⣕⢽⠐⢕⠕⣡⣾⣶⣶⣶⣤⡁⢓⢕⠄⢑⢅⢑\n" \
+							"⠍⣧⠄⣶⣾⣿⣿⣿⣿⣿⣿⣷⣔⢕⢄⢡⣾⣿⣿⣿⣿⣿⣿⣿⣦⡑⢕⢤⠱⢐\n" \
+							"⢠⢕⠅⣾⣿⠋⢿⣿⣿⣿⠉⣿⣿⣷⣦⣶⣽⣿⣿⠈⣿⣿⣿⣿⠏⢹⣷⣷⡅⢐\n" \
+							"⣔⢕⢥⢻⣿⡀⠈⠛⠛⠁⢠⣿⣿⣿⣿⣿⣿⣿⣿⡀⠈⠛⠛⠁⠄⣼⣿⣿⡇⢔\n" \
+							"⢕⢕⢽⢸⢟⢟⢖⢖⢤⣶⡟⢻⣿⡿⠻⣿⣿⡟⢀⣿⣦⢤⢤⢔⢞⢿⢿⣿⠁⢕\n" \
+							"⢕⢕⠅⣐⢕⢕⢕⢕⢕⣿⣿⡄⠛⢀⣦⠈⠛⢁⣼⣿⢗⢕⢕⢕⢕⢕⢕⡏⣘⢕\n" \
+							"⢕⢕⠅⢓⣕⣕⣕⣕⣵⣿⣿⣿⣾⣿⣿⣿⣿⣿⣿⣿⣷⣕⢕⢕⢕⢕⡵⢀⢕⢕\n" \
+							"⢑⢕⠃⡈⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢃⢕⢕⢕\n" \
+							"⣆⢕⠄⢱⣄⠛⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⢁⢕⢕⠕⢁\n" \
+							"⣿⣦⡀⣿⣿⣷⣶⣬⣍⣛⣛⣛⡛⠿⠿⠿⠛⠛⢛⣛⣉⣭⣤⣂⢜⠕⢑⣡⣴⣿\n";
     return tab;
 }
 
@@ -104,12 +108,37 @@ std::string formatReply( const int code, const std::map<std::string, std::string
 }
 
 void sendReply( const int fd, int code ) {
-    g_vars = fillVars( fd , g_vars );
+	g_vars = fillVars( fd , g_vars );
 	std::string reply = formatReply( code, g_vars );
-    if ( send( fd, reply.c_str(), reply.length(), 0 ) == -1 ) {
-        std::cerr << RED "Error sending response" END << std::endl;
-    }
+	if ( send( fd, reply.c_str(), reply.length(), 0 ) == -1 ) {
+		std::cerr << RED "Error sending response" END << std::endl;
+	}
 	std::cout << GRE "<<< " END << reply;
+}
+
+std::string formatMessage( std::string message, const std::map<std::string, std::string> &vars ) {
+
+	std::map<std::string, std::string>::const_iterator it;
+	for ( it = vars.begin(); it != vars.end(); ++it ) {
+		std::string key = "{" + it->first + "}";
+		std::string	value = it->second;
+
+		std::string::size_type pos = 0;
+		while ( ( pos = message.find( key, pos ) ) != std::string::npos ) {
+			message.replace( pos, key.length(), value );
+			pos += value.length();
+		}
+	}
+	return message;
+}
+
+void sendMessage( const int fd, std::string str ) {
+	g_vars = fillVars( fd , g_vars );
+	std::string message = formatMessage( str + "\r\n", g_vars );
+	if ( send( fd, message.c_str(), message.length(), 0 ) == -1 ) {
+		std::cerr << RED "Error sending response" END << std::endl;
+	}
+	std::cout << GRE "<<< " END << message;
 }
 
 /* TO DO DLOU:
