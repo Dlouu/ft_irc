@@ -9,30 +9,31 @@ void	Command::modeCommand( const CommandData_t& data ) const {
 
 	if (params.size() < 2) {
 		return sendReply( data.fd, ERR_NEEDMOREPARAMS );
-	} else if (params.size() == 3 && params[1] == Server::getClientByFD( data.fd )->getNickname() && params[2] == "+i") {
+	} else if (params.size() == 3 && params[1] == client.getNickname() && params[2] == "+i") {
 		return (sendMessage( data.fd, ":{server} :{nick}!{user}@{host} MODE {nick} :+i" ));
-	// } else if (params[1].empty() || params[1][0] != '#') {	// || !isChannelExist(params[1]) a add
-	// 	g_vars[ "channel" ]	= params[1];
-	// 	return sendReply( data.fd, ERR_NOSUCHCHANNEL );
 	} else {
 		channel = server->getChannel( params[1] );
 		if (!channel->getName().empty()) {
 			g_vars[ "channel" ]	= channel->getName();
+			if (!channel->isClientUser( client )) {
+				return sendReply( data.fd, ERR_NOTONCHANNEL );
+			}
 			if (params.size() == 2) {
-				g_vars[ "channel" ]	= params[1];
-				g_vars[ "modes" ]	= channel->getChannelModes();
-				g_vars[ "params" ]	= channel->getChannelParams();
-				return sendReply( data.fd, RPL_CHANNELMODEIS );
+				if (params[1] == channel->getName()) {
+					g_vars[ "channel" ]	= params[1];
+					g_vars[ "modes" ]	= channel->getChannelModes();
+					g_vars[ "params" ]	= channel->getChannelParams();
+					return sendReply( data.fd, RPL_CHANNELMODEIS );
+				} else if (params[1] == client.getNickname()) {
+					g_vars[ "modes" ]	= "+i";
+					return sendReply( data.fd, RPL_UMODEIS );
+				}
 			}
 		} else {
 			g_vars[ "channel" ]	= params[1];
 			return sendReply( data.fd, ERR_NOSUCHCHANNEL );
 		}
 	}
-	//if (channel->isClientUser( client )) {
-	//	return sendReply( data.fd, ERR_NOTONCHANNEL );
-	//}
-	(void)client;
 
 	const std::string			modeString = params[2];
 	std::string					flagsApplied;
@@ -47,7 +48,10 @@ void	Command::modeCommand( const CommandData_t& data ) const {
 			flagsApplied += c;
 			continue;
 		}
-		
+	
+	if (!channel->isClientOperator( client )) {
+		return sendReply( data.fd, ERR_CHANOPRIVSNEEDED );
+	} else {
 		switch (c) {
 			case 'i':
 				channel->setInviteOnly(sign == '+');
@@ -70,7 +74,7 @@ void	Command::modeCommand( const CommandData_t& data ) const {
 					channel->setPassword( key );
 					usedParams.push_back( key );
 				} else {
-				    channel->setPassword("");
+					channel->setPassword("");
 				}
 				flagsApplied += 'k';
 				break;
@@ -120,17 +124,16 @@ void	Command::modeCommand( const CommandData_t& data ) const {
 
 			default:
 				return sendReply( data.fd, ERR_UMODEUNKNOWNFLAG );
+			}
 		}
 	}
-	// faire la reponse serveur > client
-	// std::ostringstream oss;
-	// oss << ":" << -mask- << " MODE "
-	// 	<< channel.getName() << " " << flagsApplied;
-	// for (size_t i = 0; i < usedParams.size(); ++i)
-	// 	oss << " " << usedParams[i];
-	// oss << "\r\n";
-	// creer fonction broadcast pour diffuser à tous les utilisateurs du channel
-	// channel.broadcast(oss.str());
+	std::ostringstream oss;
+	oss << ":" << client.getMask() << " MODE "
+		<< channel->getName() << " " << flagsApplied;
+	for (size_t i = 0; i < usedParams.size(); ++i)
+		oss << " " << usedParams[i];
+	oss << "\r\n";
+	channel->broadcast(oss.str());
 }
 
 	//NOTES :

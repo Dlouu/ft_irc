@@ -20,7 +20,6 @@
 
 # define MAX_EVENTS 10
 # define SERVER_VERSION "ft_irc-1.0"
-# define USERMODES "itkol"
 
 std::vector<std::string> extractMessages(std::string& buffer);
 

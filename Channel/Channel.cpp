@@ -6,7 +6,7 @@
 /*   By: mbaumgar <mbaumgar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/18 12:31:21 by tclaereb          #+#    #+#             */
-/*   Updated: 2025/09/08 23:26:43 by mbaumgar         ###   ########.fr       */
+/*   Updated: 2025/09/09 13:18:54 by mbaumgar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -190,4 +190,11 @@ Channel	&Channel::operator=( const Channel &other ) {
 std::ostream	&operator<<( std::ostream &os, const Channel &add ) {
 	os << "Channel name: " << add.getName() << "\n";
 	return ( os );
+}
+
+void	Channel::broadcast( std::ostream &os ) {
+	for ( size_t i = 0; i < this->_users.size(); i++ ) {
+		send( this->_users[ i ].getFD(), &os, (std::string)os.size(), 0 );
+		LOGC( INFO ) << os;
+	}
 }

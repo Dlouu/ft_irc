@@ -6,7 +6,7 @@
 /*   By: mbaumgar <mbaumgar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/18 08:18:40 by tclaereb          #+#    #+#             */
-/*   Updated: 2025/09/08 23:26:58 by mbaumgar         ###   ########.fr       */
+/*   Updated: 2025/09/09 13:13:50 by mbaumgar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,7 @@ class Channel {
 		bool						isPasswordCorrect( const std::string &password ) const;
 
 		void						shareMessage( const Client &executor, const std::string &rawMsg );
+		void						broadcast( std::ostream &os );
 };
 
 std::ostream	&operator<<( std::ostream &os, const Channel &add );

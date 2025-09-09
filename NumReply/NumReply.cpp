@@ -6,7 +6,7 @@ std::map<int, std::string> createReplies() {
 	num[RPL_WELCOME]			= ":{server} 001 {nick} :Welcome to the IRC Network {nick}!{user}@{host}\r\n";
 	num[RPL_YOURHOST]			= ":{server} 002 {nick} :Your host is {server}, running version {version}\r\n";
 	num[RPL_CREATED]			= ":{server} 003 {nick} :This server was created {datetime}\r\n";
-	num[RPL_MYINFO]				= ":{server} 004 {nick} {server} {version} {usermodes}\r\n";
+	num[RPL_MYINFO]				= ":{server} 004 {nick} {server} {version} itkol\r\n";
 
 	num[RPL_UMODEIS]			= ":{server} 221 {nick} {modes}\r\n";
 	num[RPL_AWAY]				= ":{server} 301 {nick} {target} :{message}\r\n";
@@ -55,7 +55,6 @@ std::map<std::string, std::string> fillPermanentVars( void ) {
 	tab[ "server" ]		= Server::getServername();
 	tab[ "datetime" ]	= Server::getInstance()->datetime;
 	tab[ "version" ]	= SERVER_VERSION;
-	tab[ "usermodes" ]	= USERMODES;
 	tab[ "command" ]	= "";
 	tab[ "channel" ]	= "";
 	tab[ "modes" ]		= "";
