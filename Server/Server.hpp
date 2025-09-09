@@ -51,6 +51,7 @@ class Server
 
 		static std::map<int, Client>	getClients( void );
 		static Client					*getClientByFD( const int fd );
+		static Client					*getClientByNick( std::string nick );
 		static const std::string&		getServername( void );
 		static Channel					*getChannel( const std::string &name );
 

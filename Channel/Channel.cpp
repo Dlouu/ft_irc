@@ -6,7 +6,7 @@
 /*   By: mbaumgar <mbaumgar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/18 12:31:21 by tclaereb          #+#    #+#             */
-/*   Updated: 2025/09/09 13:18:54 by mbaumgar         ###   ########.fr       */
+/*   Updated: 2025/09/09 15:49:13 by mbaumgar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -163,15 +163,13 @@ bool	Channel::isPasswordCorrect( const std::string &password ) const {
 	return ( false );
 }
 
-void	Channel::shareMessage( const Client &executor, const std::string &rawMsg ) {
+void	Channel::shareMessage( const Client &executor, const std::string &rawMsg, const std::string &cmd ) {
 	for ( size_t i = 0; i < this->_users.size(); i++ ) {
-		LOGC( INFO ) << "Hello";
-		// if ( executor.getFD() == this->_users[ i ].getFD() )
-		// 	continue ;
-		( void )executor;
-		std::string	msg = ":" + this->_users[ i ].getMask() + " PRIVMSG " + this->_name + " :" + rawMsg;
+		if ( cmd == "PRIVMSG" && executor.getFD() == this->_users[ i ].getFD() )
+			continue ;
+		std::string	msg = ":" + executor.getMask() + " " + cmd + " " + this->_name + " :" + rawMsg + "\r\n";
 		send( this->_users[ i ].getFD(), msg.c_str(), msg.size(), 0 );
-		LOGC( INFO ) << msg;
+		LOGC( SERVER ) << msg;
 	}
 }
 
@@ -190,11 +188,4 @@ Channel	&Channel::operator=( const Channel &other ) {
 std::ostream	&operator<<( std::ostream &os, const Channel &add ) {
 	os << "Channel name: " << add.getName() << "\n";
 	return ( os );
-}
-
-void	Channel::broadcast( std::ostream &os ) {
-	for ( size_t i = 0; i < this->_users.size(); i++ ) {
-		send( this->_users[ i ].getFD(), &os, (std::string)os.size(), 0 );
-		LOGC( INFO ) << os;
-	}
 }

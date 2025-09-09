@@ -1,15 +1,17 @@
 #include "Command.hpp"
 
 void	Command::modeCommand( const CommandData_t& data ) const {
-	Client &client = *Server::getClientByFD( data.fd );
+	Client	&client = *Server::getClientByFD( data.fd );
 	Server	*server = Server::getInstance();
+	Client	*target;
 	Channel	*channel;
+
 	std::vector<std::string> params = split( data.message, ' ' );
 	g_vars[ "command" ]	= params[0];
 
 	if (params.size() < 2) {
 		return sendReply( data.fd, ERR_NEEDMOREPARAMS );
-	} else if (params.size() == 3 && params[1] == client.getNickname() && params[2] == "+i") {
+	} else if (params.size() == 3 && params[1] == client.getNickname() && params[2] == "+i") { //voir s'il faut pas add des MODES aux USER
 		return (sendMessage( data.fd, ":{server} :{nick}!{user}@{host} MODE {nick} :+i" ));
 	} else {
 		channel = server->getChannel( params[1] );
@@ -50,7 +52,7 @@ void	Command::modeCommand( const CommandData_t& data ) const {
 		}
 	
 	if (!channel->isClientOperator( client )) {
-		return sendReply( data.fd, ERR_CHANOPRIVSNEEDED );
+		sendReply( data.fd, ERR_CHANOPRIVSNEEDED );
 	} else {
 		switch (c) {
 			case 'i':
@@ -73,39 +75,28 @@ void	Command::modeCommand( const CommandData_t& data ) const {
 						return sendReply( data.fd, ERR_KEYSET );
 					channel->setPassword( key );
 					usedParams.push_back( key );
-				} else {
+				} else if (sign == '-') {
 					channel->setPassword("");
 				}
 				flagsApplied += 'k';
 				break;
 
-			case 'o':
-			// if (paramIdx >= params.size())
-			// 	return sendReply(client, ERR_NEEDMOREPARAMS);
-			// {
-			// besoin d'un GetClientByNick je pense
-			// 	std::string targetNick = params[paramIdx++];
-			// 	if (!channel->isClientUser(targetNick))
-			// 		return sendReply(client, ERR_NOTONCHANNEL);
-			// 	if (sign == '+')
-			// 		channel.promoteOp(targetNick);
-			// 	else
-			// 		channel.demoteOp(targetNick);
-			// 	usedParams.push_back(targetNick);
-			// }
-				std::cout << "Give/take operator privilege to -target- " << (sign == '+' ? "on" : "off") << std::endl;
-				flagsApplied += 'o';
-				if (sign == '+') {
-					std::cout << "Promoting user to OP:" << std::endl;
-				} else if (sign == '-') {
-					std::cout << "Demoting user from OP:" << std::endl;
-				}
-				if (params.size() > paramIdx) {
-					std::cout << params[paramIdx] << std::endl;
-					paramIdx++;
-				} else {
+			case 'o': // Theo doit fix l'invalid read que je trigger a cause de target
+				if (paramIdx >= params.size()) {
 					return sendReply( data.fd, ERR_NEEDMOREPARAMS );
 				}
+				target = server->getClientByNick( params[paramIdx] );
+				paramIdx++;
+				if (!channel->isClientUser( *target )) {
+					return sendReply( data.fd, ERR_NOTONCHANNEL );
+				}
+				if (sign == '+') {
+					channel->addOperator( client, *target );
+				} else if (sign == '-') {
+					channel->delOperator( client, *target );
+					usedParams.push_back( target->getNickname() );
+				}
+				flagsApplied += 'o';
 				break;
 
 			case 'l':
@@ -116,24 +107,24 @@ void	Command::modeCommand( const CommandData_t& data ) const {
 					paramIdx++;
 					channel->setUserLimit(std::atoll( limit.c_str() ));
 					usedParams.push_back(limit);
-					flagsApplied += 'l';
-				} else {
+				} else if (sign == '-') {
 					channel->setUserLimit(0);
 				}
+				flagsApplied += 'l';
 				break;
 
 			default:
 				return sendReply( data.fd, ERR_UMODEUNKNOWNFLAG );
 			}
+			
+			std::ostringstream oss;
+			oss << flagsApplied;
+			for (size_t i = 0; i < usedParams.size(); ++i) {
+				oss << " " << usedParams[i];
+			}
+			channel->shareMessage( client, oss.str(), "MODE" );
 		}
 	}
-	std::ostringstream oss;
-	oss << ":" << client.getMask() << " MODE "
-		<< channel->getName() << " " << flagsApplied;
-	for (size_t i = 0; i < usedParams.size(); ++i)
-		oss << " " << usedParams[i];
-	oss << "\r\n";
-	channel->broadcast(oss.str());
 }
 
 	//NOTES :

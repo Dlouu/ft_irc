@@ -112,7 +112,7 @@ void sendReply( const int fd, int code ) {
 	if ( send( fd, reply.c_str(), reply.length(), 0 ) == -1 ) {
 		std::cerr << RED "Error sending response" END << std::endl;
 	}
-	std::cout << GRE "<<< " END << reply;
+	LOGC( SERVER ) << reply;
 }
 
 std::string formatMessage( std::string message, const std::map<std::string, std::string> &vars ) {
@@ -137,7 +137,7 @@ void sendMessage( const int fd, std::string str ) {
 	if ( send( fd, message.c_str(), message.length(), 0 ) == -1 ) {
 		std::cerr << RED "Error sending response" END << std::endl;
 	}
-	std::cout << GRE "<<< " END << message;
+	LOGC( SERVER ) << message;
 }
 
 /* TO DO DLOU:
