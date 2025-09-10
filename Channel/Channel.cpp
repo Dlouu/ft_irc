@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbaumgar <mbaumgar@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tclaereb <tclaereb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/18 12:31:21 by tclaereb          #+#    #+#             */
-/*   Updated: 2025/09/09 15:49:13 by mbaumgar         ###   ########.fr       */
+/*   Updated: 2025/09/10 13:03:00 by tclaereb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 
 Channel::Channel( void ) : _name( "" ), _password( "" ), _userLimit( 0 ), _inviteOnly( false ), _topicOperatorOnly( true ) {}
 
-Channel::Channel( const std::string &name, const std::string &pass ) :
-		_name( name ), _topic( "" ), _password( pass ), _userLimit( 0 ), _inviteOnly( false ), _topicOperatorOnly( true ) {}
+Channel::Channel( const std::string &name ) :
+		_name( name ), _topic( "" ), _password( "" ), _userLimit( 0 ), _inviteOnly( false ), _topicOperatorOnly( true ) {}
 
 const std::string	&Channel::getName( void ) const {
 	return ( this->_name );
@@ -96,7 +96,7 @@ void	Channel::setPassword( const std::string password ) {
 
 void	Channel::setTopic( const Client &executor, const std::string topic ) {
 	if ( !this->isClientOperator( executor ) && this->_topicOperatorOnly )
-		return ;
+		return sendReply( executor.getFD(), ERR_CHANOPRIVSNEEDED );
 
 	this->_topic = topic;
 }
@@ -158,7 +158,7 @@ bool	Channel::isClientOperator( const Client &target ) {
 }
 
 bool	Channel::isPasswordCorrect( const std::string &password ) const {
-	if ( password == this->_password and this->_password != "x" )
+	if ( password == this->_password )
 		return ( true );
 	return ( false );
 }

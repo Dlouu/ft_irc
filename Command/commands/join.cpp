@@ -24,12 +24,14 @@ void	Command::joinCommand( const CommandData_t& data ) const {
 			Channel	*channelObj = NULL;
 			LOGC( INFO ) << "Channel exist";
 			channelObj = server->getChannel( channels[ i ] );
-			if ( i < passwords.size() && !channelObj->isPasswordCorrect( passwords[ i ] ) )
+			if ( i >= passwords.size() || !channelObj->isPasswordCorrect( passwords[ i ] ) ) {
+				sendReply( executor->getFD(), ERR_BADCHANNELKEY );
 				continue;
+			}
 			channelObj->addUser( *server, *executor );
 		} else {
 			LOGC( INFO ) << "Channel doesn't exist";
-			Channel	channelObj = Channel( channels[ i ], i < passwords.size() ? passwords[ i ] : "x" );
+			Channel	channelObj = Channel( channels[ i ] );
 			channelObj.addUser( *server, *executor );
 			channelObj.addOperator( *server, *executor );
 			server->addChannel( channelObj );
@@ -45,7 +47,7 @@ void	Command::joinCommand( const CommandData_t& data ) const {
 		//ERR_BADCHANMASK	// Begins with # or &
 							// Has 1–200 characters
 							// Cannot contain spaces, ASCII BEL (0x07), comma ,, or the channel type prefixes # / & / + / ! inside
-							// Wildcards (*, ?) are generally not allowed unless specifically implemented for masks 
+							// Wildcards (*, ?) are generally not allowed unless specifically implemented for masks
 							//source : chat gpt t'inquiete
 	//else if (channel is full)
 		//ERR_CHANNELISFULL
@@ -55,6 +57,6 @@ void	Command::joinCommand( const CommandData_t& data ) const {
 		//ERR_BADCHANNELKEY
 	//else if (client joined too many channels (>10?))
 		//ERR_TOOMANYCHANNELS
-	//else 
+	//else
 		//RPL_TOPIC and RPL_NAMREPLY
 }

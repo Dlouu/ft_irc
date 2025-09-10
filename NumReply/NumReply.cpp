@@ -45,13 +45,13 @@ std::map<int, std::string> createReplies() {
 	num[ERR_BADCHANMASK]		= ":{server} 476 {nick} {channel} :Bad Channel Mask\r\n"; // a tester
 	num[ERR_CHANOPRIVSNEEDED]	= ":{server} 482 {channel} :You're not channel operator\r\n";
 	num[ERR_UMODEUNKNOWNFLAG]	= ":{server} 501 {nick} :Unknown MODE flag\r\n";
-	
+
     return num;
 }
 
 std::map<std::string, std::string> fillPermanentVars( void ) {
 	std::map<std::string, std::string> tab;
-	
+
 	tab[ "server" ]		= Server::getServername();
 	tab[ "datetime" ]	= Server::getInstance()->datetime;
 	tab[ "version" ]	= SERVER_VERSION;

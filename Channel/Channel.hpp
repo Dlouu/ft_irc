@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbaumgar <mbaumgar@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tclaereb <tclaereb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/18 08:18:40 by tclaereb          #+#    #+#             */
-/*   Updated: 2025/09/09 15:49:19 by mbaumgar         ###   ########.fr       */
+/*   Updated: 2025/09/10 12:46:48 by tclaereb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ class Channel {
 
 	public:
 		Channel( void );
-		Channel( const std::string &name, const std::string &pass );
+		Channel( const std::string &name );
 		Channel						&operator=( const Channel &other );
 
 		const std::string			&getName( void ) const;
