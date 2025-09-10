@@ -74,7 +74,7 @@ void	Command::nickCommand( const CommandData_t& data ) const {
 				+ "@" + (*Server::getClientByFD( data.fd )).getHostname()
 				+ " NICK " + (*Server::getClientByFD( data.fd )).getNickname() + "\r\n";
 			send( data.fd, reply.c_str(), reply.size(), 0 );
-			std::cout << GRE "<<< " END << reply;
+			LOGC( SERVER ) << reply;
 		}
 	}
 }

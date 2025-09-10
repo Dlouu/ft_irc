@@ -40,11 +40,11 @@ class Server
 		std::map< std::string, Channel >	_channels;
 
 	public:
-		std::string				datetime;
+		std::string							datetime;
 
-		void			loop();
-		void			init( int port );
-		static Server*	getInstance( void );
+		void							loop();
+		void							init( int port );
+		static Server*					getInstance( void );
 
 		~Server();
 		static void						destroyInstance( void );

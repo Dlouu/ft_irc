@@ -7,15 +7,15 @@
 class Client
 {
 	private:
-		bool		_nickSet;
-		bool		_userSet;
-		bool		_welcomed;
-		std::string	_nickname;
-		std::string	_username;
-		std::string	_hostname;
-		std::string	_servername;
-		std::string	_realname;
-		int			_fd;
+		bool				_nickSet;
+		bool				_userSet;
+		bool				_welcomed;
+		std::string			_nickname;
+		std::string			_username;
+		std::string			_hostname;
+		std::string			_servername;
+		std::string			_realname;
+		int					_fd;
 
 	public:
 		Client();

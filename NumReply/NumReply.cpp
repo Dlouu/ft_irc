@@ -3,7 +3,7 @@
 std::map<int, std::string> createReplies() {
 	std::map<int, std::string> num;
 
-	num[RPL_WELCOME]			= ":{server} 001 {nick} :Welcome to the IRC Network {nick}!{user}@{host}\r\n";
+	num[RPL_WELCOME]			= ":{server} 001 {nick} :Welcome to the IRC Network {mask}\r\n";
 	num[RPL_YOURHOST]			= ":{server} 002 {nick} :Your host is {server}, running version {version}\r\n";
 	num[RPL_CREATED]			= ":{server} 003 {nick} :This server was created {datetime}\r\n";
 	num[RPL_MYINFO]				= ":{server} 004 {nick} {server} {version} itkol\r\n";
@@ -37,13 +37,13 @@ std::map<int, std::string> createReplies() {
 	num[ERR_USERONCHANNEL]		= ":{server} 443 {nick} {target} {channel} :is already on channel\r\n";
 	num[ERR_NEEDMOREPARAMS]		= ":{server} 461 {nick} {command} :Not enough parameters\r\n";
 	num[ERR_ALREADYREGISTRED]	= ":{server} 462 {nick} :You may not reregister\r\n";
-	num[ERR_KEYSET]				= ":{server} 467 {nick} {channel} :Channel key already set\r\n";
-	num[ERR_CHANNELISFULL]		= ":{server} 471 {nick} {channel} :Cannot join channel (+l)\r\n";
-	num[ERR_INVITEONLYCHAN]		= ":{server} 473 {nick} {channel} :Cannot join channel (+i)\r\n";
-	num[ERR_BANNEDFROMCHAN]		= ":{server} 474 {nick} {channel} :Cannot join channel (+b)\r\n";
-	num[ERR_BADCHANNELKEY]		= ":{server} 475 {nick} {channel} :Cannot join channel (+k)\r\n";
-	num[ERR_BADCHANMASK]		= ":{server} 476 {nick} {channel} :Bad Channel Mask\r\n";
-	num[ERR_CHANOPRIVSNEEDED]	= ":{server} 482 {nick} {channel} :You're not channel operator\r\n";
+	num[ERR_KEYSET]				= ":{server} 467 {nick} {channel} :Channel key already set\r\n"; // a tester
+	num[ERR_CHANNELISFULL]		= ":{server} 471 {nick} {channel} :Cannot join channel (+l)\r\n"; // a tester
+	num[ERR_INVITEONLYCHAN]		= ":{server} 473 {nick} {channel} :Cannot join channel (+i)\r\n"; // a tester
+	num[ERR_BANNEDFROMCHAN]		= ":{server} 474 {nick} {channel} :Cannot join channel (+b)\r\n"; // a tester
+	num[ERR_BADCHANNELKEY]		= ":{server} 475 {nick} {channel} :Cannot join channel (+k)\r\n"; // a tester
+	num[ERR_BADCHANMASK]		= ":{server} 476 {nick} {channel} :Bad Channel Mask\r\n"; // a tester
+	num[ERR_CHANOPRIVSNEEDED]	= ":{server} 482 {channel} :You're not channel operator\r\n";
 	num[ERR_UMODEUNKNOWNFLAG]	= ":{server} 501 {nick} :Unknown MODE flag\r\n";
 	
     return num;
@@ -83,6 +83,7 @@ std::map<std::string, std::string> fillVars( int clientFD, std::map<std::string,
 	tab[ "nick" ]	= client.getNickname();
 	tab[ "user" ]	= client.getUsername();
 	tab[ "host" ]	= client.getHostname();
+	tab[ "mask" ]	= client.getMask();
     return tab;
 }
 
@@ -142,4 +143,22 @@ void sendMessage( const int fd, std::string str ) {
 
 /* TO DO DLOU:
 a voir si je mets le reply dans un buffer sur le client (voir avec Tom ?)
+
+voir si je peux integrer les buffer avec juste un while 1 ou si ca peut bloquer
+
+je passe en try/catch ?
+
+void sendMessage( const int fd, std::string str ) {
+	g_vars = fillVars( fd , g_vars );
+	std::string message = formatMessage( str + "\r\n", g_vars );
+	try	{
+		if ( send( fd, message.c_str(), message.length(), 0 ) == -1 ) {
+			throw SendToTargetException();
+	}
+	catch(const std::exception & e) {
+		std::cerr << e.what() << '\n';
+	}
+	LOGC( SERVER ) << message;
+}
+
 */

@@ -11,8 +11,13 @@ void	Command::modeCommand( const CommandData_t& data ) const {
 
 	if (params.size() < 2) {
 		return sendReply( data.fd, ERR_NEEDMOREPARAMS );
-	} else if (params.size() == 3 && params[1] == client.getNickname() && params[2] == "+i") { //voir s'il faut pas add des MODES aux USER
-		return (sendMessage( data.fd, ":{server} :{nick}!{user}@{host} MODE {nick} :+i" ));
+	} else if (params.size() >= 2 && params[1] == client.getNickname()) {
+		if (params.size() == 2) {
+			g_vars[ "modes" ]	= "+i";
+			return sendReply( data.fd, RPL_UMODEIS );
+		} else if (params.size() == 3 && params[2] == "+i") {
+			return sendMessage( data.fd, ":{server} :{nick}!{user}@{host} MODE {nick} :+i" );
+		}
 	} else {
 		channel = server->getChannel( params[1] );
 		if (!channel->getName().empty()) {
@@ -20,16 +25,11 @@ void	Command::modeCommand( const CommandData_t& data ) const {
 			if (!channel->isClientUser( client )) {
 				return sendReply( data.fd, ERR_NOTONCHANNEL );
 			}
-			if (params.size() == 2) {
-				if (params[1] == channel->getName()) {
-					g_vars[ "channel" ]	= params[1];
-					g_vars[ "modes" ]	= channel->getChannelModes();
-					g_vars[ "params" ]	= channel->getChannelParams();
-					return sendReply( data.fd, RPL_CHANNELMODEIS );
-				} else if (params[1] == client.getNickname()) {
-					g_vars[ "modes" ]	= "+i";
-					return sendReply( data.fd, RPL_UMODEIS );
-				}
+			if (params.size() == 2 && params[1] == channel->getName()) {
+				g_vars[ "channel" ]	= params[1];
+				g_vars[ "modes" ]	= channel->getChannelModes();
+				g_vars[ "params" ]	= channel->getChannelParams();
+				return sendReply( data.fd, RPL_CHANNELMODEIS );
 			}
 		} else {
 			g_vars[ "channel" ]	= params[1];
@@ -73,6 +73,8 @@ void	Command::modeCommand( const CommandData_t& data ) const {
 					paramIdx++;
 					if (channel->getPassword() == key)
 						return sendReply( data.fd, ERR_KEYSET );
+					if (key == "x")
+						return sendMessage( data.fd, ":{server} :{nick}!{user}@{host} Invalid key for irssi" );
 					channel->setPassword( key );
 					usedParams.push_back( key );
 				} else if (sign == '-') {

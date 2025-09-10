@@ -1,5 +1,10 @@
 #include "Server.hpp"
 
+/*
+Faut qu'on test le try and catch s'il fonctionne
+GetClientByFD
+*/
+
 Server			*Server::_instance;
 std::string		Server::_name;
 
