@@ -3,11 +3,13 @@
 static void	isItGood(std::string chan, std::string lastWord, int fd) {
 	if (!Server::getInstance()->getChannel(chan)->isClientUser(*Server::getInstance()->getClientByFD(fd))) {
 		std::cout << "client no on channel [" << chan << "]\n";
-		//ERR_NOTONCHANNEL
+		sendReply(fd, ERR_NOTONCHANNEL);
 		return;
 	}
-	std::cout << "message [" << lastWord << "] shared to channel(s)\n";
-	//shareMessage(user PART #*it lasword);
+	std::string msg = Server::getInstance()->getClientByFD(fd)->getMask() + " PART " + chan + " " + lastWord + "\r\n";
+	Server::getInstance()->getChannel(chan)->shareMessage(msg);	//shareMessage(user PART #*it lasword);
+	Server::getInstance()->getChannel(chan)->delUser(*Server::getInstance()->getClientByFD(fd));
+	std::cout << "message [" << lastWord << "] shared to channel [" << chan << "]\n";
 }
 
 void	Command::partCommand(const CommandData_t& data) const {
@@ -29,7 +31,7 @@ void	Command::partCommand(const CommandData_t& data) const {
 			isItGood(*it, lastWord, data.fd);
 		} else if (!Server::getInstance()->isChannelExist(*it)) {
 			std::cout << "channel [" << *it << " ]not found\n";
-			//ERR_NOSUCHCHANNEL
+			sendReply(data.fd, ERR_NOSUCHCHANNEL);
 		}
 	}
 }

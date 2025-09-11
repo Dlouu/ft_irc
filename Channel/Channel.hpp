@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cluby <cluby@student.42.fr>                +#+  +:+       +#+        */
+/*   By: icewell <icewell@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/18 08:18:40 by tclaereb          #+#    #+#             */
-/*   Updated: 2025/08/28 16:04:28 by cluby            ###   ########.fr       */
+/*   Updated: 2025/09/11 09:09:16 by icewell          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,7 @@ class Channel {
 		void						addUser( const Client &executor, const Client &target );
 		void						addUser( const Server &server, const Client &target );
 		void						delUser( const Client &executor, const Client &target );
+		void						delUser(const Client &target );
 
 		void						addOperator( const Client &executor, const Client &target );
 		void						addOperator( const Server &server, const Client &target );
@@ -62,6 +63,7 @@ class Channel {
 		bool						isPasswordCorrect( const std::string &password ) const;
 
 		void						shareMessage( const Client &executor, const std::string &rawMsg );
+		void						shareMessage( const std::string &msg );
 };
 
 std::ostream	&operator<<( std::ostream &os, const Channel &add );

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbaumgar <mbaumgar@student.42.fr>          +#+  +:+       +#+        */
+/*   By: icewell <icewell@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/18 12:31:21 by tclaereb          #+#    #+#             */
-/*   Updated: 2025/08/26 18:49:04 by mbaumgar         ###   ########.fr       */
+/*   Updated: 2025/09/11 09:08:55 by icewell          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,11 @@ void	Channel::delUser( const Client &executor, const Client &target ) {
 	this->_users.erase( it );
 }
 
+void	Channel::delUser(const Client &target ) {
+	std::vector< Client >::iterator it = std::find(this->_users.begin(), this->_users.end(), target );
+	this->_users.erase( it );
+}
+
 void	Channel::addOperator( const Client &executor, const Client &target ) {
 	if ( this->isClientOperator( executor ) && !this->isClientOperator( target ) )
 		this->_operators.push_back( target );
@@ -129,6 +134,14 @@ void	Channel::shareMessage( const Client &executor, const std::string &rawMsg ) 
 		LOGC( INFO ) << msg;
 	}
 }
+
+void	Channel::shareMessage( const std::string &msg ) {
+	for ( size_t i = 0; i < this->_users.size(); i++ ) {
+		send( this->_users[ i ].getFD(), msg.c_str(), msg.size(), 0 );
+		LOGC( SERVER ) << msg;
+	}
+}
+
 
 Channel	&Channel::operator=( const Channel &other ) {
 	this->_name = other._name;
