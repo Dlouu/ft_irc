@@ -28,12 +28,13 @@ class Channel {
 		Channel						&operator=( const Channel &other );
 
 		const std::string			&getName( void ) const;
+		const std::string			&getTopic( void ) const;
 		const std::string			&getPassword( void ) const;
-		const bool					&getInviteOnly( void ) const;
+		const bool					&isInviteOnly( void ) const;
 		const unsigned long			&getUserLimit( void ) const;
 		const std::vector< Client >	&getOperators( void ) const;
-		const bool					&getTopicRestricted( void ) const;
-		bool						getPasswordStatus( void ) const;
+		const bool					&isTopicRestricted( void ) const;
+		bool						isPasswordSet( void ) const;
 		std::string					getChannelModes( void ) const;
 		std::string					getChannelParams( void ) const;
 
