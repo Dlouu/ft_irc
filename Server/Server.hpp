@@ -20,6 +20,7 @@
 
 # define MAX_EVENTS 10
 # define SERVER_VERSION "ft_irc-1.0"
+# define SERVER_NAME "server.irc.uwu"
 
 std::vector<std::string> extractMessages(std::string& buffer);
 

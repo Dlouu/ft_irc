@@ -41,7 +41,7 @@ void	Server::init(int port, std::string password) {
 	_password = password;
 	_socket = -1;
 	_epoll = -1;
-	_name = "server.irc.uwu";
+	_name = SERVER_NAME;
 	g_replies = createReplies();
 
 	time_t now;
@@ -127,7 +127,9 @@ void	Server::loop() {
 					std::vector<std::string> messages = extractMessages(clientBuffers[clientFd]);
 					for (std::vector<std::string>::iterator it = messages.begin(); it != messages.end(); ++it) {
 						Command::processIRCMessage(clientFd, *it);
-						if (!getInstance()->_users[clientFd].isPassOk()) {
+						if (*it == "CAP LS\r\n")
+							continue;
+						else if (!getInstance()->_users[clientFd].isPassOk()) {
 							std::cout << "* Client fd closed: bad password *\n";
 							close(clientFd);
 							break;
