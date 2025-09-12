@@ -17,6 +17,8 @@ void	Command::modeCommand( const CommandData_t& data ) const {
 			return sendReply( data.fd, RPL_UMODEIS );
 		} else if (params.size() == 3 && params[2] == "+i") {
 			return sendMessage( data.fd, ":{server} :{mask} MODE {nick} :+i" );
+		} else {
+			return ;
 		}
 	} else {
 		channel = server->getChannel( params[1] );

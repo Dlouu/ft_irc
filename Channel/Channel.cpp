@@ -173,7 +173,6 @@ void	Channel::shareMessage( const std::string &msg ) {
 	}
 }
 
-
 Channel	&Channel::operator=( const Channel &other ) {
 	this->_name = other._name;
 	this->_topic = other._topic;
