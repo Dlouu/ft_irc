@@ -5,5 +5,5 @@ void	Command::pingCommand( const CommandData_t& data ) const {
 	if (send(data.fd, answer.c_str(), answer.size(), 0) == -1) {
 		std::cout << "error during pong\n";
 	}
-	std::cout << GRE "<<< " END << answer;
+	LOGC( SERVER ) << answer;
 }

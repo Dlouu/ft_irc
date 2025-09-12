@@ -52,7 +52,6 @@ void	Command::nickCommand( const CommandData_t& data ) const {
 		while (alreadyRegistered( nickname )) {
 			Server::setNicknameByFD( data.fd, "* " + nickname );
 			return (sendReply( data.fd, ERR_NICKNAMEINUSE ));
-			//ou le remettre que dans already registred
 		}
 		Server::setNicknameByFD( data.fd, nickname );
 		Server::getClientByFD( data.fd )->setFD( data.fd );
