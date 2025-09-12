@@ -1,5 +1,10 @@
 #include "Server.hpp"
 
+/*
+Faut qu'on test le try and catch s'il fonctionne
+GetClientByFD
+*/
+
 Server			*Server::_instance;
 std::string		Server::_name;
 std::string		Server::_password;
@@ -157,6 +162,16 @@ Client	*Server::getClientByFD( const int fd ) {
 	} catch ( std::logic_error &e ) {
 		return ( NULL );
 	}
+}
+
+Client	*Server::getClientByNick( std::string nick ) {
+	std::map<int, Client> clients = Server::getClients();
+	for (std::map<int, Client>::iterator it = clients.begin(); it != clients.end(); it++) {
+		if (it->second.getNickname() == nick) {
+			return ( &it->second );
+		}
+	}
+	return ( NULL );
 }
 
 void	Server::setNicknameByFD( const int fd, const std::string& nickname ) {

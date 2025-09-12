@@ -1,28 +1,57 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Channel.cpp                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: icewell <icewell@student.42.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/18 12:31:21 by tclaereb          #+#    #+#             */
-/*   Updated: 2025/09/11 09:08:55 by icewell          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "Channel.hpp"
 
 Channel::Channel( void ) : _name( "" ), _password( "" ), _userLimit( 0 ), _inviteOnly( false ), _topicOperatorOnly( true ) {}
 
-Channel::Channel( const std::string &name, const std::string &pass ) :
-		_name( name ), _topic( "" ), _password( pass ), _userLimit( 0 ), _inviteOnly( false ), _topicOperatorOnly( true ) {}
+Channel::Channel( const std::string &name ) :
+		_name( name ), _topic( "" ), _password( "" ), _userLimit( 0 ), _inviteOnly( false ), _topicOperatorOnly( true ) {}
 
 const std::string	&Channel::getName( void ) const {
 	return ( this->_name );
 }
 
+const std::string	&Channel::getPassword( void ) const {
+	return ( this->_password );
+}
+
 const bool	&Channel::getInviteOnly( void ) const {
 	return ( this->_inviteOnly );
+}
+
+const bool	&Channel::getTopicRestricted( void ) const {
+	return ( this->_topicOperatorOnly );
+}
+
+bool	Channel::getPasswordStatus( void ) const {
+	if (this->_password == "")
+		return ( false );
+	return ( true );
+}
+
+std::string	Channel::getChannelModes( void ) const {
+	std::string	modes = "";
+	if (this->getInviteOnly())
+		modes.append("i");
+	if (this->getTopicRestricted())
+		modes.append("t");
+	if (this->getUserLimit() > 0)
+		modes.append("l");
+	if (this->getPasswordStatus())
+		modes.append("k");
+	return ( modes );
+}
+
+std::string	Channel::getChannelParams( void ) const {
+	std::stringstream	params;
+	if (this->getUserLimit() > 0) {
+		params << _userLimit;
+		if (this->getPasswordStatus()) {
+			params << " " << _password;
+		}
+	}
+	else if (this->getPasswordStatus()) {
+		params << _password;
+	}
+	return ( params.str() );
 }
 
 const unsigned long	&Channel::getUserLimit( void ) const {
@@ -35,6 +64,10 @@ const std::vector< Client >	&Channel::getOperators( void ) const {
 
 void	Channel::setInviteOnly( const bool state ) {
 	this->_inviteOnly = state;
+}
+
+void	Channel::setTopicRestricted( const bool state ) {
+	this->_topicOperatorOnly = state;
 }
 
 void	Channel::setUserLimit( const unsigned long n ) {
@@ -51,7 +84,7 @@ void	Channel::setPassword( const std::string password ) {
 
 void	Channel::setTopic( const Client &executor, const std::string topic ) {
 	if ( !this->isClientOperator( executor ) && this->_topicOperatorOnly )
-		return ;
+		return sendReply( executor.getFD(), ERR_CHANOPRIVSNEEDED );
 
 	this->_topic = topic;
 }
@@ -118,20 +151,18 @@ bool	Channel::isClientOperator( const Client &target ) {
 }
 
 bool	Channel::isPasswordCorrect( const std::string &password ) const {
-	if ( password == this->_password and this->_password != "x" )
+	if ( password == this->_password )
 		return ( true );
 	return ( false );
 }
 
-void	Channel::shareMessage( const Client &executor, const std::string &rawMsg ) {
+void	Channel::shareMessage( const Client &executor, const std::string &rawMsg, const std::string &cmd ) {
 	for ( size_t i = 0; i < this->_users.size(); i++ ) {
-		LOGC( INFO ) << "Hello";
-		// if ( executor.getFD() == this->_users[ i ].getFD() )
-		// 	continue ;
-		( void )executor;
-		std::string	msg = ":" + this->_users[ i ].getMask() + " PRIVMSG " + this->_name + " :" + rawMsg;
+		if ( cmd == "PRIVMSG" && executor.getFD() == this->_users[ i ].getFD() )
+			continue ;
+		std::string	msg = ":" + executor.getMask() + " " + cmd + " " + this->_name + " :" + rawMsg + "\r\n";
 		send( this->_users[ i ].getFD(), msg.c_str(), msg.size(), 0 );
-		LOGC( INFO ) << msg;
+		LOGC( SERVER ) << msg;
 	}
 }
 

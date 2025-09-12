@@ -65,6 +65,14 @@
 		"set": "cpp",
 		"typeindex": "cpp",
 		"variant": "cpp",
-		"csignal": "cpp"
+		"csignal": "cpp",
+		"__bit_reference": "cpp",
+		"__config": "cpp",
+		"__locale": "cpp",
+		"__threading_support": "cpp",
+		"__verbose_abort": "cpp",
+		"execution": "cpp",
+		"ios": "cpp",
+		"locale": "cpp"
 	}
 }

@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Channel.hpp                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: icewell <icewell@student.42.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/18 08:18:40 by tclaereb          #+#    #+#             */
-/*   Updated: 2025/09/11 09:09:16 by icewell          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #pragma once
 
 #include <string>
@@ -36,15 +24,21 @@ class Channel {
 
 	public:
 		Channel( void );
-		Channel( const std::string &name, const std::string &pass );
+		Channel( const std::string &name );
 		Channel						&operator=( const Channel &other );
 
 		const std::string			&getName( void ) const;
+		const std::string			&getPassword( void ) const;
 		const bool					&getInviteOnly( void ) const;
 		const unsigned long			&getUserLimit( void ) const;
 		const std::vector< Client >	&getOperators( void ) const;
+		const bool					&getTopicRestricted( void ) const;
+		bool						getPasswordStatus( void ) const;
+		std::string					getChannelModes( void ) const;
+		std::string					getChannelParams( void ) const;
 
 		void						setInviteOnly( const bool state );
+		void						setTopicRestricted( const bool state );
 		void						setUserLimit( const unsigned long n );
 		void						setPassword( const std::string password );
 		void						setTopic( const Client &executor, const std::string topic );
@@ -62,8 +56,8 @@ class Channel {
 		bool						isClientOperator( const Client &target );
 		bool						isPasswordCorrect( const std::string &password ) const;
 
-		void						shareMessage( const Client &executor, const std::string &rawMsg );
 		void						shareMessage( const std::string &msg );
+		void						shareMessage( const Client &executor, const std::string &rawMsg, const std::string &cmd );
 };
 
 std::ostream	&operator<<( std::ostream &os, const Channel &add );
