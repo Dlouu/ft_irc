@@ -17,21 +17,20 @@ Command *Command::getInstance( void ) {
 }
 
 void	Command::init( void ) {
-	_command[ "KICK " ]		=	&Command::kickCommand;
 	_command[ "INVITE " ]	=	&Command::inviteCommand;
-	_command[ "TOPIC " ]	=	&Command::topicCommand;
+	_command[ "JOIN " ]		= 	&Command::joinCommand;
+	_command[ "KICK " ]		=	&Command::kickCommand;
 	_command[ "MODE " ]		=	&Command::modeCommand;
 	_command[ "NICK " ]		=	&Command::nickCommand;
-	_command[ "USER " ]		=	&Command::userCommand;
-	_command[ "PING " ]		=	&Command::pingCommand;
 	_command[ "PART " ]		=	&Command::partCommand;
 	_command[ "PASS " ]		=	&Command::passCommand;
-	_command[ "JOIN " ]		= 	&Command::joinCommand;
+	_command[ "PING " ]		=	&Command::pingCommand;
 	_command[ "PRIVMSG " ]	=	&Command::privmsgCommand;
+	_command[ "TOPIC " ]	=	&Command::topicCommand;
+	_command[ "USER " ]		=	&Command::userCommand;
 }
 
 void	Command::notaCommand( void ) const {
-	
 	return ;
 }
 
