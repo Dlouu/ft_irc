@@ -140,25 +140,3 @@ void sendMessage( const int fd, std::string str ) {
 	}
 	LOGC( SERVER ) << message;
 }
-
-/* TO DO DLOU:
-a voir si je mets le reply dans un buffer sur le client (voir avec Tom ?)
-
-voir si je peux integrer les buffer avec juste un while 1 ou si ca peut bloquer
-
-je passe en try/catch ?
-
-void sendMessage( const int fd, std::string str ) {
-	g_vars = fillVars( fd , g_vars );
-	std::string message = formatMessage( str + "\r\n", g_vars );
-	try	{
-		if ( send( fd, message.c_str(), message.length(), 0 ) == -1 ) {
-			throw SendToTargetException();
-	}
-	catch(const std::exception & e) {
-		std::cerr << e.what() << '\n';
-	}
-	LOGC( SERVER ) << message;
-}
-
-*/

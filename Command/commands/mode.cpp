@@ -16,7 +16,7 @@ void	Command::modeCommand( const CommandData_t& data ) const {
 			g_vars[ "modes" ]	= "+i";
 			return sendReply( data.fd, RPL_UMODEIS );
 		} else if (params.size() == 3 && params[2] == "+i") {
-			return sendMessage( data.fd, ":{server} :{nick}!{user}@{host} MODE {nick} :+i" );
+			return sendMessage( data.fd, ":{server} :{mask} MODE {nick} :+i" );
 		}
 	} else {
 		channel = server->getChannel( params[1] );
@@ -74,7 +74,7 @@ void	Command::modeCommand( const CommandData_t& data ) const {
 					if (channel->getPassword() == key)
 						return sendReply( data.fd, ERR_KEYSET );
 					if (key == "x")
-						return sendMessage( data.fd, ":{server} :{nick}!{user}@{host} Invalid key for irssi" );
+						return sendMessage( data.fd, ":{server} :{mask} Invalid key for irssi" );
 					channel->setPassword( key );
 					usedParams.push_back( key );
 				} else if (sign == '-') {

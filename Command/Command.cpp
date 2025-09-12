@@ -30,7 +30,8 @@ void	Command::init( void ) {
 }
 
 void	Command::notaCommand( void ) const {
-	// std::cout << RED "Not a command" END << std::endl;
+	
+	return ;
 }
 
 void	Command::handleCommand( const CommandData_t& data ) {
@@ -46,13 +47,11 @@ void	Command::handleCommand( const CommandData_t& data ) {
 
 void Command::processIRCMessage( int fd, const std::string& message ) {
 
-	std::cout << YEL ">>> " PUR << message << END;
-
 	std::string cleanMessage = message;
 	if ( cleanMessage.size() >= 2 && cleanMessage.substr( cleanMessage.size() - 2 ) == "\r\n" ) {
 		cleanMessage = cleanMessage.substr( 0, cleanMessage.size() - 2 );
 	}
-	// LOGC( INFO ) << message;
+	LOGC( CLIENT ) << message;
 	getInstance()->handleCommand( ( CommandData_t ){ cleanMessage, fd } );
 }
 
