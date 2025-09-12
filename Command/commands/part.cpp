@@ -6,7 +6,7 @@ static void	isItGood(std::string chan, std::string lastWord, int fd) {
 		sendReply(fd, ERR_NOTONCHANNEL);
 		return;
 	}
-	std::string msg = Server::getInstance()->getClientByFD(fd)->getMask() + " PART " + chan + " " + lastWord + "\r\n";
+	std::string msg = ":" + Server::getInstance()->getClientByFD(fd)->getMask() + " PART " + chan + " " + lastWord + "\r\n";
 	Server::getInstance()->getChannel(chan)->shareMessage(msg);	//shareMessage(user PART #*it lasword);
 	Server::getInstance()->getChannel(chan)->delUser(*Server::getInstance()->getClientByFD(fd));
 	std::cout << "message [" << lastWord << "] shared to channel [" << chan << "]\n";
