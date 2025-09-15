@@ -58,6 +58,7 @@ std::map<std::string, std::string> fillPermanentVars( void ) {
 	tab[ "command" ]	= "";
 	tab[ "channel" ]	= "";
 	tab[ "topic" ]		= "";
+	tab[ "target" ]		= "";
 	tab[ "modes" ]		= "";
 	tab[ "params" ]		= "";
 	tab[ "motd" ]		= 	"attention les yeux !\n\n" \

@@ -160,6 +160,12 @@ bool	Channel::isPasswordCorrect( const std::string &password ) const {
 	return ( false );
 }
 
+void	Channel::shareMessage( const Client &executor, const Client &target, const std::string &rawMsg, const std::string &cmd ) {
+	std::string	msg = ":" + executor.getMask() + " " + cmd + " " + this->_name + " :" + rawMsg + "\r\n";
+	send( target.getFD(), msg.c_str(), msg.size(), 0 );
+	LOGC( SERVER ) << msg;
+}
+
 void	Channel::shareMessage( const Client &executor, const std::string &rawMsg, const std::string &cmd ) {
 	for ( size_t i = 0; i < this->_users.size(); i++ ) {
 		if ( cmd == "PRIVMSG" && executor.getFD() == this->_users[ i ].getFD() )
