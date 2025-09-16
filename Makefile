@@ -14,6 +14,7 @@ SRCS =	main.cpp \
 		Command/commands/pass.cpp \
 		Command/commands/part.cpp \
 		Command/commands/privmsg.cpp \
+		Command/commands/quit.cpp \
 		Command/commands/topic.cpp \
 		Command/commands/user.cpp \
 		Command/Command.cpp \

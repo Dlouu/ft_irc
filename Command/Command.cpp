@@ -27,6 +27,7 @@ void	Command::init( void ) {
 	_command[ "PART " ]		=	&Command::partCommand;
 	_command[ "JOIN " ]		= 	&Command::joinCommand;
 	_command[ "PRIVMSG " ]	=	&Command::privmsgCommand;
+	_command[ "QUIT " ]		=	&Command::quitCommand;
 }
 
 void	Command::notaCommand( void ) const {

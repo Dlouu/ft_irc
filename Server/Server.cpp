@@ -240,3 +240,8 @@ bool	Server::isChannelExist( const std::string& name ) {
 		return ( true );
 	return ( false );
 }
+
+void	Server::delClient(int fd) {
+	getInstance()->_users.erase(fd);
+	close(fd);
+}

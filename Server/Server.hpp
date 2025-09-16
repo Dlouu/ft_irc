@@ -71,4 +71,6 @@ class Server
 		static void						setWelcomeStatusByFD( const int fd, bool status );
 		static bool						isClientRegistered( const int fd );
 		static bool						isClientWelcomed( const int fd );
+
+		static void						delClient(int fd);
 };
