@@ -17,21 +17,22 @@ Command *Command::getInstance( void ) {
 }
 
 void	Command::init( void ) {
-	_command[ "KICK " ]		=	&Command::kickCommand;
 	_command[ "INVITE " ]	=	&Command::inviteCommand;
-	_command[ "TOPIC " ]	=	&Command::topicCommand;
+	_command[ "JOIN " ]		= 	&Command::joinCommand;
+	_command[ "KICK " ]		=	&Command::kickCommand;
 	_command[ "MODE " ]		=	&Command::modeCommand;
 	_command[ "NICK " ]		=	&Command::nickCommand;
-	_command[ "USER " ]		=	&Command::userCommand;
-	_command[ "PING " ]		=	&Command::pingCommand;
 	_command[ "PART " ]		=	&Command::partCommand;
-	_command[ "JOIN " ]		= 	&Command::joinCommand;
+	_command[ "PASS " ]		=	&Command::passCommand;
+	_command[ "PING " ]		=	&Command::pingCommand;
 	_command[ "PRIVMSG " ]	=	&Command::privmsgCommand;
+	_command[ "TOPIC " ]	=	&Command::topicCommand;
+	_command[ "USER " ]		=	&Command::userCommand;
 	_command[ "QUIT " ]		=	&Command::quitCommand;
 }
 
 void	Command::notaCommand( void ) const {
-	// std::cout << RED "Not a command" END << std::endl;
+	return ;
 }
 
 void	Command::handleCommand( const CommandData_t& data ) {
@@ -47,13 +48,11 @@ void	Command::handleCommand( const CommandData_t& data ) {
 
 void Command::processIRCMessage( int fd, const std::string& message ) {
 
-	std::cout << YEL ">>> " PUR << message << END;
-
 	std::string cleanMessage = message;
 	if ( cleanMessage.size() >= 2 && cleanMessage.substr( cleanMessage.size() - 2 ) == "\r\n" ) {
 		cleanMessage = cleanMessage.substr( 0, cleanMessage.size() - 2 );
 	}
-	// LOGC( INFO ) << message;
+	LOGC( CLIENT ) << message;
 	getInstance()->handleCommand( ( CommandData_t ){ cleanMessage, fd } );
 }
 

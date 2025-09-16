@@ -3,6 +3,7 @@
 Client::Client() :	_nickSet( false ),
 					_userSet( false ),
 					_welcomed( false ),
+					_isPassOk( false ),
 					_nickname( "" ),
 					_username( "" ),
 					_hostname( "" ),
@@ -82,6 +83,10 @@ const std::string	Client::getMask( void ) const {
 	return ( mask );
 }
 
+void	Client::setPass( bool status ) {
+	this->_isPassOk = status;
+}
+
 // Nick and User Set Status
 void	Client::setNickSet( bool status ) {
 	this->_nickSet = status;
@@ -93,6 +98,10 @@ void	Client::setUserSet( bool status ) {
 
 void	Client::setWelcomeStatus( bool status ) {
 	this->_welcomed = status;
+}
+
+bool	Client::isPassOk( void ) {
+	return ( this->_isPassOk );
 }
 
 bool	Client::isNickSet( void ) {

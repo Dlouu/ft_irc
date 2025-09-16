@@ -42,6 +42,8 @@ void	Command::nickCommand( const CommandData_t& data ) const {
 	std::string nickname = data.message.substr( 5, data.message.length() );
 	std::string	oldnick = (*Server::getClientByFD(data.fd)).getNickname();
 
+	if (!Server::isClientPass(data.fd))
+		return;
 	if (nickname.empty()) {
 		return sendReply( data.fd, ERR_NONICKNAMEGIVEN );
 	} else if (invalidNickname( nickname )) {
@@ -50,7 +52,6 @@ void	Command::nickCommand( const CommandData_t& data ) const {
 		while (alreadyRegistered( nickname )) {
 			Server::setNicknameByFD( data.fd, "* " + nickname );
 			return (sendReply( data.fd, ERR_NICKNAMEINUSE ));
-			//ou le remettre que dans already registred
 		}
 		Server::setNicknameByFD( data.fd, nickname );
 		Server::getClientByFD( data.fd )->setFD( data.fd );
@@ -74,7 +75,7 @@ void	Command::nickCommand( const CommandData_t& data ) const {
 				+ "@" + (*Server::getClientByFD( data.fd )).getHostname()
 				+ " NICK " + (*Server::getClientByFD( data.fd )).getNickname() + "\r\n";
 			send( data.fd, reply.c_str(), reply.size(), 0 );
-			std::cout << GRE "<<< " END << reply;
+			LOGC( SERVER ) << reply;
 		}
 	}
 }

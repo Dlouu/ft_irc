@@ -8,16 +8,17 @@
 class Client
 {
 	private:
-		bool						_nickSet;
-		bool						_userSet;
-		bool						_welcomed;
-		std::string					_nickname;
-		std::string					_username;
-		std::string					_hostname;
-		std::string					_servername;
-		std::string					_realname;
-		int							_fd;
-		std::vector<std::string>	_channels;
+		bool								_nickSet;
+		bool								_userSet;
+		bool								_welcomed;
+		bool								_isPassOk;
+		std::string							_nickname;
+		std::string							_username;
+		std::string							_hostname;
+		std::string							_servername;
+		std::string							_realname;
+		int									_fd;
+		std::vector<std::string>			_channels;
 
 	public:
 		Client();
@@ -29,7 +30,8 @@ class Client
 		void							setHostname( const std::string& str );
 		void							setRealname( const std::string& str );
 		void							setFD( const int &fd );
-		void							setChannels( const std::string& chan);
+		void							setPass(bool status);
+		void							setChannels( const std::string& chan);		
 		void							delChannel(const std::string& chan);
 
 		void							setNickSet( bool status );
@@ -45,9 +47,10 @@ class Client
 		const int&						getFD( void ) const;
 		const std::vector<std::string>&	getChannels( void ) const;
 
-		bool							isNickSet( void );
-		bool							isUserSet( void );
-		bool							isWelcomed( void );
+		bool				isPassOk( void );
+		bool				isNickSet( void );
+		bool				isUserSet( void );
+		bool				isWelcomed( void );
 
 		bool							operator==( const Client &other ) const;
 };

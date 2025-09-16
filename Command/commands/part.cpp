@@ -1,11 +1,37 @@
 #include "Command.hpp"
 
+static void	isItGood(std::string chan, std::string lastWord, int fd) {
+	if (!Server::getInstance()->getChannel(chan)->isClientUser(*Server::getInstance()->getClientByFD(fd))) {
+		sendReply(fd, ERR_NOTONCHANNEL);
+		return;
+	}
+	std::string msg = ":" + Server::getInstance()->getClientByFD(fd)->getMask() + " PART " + chan + " " + lastWord + "\r\n";
+	Server::getInstance()->getChannel(chan)->shareMessage(msg);	//shareMessage(user PART #*it lasword);
+	Server::getInstance()->getChannel(chan)->delUser(*Server::getInstance()->getClientByFD(fd));
+}
+
 void	Command::partCommand(const CommandData_t& data) const {
-	(void)data;
+	std::string lastWord;
+	std::string raw = data.message.substr(5, data.message.length());
+
+	std::vector< std::string > chansData = this->split( raw, ' ' );
+	std::vector< std::string > chans = this->split( chansData[ 0 ], ',' );
+	
+	if (chansData.size() > 1) {
+		for (size_t i = 1; i < chansData.size(); ++i) {
+			lastWord += chansData[i];
+		}
+	}
+	for (std::vector<std::string>::iterator it = chans.begin(); it != chans.end(); ++it) {
+		if (Server::getInstance()->isChannelExist(*it)) {
+			isItGood(*it, lastWord, data.fd);
+		} else if (!Server::getInstance()->isChannelExist(*it)) {
+			sendReply(data.fd, ERR_NOSUCHCHANNEL);
+		}
+	}
 }
 
 /* Numeric Replies:
 
-           ERR_NEEDMOREPARAMS
-		   ERR_NOSUCHCHANNEL
-           ERR_NOTONCHANNEL */
+           ERR_NEEDMOREPARAMS (irssi check en amont)
+		    */

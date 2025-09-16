@@ -6,7 +6,7 @@
 /*   By: icewell <icewell@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/18 12:31:21 by tclaereb          #+#    #+#             */
-/*   Updated: 2025/09/16 09:56:46 by icewell          ###   ########.fr       */
+/*   Updated: 2025/09/16 10:05:20 by icewell          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,15 +14,60 @@
 
 Channel::Channel( void ) : _name( "" ), _password( "" ), _userLimit( 0 ), _inviteOnly( false ), _topicOperatorOnly( true ) {}
 
-Channel::Channel( const std::string &name, const std::string &pass ) :
-		_name( name ), _topic( "" ), _password( pass ), _userLimit( 0 ), _inviteOnly( false ), _topicOperatorOnly( true ) {}
+Channel::Channel( const std::string &name ) :
+		_name( name ), _topic( "" ), _password( "" ), _userLimit( 0 ), _inviteOnly( false ), _topicOperatorOnly( true ) {}
 
 const std::string	&Channel::getName( void ) const {
 	return ( this->_name );
 }
 
-const bool	&Channel::getInviteOnly( void ) const {
+const std::string	&Channel::getTopic( void ) const {
+	return ( this->_topic );
+}
+
+const std::string	&Channel::getPassword( void ) const {
+	return ( this->_password );
+}
+
+const bool	&Channel::isInviteOnly( void ) const {
 	return ( this->_inviteOnly );
+}
+
+const bool	&Channel::isTopicRestricted( void ) const {
+	return ( this->_topicOperatorOnly );
+}
+
+bool	Channel::isPasswordSet( void ) const {
+	if (this->_password == "")
+		return ( false );
+	return ( true );
+}
+
+std::string	Channel::getChannelModes( void ) const {
+	std::string	modes = "";
+	if (this->isInviteOnly())
+		modes.append("i");
+	if (this->isTopicRestricted())
+		modes.append("t");
+	if (this->getUserLimit() > 0)
+		modes.append("l");
+	if (this->isPasswordSet())
+		modes.append("k");
+	return ( modes );
+}
+
+std::string	Channel::getChannelParams( void ) const {
+	std::stringstream	params;
+	if (this->getUserLimit() > 0) {
+		params << _userLimit;
+		if (this->isPasswordSet()) {
+			params << " " << _password;
+		}
+	}
+	else if (this->isPasswordSet()) {
+		params << _password;
+	}
+	return ( params.str() );
 }
 
 const unsigned long	&Channel::getUserLimit( void ) const {
@@ -35,6 +80,10 @@ const std::vector< Client >	&Channel::getOperators( void ) const {
 
 void	Channel::setInviteOnly( const bool state ) {
 	this->_inviteOnly = state;
+}
+
+void	Channel::setTopicRestricted( const bool state ) {
+	this->_topicOperatorOnly = state;
 }
 
 void	Channel::setUserLimit( const unsigned long n ) {
@@ -51,7 +100,7 @@ void	Channel::setPassword( const std::string password ) {
 
 void	Channel::setTopic( const Client &executor, const std::string topic ) {
 	if ( !this->isClientOperator( executor ) && this->_topicOperatorOnly )
-		return ;
+		return sendReply( executor.getFD(), ERR_CHANOPRIVSNEEDED );
 
 	this->_topic = topic;
 }
@@ -77,13 +126,6 @@ void	Channel::delUser( const Client &executor, Client &target ) {
 
 	std::vector< Client >::iterator it = std::find(this->_users.begin(), this->_users.end(), target );
 	this->_users.erase( it );
-	target.delChannel(this->_name);
-}
-
-void	Channel::delUser(Client& target) {
-	std::vector< Client >::iterator it = std::find(this->_users.begin(), this->_users.end(), target );
-	this->_users.erase( it );
-	target.delChannel(this->_name);
 }
 
 void	Channel::addOperator( const Client &executor, const Client &target ) {
@@ -123,20 +165,25 @@ bool	Channel::isClientOperator( const Client &target ) {
 }
 
 bool	Channel::isPasswordCorrect( const std::string &password ) const {
-	if ( password == this->_password and this->_password != "x" )
+	if ( password == this->_password )
 		return ( true );
 	return ( false );
 }
 
-void	Channel::shareMessage( const Client &executor, const std::string &rawMsg ) {
+void	Channel::shareMessage( const Client &executor, const std::string &rawMsg, const std::string &cmd ) {
 	for ( size_t i = 0; i < this->_users.size(); i++ ) {
-		LOGC( INFO ) << "Hello";
-		// if ( executor.getFD() == this->_users[ i ].getFD() )
-		// 	continue ;
-		( void )executor;
-		std::string	msg = ":" + this->_users[ i ].getMask() + " PRIVMSG " + this->_name + " :" + rawMsg;
+		if ( cmd == "PRIVMSG" && executor.getFD() == this->_users[ i ].getFD() )
+			continue ;
+		std::string	msg = ":" + executor.getMask() + " " + cmd + " " + this->_name + " :" + rawMsg + "\r\n";
 		send( this->_users[ i ].getFD(), msg.c_str(), msg.size(), 0 );
-		LOGC( INFO ) << msg;
+		LOGC( SERVER ) << msg;
+	}
+}
+
+void	Channel::shareMessage( const std::string &msg ) {
+	for ( size_t i = 0; i < this->_users.size(); i++ ) {
+		send( this->_users[ i ].getFD(), msg.c_str(), msg.size(), 0 );
+		LOGC( SERVER ) << msg;
 	}
 }
 

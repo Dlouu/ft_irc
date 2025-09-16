@@ -1,7 +1,13 @@
 #include "Server.hpp"
 
+/*
+Faut qu'on test le try and catch s'il fonctionne
+GetClientByFD
+*/
+
 Server			*Server::_instance;
 std::string		Server::_name;
+std::string		Server::_password;
 
 std::vector<std::string> extractMessages(std::string& buffer) {
 	std::vector<std::string> messages;
@@ -30,11 +36,12 @@ void	Server::destroyInstance( void ) {
 
 Server::Server( void ) {}
 
-void	Server::init(int port) {
+void	Server::init(int port, std::string password) {
 
+	_password = password;
 	_socket = -1;
 	_epoll = -1;
-	_name = "server.irc.uwu";
+	_name = SERVER_NAME;
 	g_replies = createReplies();
 
 	time_t now;
@@ -120,6 +127,13 @@ void	Server::loop() {
 					std::vector<std::string> messages = extractMessages(clientBuffers[clientFd]);
 					for (std::vector<std::string>::iterator it = messages.begin(); it != messages.end(); ++it) {
 						Command::processIRCMessage(clientFd, *it);
+						if (*it == "CAP LS\r\n")
+							continue;
+						else if (!getInstance()->_users[clientFd].isPassOk()) {
+							std::cout << "* Client fd closed: bad password *\n";
+							close(clientFd);
+							break;
+						}
 					}
 				} else if (bytes == 0) {
 					std::cout << "* Client disconnected *\n";
@@ -152,6 +166,16 @@ Client	*Server::getClientByFD( const int fd ) {
 	}
 }
 
+Client	*Server::getClientByNick( std::string nick ) {
+	std::map<int, Client> clients = Server::getClients();
+	for (std::map<int, Client>::iterator it = clients.begin(); it != clients.end(); it++) {
+		if (it->second.getNickname() == nick) {
+			return ( &it->second );
+		}
+	}
+	return ( NULL );
+}
+
 void	Server::setNicknameByFD( const int fd, const std::string& nickname ) {
 	getInstance()->_users[ fd ].setNickname( nickname );
 }
@@ -180,6 +204,11 @@ void	Server::setUserSetByFD( const int fd, bool status ) {
 	getInstance()->_users[ fd ].setUserSet( status );
 }
 
+void	Server::setPassByFD( const int fd, bool status ) {
+	getInstance()->_users[ fd ].setPass( status );
+}
+
+
 void	Server::setWelcomeStatusByFD( const int fd, bool status ) {
 	getInstance()->_users[ fd ].setWelcomeStatus( status );
 }
@@ -191,6 +220,10 @@ bool	Server::isClientRegistered( const int fd ) {
 	return (false);
 }
 
+bool	Server::isClientPass( const int fd ) {
+	return (getInstance()->_users[ fd ].isPassOk());
+}
+
 bool	Server::isClientWelcomed( const int fd ) {
 	if (getInstance()->_users[ fd ].isWelcomed())
 		return (true);
@@ -199,6 +232,10 @@ bool	Server::isClientWelcomed( const int fd ) {
 
 const std::string&	Server::getServername( void ) {
 	return ( _name );
+}
+
+const std::string&	Server::getServPass( void ) {
+	return (_password);
 }
 
 Channel	*Server::getChannel( const std::string &name ) {

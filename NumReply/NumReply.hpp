@@ -14,7 +14,10 @@ typedef enum e_NumReply {
 	RPL_YOURHOST			= 2,
 	RPL_CREATED				= 3,
 	RPL_MYINFO				= 4,
+
+	RPL_UMODEIS				= 221,
 	RPL_AWAY				= 301,
+	RPL_CHANNELMODEIS		= 324,
 	RPL_NOTOPIC				= 331,
 	RPL_TOPIC				= 332,
 	RPL_INVITING			= 341,
@@ -33,6 +36,7 @@ typedef enum e_NumReply {
 	ERR_NOTEXTTOSEND		= 412,
 	ERR_NOTOPLEVEL			= 413,
 	ERR_WILDTOPLEVEL		= 414,
+
 	ERR_NONICKNAMEGIVEN		= 431,
 	ERR_ERRONEUSNICKNAME	= 432,
 	ERR_NICKNAMEINUSE		= 433,
@@ -40,16 +44,18 @@ typedef enum e_NumReply {
 	ERR_USERONCHANNEL		= 443,
 	ERR_NEEDMOREPARAMS		= 461,
 	ERR_ALREADYREGISTRED	= 462,
+	ERR_KEYSET				= 467,
 	ERR_CHANNELISFULL		= 471,
 	ERR_INVITEONLYCHAN		= 473,
 	ERR_BANNEDFROMCHAN		= 474,
 	ERR_BADCHANNELKEY		= 475,
 	ERR_BADCHANMASK			= 476,
-	ERR_CHANOPRIVSNEEDED	= 482
+	ERR_CHANOPRIVSNEEDED	= 482,
+	ERR_UMODEUNKNOWNFLAG	= 501
 } t_NumReply;
 
 std::map<int, std::string>			createReplies( void );
-std::map<std::string, std::string>	fillVars( int clientFD, std::map<std::string, std::string> tab, std::string nick );
+std::map<std::string, std::string>	fillVars( int clientFD, std::map<std::string, std::string> tab );
 std::map<std::string, std::string>	fillPermanentVars( void );
 
 extern std::map<int, std::string>			g_replies;
@@ -57,3 +63,5 @@ extern std::map<std::string, std::string>	g_vars;
 
 void		sendReply( const int fd, int code );
 std::string formatReply(int code, const std::map<std::string, std::string> &vars);
+void		sendMessage( const int fd, std::string str );
+std::string	formatMessage( std::string message, const std::map<std::string, std::string> &vars );

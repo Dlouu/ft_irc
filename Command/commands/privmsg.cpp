@@ -36,5 +36,5 @@ void	Command::privmsgCommand( const CommandData_t& data ) const {
 	Channel	*channel = Server::getChannel( channelName );
 	if ( !channel )
 		return ;
-	channel->shareMessage( *executor, message );
+	channel->shareMessage( *executor, message, "PRIVMSG");
 }
