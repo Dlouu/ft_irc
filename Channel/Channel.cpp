@@ -6,7 +6,7 @@
 /*   By: icewell <icewell@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/18 12:31:21 by tclaereb          #+#    #+#             */
-/*   Updated: 2025/09/16 10:05:20 by icewell          ###   ########.fr       */
+/*   Updated: 2025/09/16 10:19:57 by icewell          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,6 +124,11 @@ void	Channel::delUser( const Client &executor, Client &target ) {
 	if ( !this->isClientOperator( executor ) || this->isClientUser( target ) )
 		return;
 
+	std::vector< Client >::iterator it = std::find(this->_users.begin(), this->_users.end(), target );
+	this->_users.erase( it );
+}
+
+void	Channel::delUser(Client &target) {
 	std::vector< Client >::iterator it = std::find(this->_users.begin(), this->_users.end(), target );
 	this->_users.erase( it );
 }
