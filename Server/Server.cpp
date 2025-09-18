@@ -170,7 +170,7 @@ Client	*Server::getClientByNick( std::string nick ) {
 	std::map<int, Client> clients = Server::getClients();
 	for (std::map<int, Client>::iterator it = clients.begin(); it != clients.end(); it++) {
 		if (it->second.getNickname() == nick) {
-			return ( &it->second );
+			return ( &(getInstance()->_users[ it->first ]) );
 		}
 	}
 	return ( NULL );
