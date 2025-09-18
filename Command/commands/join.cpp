@@ -5,7 +5,7 @@ void	Command::joinCommand( const CommandData_t& data ) const {
 	Server	*server = Server::getInstance();
 	Client	*executor = server->getClientByFD( data.fd );
 	if ( !executor )
-		return ;
+		return ( sendReply( data.fd, ERR_NEEDMOREPARAMS ) );
 
 	std::string cleanMsg = data.message.substr( 5, data.message.size() - 5 );
 	LOGC( INFO ) << data.message;
@@ -23,18 +23,24 @@ void	Command::joinCommand( const CommandData_t& data ) const {
 		if ( server->isChannelExist( channels[ i ] ) ) {
 			Channel	*channelObj = NULL;
 			LOGC( INFO ) << "Channel exist";
+			g_vars[ "channel" ] = channels[ i ];
 			channelObj = server->getChannel( channels[ i ] );
-			g_vars[ "channel" ] = channelObj->getName();
+			if ( !channelObj ) {
+				sendReply( executor->getFD(), ERR_NOSUCHCHANNEL );
+				continue ;
+			} else if ( channelObj->getInviteOnly() ) {
+				sendReply( executor->getFD(), ERR_INVITEONLYCHAN );
+			}
 			if ( passwords.size() > 0 && ( i >= passwords.size() || !channelObj->isPasswordCorrect( passwords[ i ] ) ) ) {
 				sendReply( executor->getFD(), ERR_BADCHANNELKEY );
 				continue;
 			}
-			channelObj->addUser( *server, *executor );
+			channelObj->addUser( *executor );
 		} else {
 			LOGC( INFO ) << "Channel doesn't exist";
 			Channel	channelObj = Channel( channels[ i ] );
-			channelObj.addUser( *server, *executor );
-			channelObj.addOperator( *server, *executor );
+			channelObj.addUser( *executor );
+			channelObj.addOperator( *executor );
 			server->addChannel( channelObj );
 		}
 	}

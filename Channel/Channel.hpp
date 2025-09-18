@@ -18,6 +18,7 @@ class Channel {
 
 		std::vector< Client >	_users;
 		std::vector< Client >	_operators;
+		std::vector< Client >	_bans;
 
 		bool					_inviteOnly;
 		bool					_topicOperatorOnly;
@@ -31,6 +32,7 @@ class Channel {
 		const std::string			&getPassword( void ) const;
 		const bool					&getInviteOnly( void ) const;
 		const unsigned long			&getUserLimit( void ) const;
+		unsigned long				getUserCount( void ) const;
 		const std::vector< Client >	&getOperators( void ) const;
 		const bool					&getTopicRestricted( void ) const;
 		bool						getPasswordStatus( void ) const;
@@ -44,16 +46,22 @@ class Channel {
 		void						setTopic( const Client &executor, const std::string topic );
 
 		void						addUser( const Client &executor, const Client &target );
-		void						addUser( const Server &server, const Client &target );
+		void						addUser( const Client &target );
 		void						delUser( const Client &executor, const Client &target );
 		void						delUser(const Client &target );
 
 		void						addOperator( const Client &executor, const Client &target );
-		void						addOperator( const Server &server, const Client &target );
+		void						addOperator( const Client &target );
 		void						delOperator( const Client &executor, const Client &target );
+
+		void						addBan( const Client &executor, const Client &target );
+		void						addBan( const Client &target );
+		void						delBan( const Client &executor, const Client &target );
+		void						delBan(const Client &target );
 
 		bool						isClientUser( const Client &target );
 		bool						isClientOperator( const Client &target );
+		bool						isClientBan( const Client &target );
 		bool						isPasswordCorrect( const std::string &password ) const;
 
 		void						shareMessage( const std::string &msg );
