@@ -7,6 +7,8 @@ static void	isItGood(std::string chan, std::string lastWord, int fd) {
 	}
 	std::string msg = ":" + Server::getInstance()->getClientByFD(fd)->getMask() + " PART " + chan + " " + lastWord + "\r\n";
 	Server::getInstance()->getChannel(chan)->shareMessage(msg);	//shareMessage(user PART #*it lasword);
+	g_vars[ "channel" ] = Server::getInstance()->getChannel(chan)->getName();
+	sendMessage( fd, ":" + Server::getInstance()->getClientByFD(fd)->getMask() + " KICK {channel} {nick} :{reason}" );
 	Server::getInstance()->getChannel(chan)->delUser(*Server::getInstance()->getClientByFD(fd));
 }
 

@@ -32,7 +32,8 @@ std::map<int, std::string> createReplies() {
 
 	num[ERR_NONICKNAMEGIVEN]	= ":{server} 431 {nick} :No nickname given\r\n";
 	num[ERR_ERRONEUSNICKNAME]	= ":{server} 432 {nick} :Erroneous nickname\r\n";
-	num[ERR_NICKNAMEINUSE]		= ":{server} 433 {nick} :Nickname is already in use\r\n"; //irssi already write  "{nick} is already in use"
+	num[ERR_NICKNAMEINUSE]		= ":{server} 433 {nick} :Nickname is already in use\r\n";
+	num[ERR_USERNOTINCHANNEL]	= ":{server} 441 {nick} {target} {channel}: They aren't on that channel\r\n";
 	num[ERR_NOTONCHANNEL]		= ":{server} 442 {nick} {channel} :You're not on that channel\r\n";
 	num[ERR_USERONCHANNEL]		= ":{server} 443 {nick} {target} {channel} :is already on channel\r\n";
 	num[ERR_NEEDMOREPARAMS]		= ":{server} 461 {nick} {command} :Not enough parameters\r\n";
