@@ -1,5 +1,7 @@
 #include "Client.hpp"
 
+unsigned int	Client::maxChannel = 5;
+
 Client::Client() :	_nickSet( false ),
 					_userSet( false ),
 					_welcomed( false ),

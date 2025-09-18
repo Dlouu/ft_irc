@@ -21,6 +21,8 @@ class Client
 		std::vector<std::string>			_channels;
 
 	public:
+		static unsigned int maxChannel;
+
 		Client();
 		~Client();
 
@@ -31,7 +33,7 @@ class Client
 		void							setRealname( const std::string& str );
 		void							setFD( const int &fd );
 		void							setPass(bool status);
-		void							setChannels( const std::string& chan);		
+		void							setChannels( const std::string& chan);
 		void							delChannel(const std::string& chan);
 
 		void							setNickSet( bool status );

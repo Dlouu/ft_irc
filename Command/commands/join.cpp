@@ -1,11 +1,27 @@
 #include "Command.hpp"
 
+bool	isChannelMaskValid( std::string name ) {
+	if ( name.length() <= 1 || name.length() > 200 )
+		return ( false );
+	else if ( name[ 0 ] != '#' && name[ 0 ] != '&' )
+		return ( false );
+
+	char	tmp[] = { ',', '?', '*', '\a' };
+	std::vector< char >	unallowedChar( tmp, tmp + sizeof( tmp ) / sizeof( tmp[ 0 ] ) );
+	for ( unsigned int i = 0; i < unallowedChar.size(); i++ ) {
+		size_t pos = name.find( unallowedChar[ i ] );
+		if ( pos != name.npos )
+			return ( false );
+	}
+	return ( true );
+}
+
 void	Command::joinCommand( const CommandData_t& data ) const {
 
 	Server	*server = Server::getInstance();
 	Client	*executor = server->getClientByFD( data.fd );
 	if ( !executor )
-		return ;
+		return ( sendReply( data.fd, ERR_NEEDMOREPARAMS ) );
 
 	std::string cleanMsg = data.message.substr( 5, data.message.size() - 5 );
 	LOGC( INFO ) << data.message;
@@ -20,20 +36,30 @@ void	Command::joinCommand( const CommandData_t& data ) const {
 	}
 
 	for ( size_t i = 0; i < channels.size(); i++ ) {
+		g_vars[ "channel" ] = channels[ i ];
+		if ( !isChannelMaskValid( channels[ i ] ) ) {
+			sendReply( executor->getFD(), ERR_BADCHANMASK );
+			continue ;
+		} else if ( executor->getChannels().size() == Client::maxChannel )
+			return ( sendReply( executor->getFD(), ERR_TOOMANYCHANNELS ) );
+
 		if ( server->isChannelExist( channels[ i ] ) ) {
 			Channel	*channelObj = NULL;
 			LOGC( INFO ) << "Channel exist";
 			channelObj = server->getChannel( channels[ i ] );
-			if ( i >= passwords.size() || !channelObj->isPasswordCorrect( passwords[ i ] ) ) {
+			if ( channelObj->isInviteOnly() ) {
+				sendReply( executor->getFD(), ERR_INVITEONLYCHAN );
+				continue  ;
+			} else if ( channelObj->isPasswordSet() && ( i >= passwords.size() || !channelObj->isPasswordCorrect( passwords[ i ] ) ) ) {
 				sendReply( executor->getFD(), ERR_BADCHANNELKEY );
 				continue;
 			}
-			channelObj->addUser( *server, *executor );
+			channelObj->addUser( *executor );
 		} else {
 			LOGC( INFO ) << "Channel doesn't exist";
 			Channel	channelObj = Channel( channels[ i ] );
-			channelObj.addUser( *server, *executor );
-			channelObj.addOperator( *server, *executor );
+			channelObj.addUser( *executor );
+			channelObj.addOperator( *executor );
 			server->addChannel( channelObj );
 		}
 	}
