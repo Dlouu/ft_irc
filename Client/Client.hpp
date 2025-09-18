@@ -47,10 +47,10 @@ class Client
 		const int&						getFD( void ) const;
 		const std::vector<std::string>&	getChannels( void ) const;
 
-		bool				isPassOk( void );
-		bool				isNickSet( void );
-		bool				isUserSet( void );
-		bool				isWelcomed( void );
+		bool							isPassOk( void );
+		bool							isNickSet( void );
+		bool							isUserSet( void );
+		bool							isWelcomed( void );
 
 		bool							operator==( const Client &other ) const;
 };

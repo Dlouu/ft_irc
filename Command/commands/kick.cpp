@@ -15,7 +15,7 @@ void	Command::kickCommand( const CommandData_t& data ) const {
 	}
 	else if (params.size() >= 3) {
 		g_vars[ "channel" ] = params[1];
-		if (params[1][0] != '#' || params[1][0] != '&') {
+		if (params[1][0] != '#' && params[1][0] != '&') {
 			return sendReply( data.fd, ERR_BADCHANMASK );
 		}
 		g_vars[ "target" ] = params[2];
@@ -39,9 +39,10 @@ void	Command::kickCommand( const CommandData_t& data ) const {
 		return sendReply( data.fd, ERR_CHANOPRIVSNEEDED );
 	} else if (!channel->isClientUser( client )) {
 		return sendReply( data.fd, ERR_NOTONCHANNEL );
+		// AJOUTER UN CHECK TARGET ON CHAN
 	} else {
 		//kick from server
-		LOGC( INFO ) << "delete le user de la db du chan";
+		LOGC( INFO ) << "SUPPRIMER L'UTILISATEUR DE LA LISTE DES FD DU CHANNEL";
 		sendMessage( target->getFD(), ":" + client.getMask() + " KICK {channel} {target} :{reason}" );
 		channel->shareMessage( client, target->getNickname(), "KICK", g_vars["reason"]);
 	}
