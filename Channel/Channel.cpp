@@ -126,11 +126,13 @@ void	Channel::delUser( const Client &executor, Client &target ) {
 
 	std::vector< Client >::iterator it = std::find(this->_users.begin(), this->_users.end(), target );
 	this->_users.erase( it );
+	this->delOperator( executor, target );
 }
 
 void	Channel::delUser(Client &target) {
 	std::vector< Client >::iterator it = std::find(this->_users.begin(), this->_users.end(), target );
 	this->_users.erase( it );
+	this->delOperator( target, target );
 }
 
 void	Channel::addOperator( const Client &executor, const Client &target ) {
@@ -186,6 +188,14 @@ void	Channel::shareMessage( const Client &executor, const std::string &rawMsg, c
 		if ( cmd == "PRIVMSG" && executor.getFD() == this->_users[ i ].getFD() )
 			continue ;
 		std::string	msg = ":" + executor.getMask() + " " + cmd + " " + this->_name + " :" + rawMsg + "\r\n";
+		send( this->_users[ i ].getFD(), msg.c_str(), msg.size(), 0 );
+		LOGC( SERVER ) << msg;
+	}
+}
+
+void	Channel::shareMessage( const Client &executor, const std::string &rawMsg, const std::string &cmd, std::string reason ) {
+	for ( size_t i = 0; i < this->_users.size(); i++ ) {
+		std::string	msg = ":" + executor.getMask() + " " + cmd + " " + this->_name + " " + rawMsg + " :" + reason + "\r\n";
 		send( this->_users[ i ].getFD(), msg.c_str(), msg.size(), 0 );
 		LOGC( SERVER ) << msg;
 	}
