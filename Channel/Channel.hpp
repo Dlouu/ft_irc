@@ -46,19 +46,19 @@ class Channel {
 		void						setPassword( const std::string password );
 		void						setTopic( const Client &executor, const std::string topic );
 
-		void						addUser( const Client &executor, const Client &target );
-		void						addUser( const Client &target );
-		void						delUser( const Client &executor, const Client &target );
-		void						delUser(const Client &target );
+		void						addUser( const Client &executor, Client &target );
+		void						addUser( Client &target );
+		void						delUser( const Client &executor, Client &target );
+		void						delUser( Client &target );
 
-		void						addOperator( const Client &executor, const Client &target );
-		void						addOperator( const Client &target );
-		void						delOperator( const Client &executor, const Client &target );
+		void						addOperator( const Client &executor, Client &target );
+		void						addOperator( Client &target );
+		void						delOperator( const Client &executor, Client &target );
 
-		void						addBan( const Client &executor, const Client &target );
-		void						addBan( const Client &target );
-		void						delBan( const Client &executor, const Client &target );
-		void						delBan(const Client &target );
+		void						addBan( const Client &executor, Client &target );
+		void						addBan( Client &target );
+		void						delBan( const Client &executor, Client &target );
+		void						delBan( Client &target );
 
 		bool						isClientUser( const Client &target );
 		bool						isClientOperator( const Client &target );

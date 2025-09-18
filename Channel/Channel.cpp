@@ -6,7 +6,7 @@
 /*   By: tclaereb <tclaereb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/18 12:31:21 by tclaereb          #+#    #+#             */
-/*   Updated: 2025/09/18 12:10:56 by tclaereb         ###   ########.fr       */
+/*   Updated: 2025/09/18 12:17:44 by tclaereb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,7 +109,7 @@ void	Channel::setTopic( const Client &executor, const std::string topic ) {
 	this->_topic = topic;
 }
 
-void	Channel::addUser( const Client &executor, const Client &target ) {
+void	Channel::addUser( const Client &executor, Client &target ) {
 	if ( !this->isClientOperator( executor ) )
 		return ( sendReply( executor.getFD(), ERR_CHANOPRIVSNEEDED ) );
 	else if ( this->isClientUser( target ) )
@@ -123,7 +123,7 @@ void	Channel::addUser( const Client &executor, const Client &target ) {
 	target.setChannels(this->_name);
 }
 
-void	Channel::addUser( const Client &target ) {
+void	Channel::addUser( Client &target ) {
 	if ( this->isClientUser( target ) )
 		return ( sendReply( target.getFD(), ERR_USERONCHANNEL ) );
 	else if ( this->isClientBan( target ) )
@@ -135,7 +135,7 @@ void	Channel::addUser( const Client &target ) {
 	target.setChannels(this->_name);
 }
 
-void	Channel::delUser( const Client &executor, const Client &target ) {
+void	Channel::delUser( const Client &executor, Client &target ) {
 	if ( !this->isClientOperator( executor ) )
 		return ( sendReply( executor.getFD(), ERR_CHANOPRIVSNEEDED ) );
 	else if ( !this->isClientUser( target ) )
@@ -144,18 +144,20 @@ void	Channel::delUser( const Client &executor, const Client &target ) {
 	std::vector< Client >::iterator it = std::find(this->_users.begin(), this->_users.end(), target );
 	this->_users.erase( it );
 	this->delOperator( executor, target );
+	target.delChannel( this->_name );
 }
 
-void	Channel::delUser( const Client &target ) {
+void	Channel::delUser( Client &target ) {
 	if ( !this->isClientUser( target ) )
 		return ( sendReply( target.getFD(), ERR_NOSUCHNICK ) );
 
 	std::vector< Client >::iterator it = std::find(this->_users.begin(), this->_users.end(), target );
 	this->_users.erase( it );
 	this->delOperator( target, target );
+	target.delChannel( this->_name );
 }
 
-void	Channel::addOperator( const Client &executor, const Client &target ) {
+void	Channel::addOperator( const Client &executor, Client &target ) {
 	if ( !this->isClientOperator( executor ) )
 		return ( sendReply( executor.getFD(), ERR_CHANOPRIVSNEEDED ) );
 	else if ( !this->isClientUser( target ) )
@@ -166,7 +168,7 @@ void	Channel::addOperator( const Client &executor, const Client &target ) {
 	this->_operators.push_back( target );
 }
 
-void	Channel::addOperator( const Client &target ) {
+void	Channel::addOperator( Client &target ) {
 	if ( !this->isClientUser( target ) )
 		return ( sendReply( target.getFD(), ERR_NOSUCHNICK ) );
 	else if ( this->isClientOperator( target ) )
@@ -175,7 +177,7 @@ void	Channel::addOperator( const Client &target ) {
 	this->_operators.push_back( target );
 }
 
-void	Channel::delOperator( const Client &executor, const Client &target ) {
+void	Channel::delOperator( const Client &executor, Client &target ) {
 	if ( !this->isClientOperator( executor ) )
 		return ( sendReply( executor.getFD(), ERR_CHANOPRIVSNEEDED ) );
 	else if ( !this->isClientUser( target ) )
@@ -187,7 +189,7 @@ void	Channel::delOperator( const Client &executor, const Client &target ) {
 	this->_operators.erase( it );
 }
 
-void	Channel::addBan( const Client &executor, const Client &target ) {
+void	Channel::addBan( const Client &executor, Client &target ) {
 	if ( !this->isClientOperator( executor ) )
 		return ( sendReply( executor.getFD(), ERR_CHANOPRIVSNEEDED ) );
 	else if ( this->isClientBan( target ) )
@@ -196,14 +198,14 @@ void	Channel::addBan( const Client &executor, const Client &target ) {
 	this->delUser( executor, target );
 }
 
-void	Channel::addBan( const Client &target ) {
+void	Channel::addBan( Client &target ) {
 	if ( this->isClientBan( target ) )
 		return ;
 	this->_bans.push_back( target );
 	this->delUser( target );
 }
 
-void	Channel::delBan( const Client &executor, const Client &target ) {
+void	Channel::delBan( const Client &executor, Client &target ) {
 	if ( !this->isClientOperator( executor ) )
 		return ( sendReply( executor.getFD(), ERR_CHANOPRIVSNEEDED ) );
 	else if ( !this->isClientBan( target ) )
@@ -213,7 +215,7 @@ void	Channel::delBan( const Client &executor, const Client &target ) {
 	this->_bans.erase( it );
 }
 
-void	Channel::delBan(const Client &target ) {
+void	Channel::delBan( Client &target ) {
 	if ( !this->isClientBan( target ) )
 		return ;
 

@@ -28,10 +28,10 @@ void	Command::joinCommand( const CommandData_t& data ) const {
 			if ( !channelObj ) {
 				sendReply( executor->getFD(), ERR_NOSUCHCHANNEL );
 				continue ;
-			} else if ( channelObj->getInviteOnly() ) {
+			} else if ( channelObj->isInviteOnly() ) {
 				sendReply( executor->getFD(), ERR_INVITEONLYCHAN );
 			}
-			if ( passwords.size() > 0 && ( i >= passwords.size() || !channelObj->isPasswordCorrect( passwords[ i ] ) ) ) {
+			if ( channelObj->isPasswordSet() && ( i >= passwords.size() || !channelObj->isPasswordCorrect( passwords[ i ] ) ) ) {
 				sendReply( executor->getFD(), ERR_BADCHANNELKEY );
 				continue;
 			}
