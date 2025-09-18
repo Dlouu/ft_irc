@@ -6,10 +6,10 @@ void	Command::topicCommand( const CommandData_t& data ) const {
 	Channel		*channel	= NULL;
 
 	std::vector<std::string> params = split( data.message, ' ' );
+	g_vars[ "command" ] = params[0];
 
 	//check params and channel
 	if (params.size() < 2) {
-		g_vars[ "command" ] = params[0];
 		return sendReply( data.fd, ERR_NEEDMOREPARAMS );
 	}
 	else if (params.size() >= 2) {

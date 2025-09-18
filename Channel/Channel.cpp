@@ -6,7 +6,7 @@
 /*   By: tclaereb <tclaereb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/18 12:31:21 by tclaereb          #+#    #+#             */
-/*   Updated: 2025/09/18 12:17:44 by tclaereb         ###   ########.fr       */
+/*   Updated: 2025/09/18 12:25:56 by tclaereb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -253,6 +253,12 @@ bool	Channel::isPasswordCorrect( const std::string &password ) const {
 	return ( false );
 }
 
+void	Channel::shareMessage( const Client &executor, const Client &target, const std::string &rawMsg, const std::string &cmd ) {
+	std::string	msg = ":" + executor.getMask() + " " + cmd + " " + this->_name + " :" + rawMsg + "\r\n";
+	send( target.getFD(), msg.c_str(), msg.size(), 0 );
+	LOGC( SERVER ) << msg;
+}
+
 void	Channel::shareMessage( const Client &executor, const std::string &rawMsg, const std::string &cmd ) {
 	if ( !this->isClientUser( executor ) )
 		return ( sendReply( executor.getFD(), ERR_CANNOTSENDTOCHAN ) );
@@ -260,6 +266,14 @@ void	Channel::shareMessage( const Client &executor, const std::string &rawMsg, c
 		if ( cmd == "PRIVMSG" && executor.getFD() == this->_users[ i ].getFD() )
 			continue ;
 		std::string	msg = ":" + executor.getMask() + " " + cmd + " " + this->_name + " :" + rawMsg + "\r\n";
+		send( this->_users[ i ].getFD(), msg.c_str(), msg.size(), 0 );
+		LOGC( SERVER ) << msg;
+	}
+}
+
+void	Channel::shareMessage( const Client &executor, const std::string &rawMsg, const std::string &cmd, std::string reason ) {
+	for ( size_t i = 0; i < this->_users.size(); i++ ) {
+		std::string	msg = ":" + executor.getMask() + " " + cmd + " " + this->_name + " " + rawMsg + " :" + reason + "\r\n";
 		send( this->_users[ i ].getFD(), msg.c_str(), msg.size(), 0 );
 		LOGC( SERVER ) << msg;
 	}
