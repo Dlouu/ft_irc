@@ -1,9 +1,9 @@
 #include "Channel.hpp"
 
-Channel::Channel( void ) : _name( "" ), _password( "" ), _userLimit( 0 ), _inviteOnly( false ), _topicOperatorOnly( true ) {}
+Channel::Channel( void ) : _name( "" ), _password( "" ), _userLimit( 100 ), _inviteOnly( false ), _topicOperatorOnly( true ) {}
 
 Channel::Channel( const std::string &name ) :
-		_name( name ), _topic( "" ), _password( "" ), _userLimit( 0 ), _inviteOnly( false ), _topicOperatorOnly( true ) {}
+		_name( name ), _topic( "" ), _password( "" ), _userLimit( 100 ), _inviteOnly( false ), _topicOperatorOnly( true ) {}
 
 const std::string	&Channel::getName( void ) const {
 	return ( this->_name );
@@ -234,6 +234,8 @@ bool	Channel::isPasswordCorrect( const std::string &password ) const {
 }
 
 void	Channel::shareMessage( const Client &executor, const std::string &rawMsg, const std::string &cmd ) {
+	if ( !this->isClientUser( executor ) )
+		return ( sendReply( executor.getFD(), ERR_CANNOTSENDTOCHAN ) );
 	for ( size_t i = 0; i < this->_users.size(); i++ ) {
 		if ( cmd == "PRIVMSG" && executor.getFD() == this->_users[ i ].getFD() )
 			continue ;
