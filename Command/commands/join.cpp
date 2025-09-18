@@ -24,7 +24,8 @@ void	Command::joinCommand( const CommandData_t& data ) const {
 			Channel	*channelObj = NULL;
 			LOGC( INFO ) << "Channel exist";
 			channelObj = server->getChannel( channels[ i ] );
-			if ( i >= passwords.size() || !channelObj->isPasswordCorrect( passwords[ i ] ) ) {
+			g_vars[ "channel" ] = channelObj->getName();
+			if ( passwords.size() > 0 && ( i >= passwords.size() || !channelObj->isPasswordCorrect( passwords[ i ] ) ) ) {
 				sendReply( executor->getFD(), ERR_BADCHANNELKEY );
 				continue;
 			}
