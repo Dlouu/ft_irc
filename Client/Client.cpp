@@ -9,7 +9,8 @@ Client::Client() :	_nickSet( false ),
 					_hostname( "" ),
 					_servername( "" ),
 					_realname( "" ),
-					_fd (-1) {}
+					_fd (-1),
+					_channels() {}
 
 Client::~Client() {}
 
@@ -37,6 +38,19 @@ void	Client::setFD( const int &fd ) {
 	this->_fd = fd;
 }
 
+void	Client::setChannels( const std::string& chan) {
+	this->_channels.push_back(chan);
+}
+
+void	Client::delChannel(const std::string& chan) {
+	for (std::vector<std::string>::iterator it = this->_channels.begin(); it != this->_channels.end(); ++it) {
+		if (*it == chan) {
+			this->_channels.erase(it);
+			return;
+		}
+	}
+}
+
 const std::string&	Client::getNickname( void ) const {
 	return ( this->_nickname );
 }
@@ -58,6 +72,10 @@ const std::string&	Client::getRealname( void ) const {
 
 const int&	Client::getFD( void ) const {
 	return ( this->_fd );
+}
+
+const std::vector<std::string>&	Client::getChannels( void ) const {
+	return (this->_channels);
 }
 
 const std::string	Client::getMask( void ) const {

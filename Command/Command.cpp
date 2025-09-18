@@ -28,6 +28,7 @@ void	Command::init( void ) {
 	_command[ "PRIVMSG " ]	=	&Command::privmsgCommand;
 	_command[ "TOPIC " ]	=	&Command::topicCommand;
 	_command[ "USER " ]		=	&Command::userCommand;
+	_command[ "QUIT " ]		=	&Command::quitCommand;
 }
 
 void	Command::notaCommand( void ) const {

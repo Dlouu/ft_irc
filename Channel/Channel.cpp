@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Channel.cpp                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: icewell <icewell@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/18 12:31:21 by tclaereb          #+#    #+#             */
+/*   Updated: 2025/09/16 10:19:57 by icewell          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "Channel.hpp"
 
 Channel::Channel( void ) : _name( "" ), _password( "" ), _userLimit( 0 ), _inviteOnly( false ), _topicOperatorOnly( true ) {}
@@ -93,19 +105,22 @@ void	Channel::setTopic( const Client &executor, const std::string topic ) {
 	this->_topic = topic;
 }
 
-void	Channel::addUser( const Client &executor, const Client &target ) {
-	if ( this->isClientOperator( executor ) && !this->isClientUser( target ) )
+void	Channel::addUser( const Client &executor, Client &target ) {
+	if ( this->isClientOperator( executor ) && !this->isClientUser( target ) ) {
 		this->_users.push_back( target );
-}
-
-void	Channel::addUser( const Server &server, const Client &target ) {
-	( void )server;
-	if ( !this->isClientUser( target ) ) {
-		this->_users.push_back( target );
+		target.setChannels(this->_name);
 	}
 }
 
-void	Channel::delUser( const Client &executor, const Client &target ) {
+void	Channel::addUser( const Server &server, Client &target ) {
+	( void )server;
+	if ( !this->isClientUser( target ) ) {
+		this->_users.push_back( target );
+		target.setChannels(this->_name);
+	}
+}
+
+void	Channel::delUser( const Client &executor, Client &target ) {
 	if ( !this->isClientOperator( executor ) || this->isClientUser( target ) )
 		return;
 
@@ -113,7 +128,7 @@ void	Channel::delUser( const Client &executor, const Client &target ) {
 	this->_users.erase( it );
 }
 
-void	Channel::delUser(const Client &target ) {
+void	Channel::delUser(Client &target) {
 	std::vector< Client >::iterator it = std::find(this->_users.begin(), this->_users.end(), target );
 	this->_users.erase( it );
 }

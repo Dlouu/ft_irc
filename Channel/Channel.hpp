@@ -44,10 +44,10 @@ class Channel {
 		void						setPassword( const std::string password );
 		void						setTopic( const Client &executor, const std::string topic );
 
-		void						addUser( const Client &executor, const Client &target );
-		void						addUser( const Server &server, const Client &target );
-		void						delUser( const Client &executor, const Client &target );
-		void						delUser(const Client &target );
+		void						addUser( const Client &executor, Client &target );
+		void						addUser( const Server &server, Client &target );
+		void						delUser( const Client &executor, Client &target );
+		void						delUser(Client& target);
 
 		void						addOperator( const Client &executor, const Client &target );
 		void						addOperator( const Server &server, const Client &target );
