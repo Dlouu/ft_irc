@@ -1,7 +1,5 @@
 #include "Command.hpp"
 
-
-
 void	Command::quitCommand( const CommandData_t& data ) const {
 	Server *instance = Server::getInstance();
 	Client *user = instance->getClientByFD(data.fd);
