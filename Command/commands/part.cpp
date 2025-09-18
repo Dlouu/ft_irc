@@ -2,21 +2,17 @@
 
 static void	isItGood(std::string chan, std::string lastWord, int fd) {
 	if (!Server::getInstance()->getChannel(chan)->isClientUser(*Server::getInstance()->getClientByFD(fd))) {
-		std::cout << "client no on channel [" << chan << "]\n";
 		sendReply(fd, ERR_NOTONCHANNEL);
 		return;
 	}
 	std::string msg = ":" + Server::getInstance()->getClientByFD(fd)->getMask() + " PART " + chan + " " + lastWord + "\r\n";
 	Server::getInstance()->getChannel(chan)->shareMessage(msg);	//shareMessage(user PART #*it lasword);
 	Server::getInstance()->getChannel(chan)->delUser(*Server::getInstance()->getClientByFD(fd));
-	std::cout << "message [" << lastWord << "] shared to channel [" << chan << "]\n";
 }
 
 void	Command::partCommand(const CommandData_t& data) const {
 	std::string lastWord;
 	std::string raw = data.message.substr(5, data.message.length());
-
-	std::cout << "["<< raw << "]\n";
 
 	std::vector< std::string > chansData = this->split( raw, ' ' );
 	std::vector< std::string > chans = this->split( chansData[ 0 ], ',' );
@@ -30,7 +26,6 @@ void	Command::partCommand(const CommandData_t& data) const {
 		if (Server::getInstance()->isChannelExist(*it)) {
 			isItGood(*it, lastWord, data.fd);
 		} else if (!Server::getInstance()->isChannelExist(*it)) {
-			std::cout << "channel [" << *it << " ]not found\n";
 			sendReply(data.fd, ERR_NOSUCHCHANNEL);
 		}
 	}

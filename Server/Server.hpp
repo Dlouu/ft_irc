@@ -76,4 +76,6 @@ class Server
 		static bool							isClientPass( const int fd );
 		static bool							isClientRegistered( const int fd );
 		static bool							isClientWelcomed( const int fd );
+
+		static void							delClient(int fd);
 };

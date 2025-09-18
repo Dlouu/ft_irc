@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Channel.cpp                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tclaereb <tclaereb@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/18 12:31:21 by tclaereb          #+#    #+#             */
+/*   Updated: 2025/09/18 12:10:56 by tclaereb         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "Channel.hpp"
 
 Channel::Channel( void ) : _name( "" ), _password( "" ), _userLimit( 100 ), _inviteOnly( false ), _topicOperatorOnly( true ) {}
@@ -9,19 +21,23 @@ const std::string	&Channel::getName( void ) const {
 	return ( this->_name );
 }
 
+const std::string	&Channel::getTopic( void ) const {
+	return ( this->_topic );
+}
+
 const std::string	&Channel::getPassword( void ) const {
 	return ( this->_password );
 }
 
-const bool	&Channel::getInviteOnly( void ) const {
+const bool	&Channel::isInviteOnly( void ) const {
 	return ( this->_inviteOnly );
 }
 
-const bool	&Channel::getTopicRestricted( void ) const {
+const bool	&Channel::isTopicRestricted( void ) const {
 	return ( this->_topicOperatorOnly );
 }
 
-bool	Channel::getPasswordStatus( void ) const {
+bool	Channel::isPasswordSet( void ) const {
 	if (this->_password == "")
 		return ( false );
 	return ( true );
@@ -29,13 +45,13 @@ bool	Channel::getPasswordStatus( void ) const {
 
 std::string	Channel::getChannelModes( void ) const {
 	std::string	modes = "";
-	if (this->getInviteOnly())
+	if (this->isInviteOnly())
 		modes.append("i");
-	if (this->getTopicRestricted())
+	if (this->isTopicRestricted())
 		modes.append("t");
 	if (this->getUserLimit() > 0)
 		modes.append("l");
-	if (this->getPasswordStatus())
+	if (this->isPasswordSet())
 		modes.append("k");
 	return ( modes );
 }
@@ -44,11 +60,11 @@ std::string	Channel::getChannelParams( void ) const {
 	std::stringstream	params;
 	if (this->getUserLimit() > 0) {
 		params << _userLimit;
-		if (this->getPasswordStatus()) {
+		if (this->isPasswordSet()) {
 			params << " " << _password;
 		}
 	}
-	else if (this->getPasswordStatus()) {
+	else if (this->isPasswordSet()) {
 		params << _password;
 	}
 	return ( params.str() );
@@ -104,6 +120,7 @@ void	Channel::addUser( const Client &executor, const Client &target ) {
 		return ( sendReply( executor.getFD(), ERR_CHANNELISFULL ) );
 
 	this->_users.push_back( target );
+	target.setChannels(this->_name);
 }
 
 void	Channel::addUser( const Client &target ) {
@@ -115,6 +132,7 @@ void	Channel::addUser( const Client &target ) {
 		return ( sendReply( target.getFD(), ERR_CHANNELISFULL ) );
 
 	this->_users.push_back( target );
+	target.setChannels(this->_name);
 }
 
 void	Channel::delUser( const Client &executor, const Client &target ) {
@@ -128,7 +146,7 @@ void	Channel::delUser( const Client &executor, const Client &target ) {
 	this->delOperator( executor, target );
 }
 
-void	Channel::delUser(const Client &target ) {
+void	Channel::delUser( const Client &target ) {
 	if ( !this->isClientUser( target ) )
 		return ( sendReply( target.getFD(), ERR_NOSUCHNICK ) );
 

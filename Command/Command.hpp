@@ -39,6 +39,7 @@ class Command
 		void	topicCommand( const CommandData_t& data ) const;
 		void	inviteCommand( const CommandData_t& data ) const;
 		void	privmsgCommand( const CommandData_t& data ) const;
+		void	quitCommand( const CommandData_t& data ) const;
 
 		void	init( void );
 		void	notaCommand( void ) const;
