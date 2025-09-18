@@ -1,5 +1,21 @@
 #include "Command.hpp"
 
+bool	isChannelMaskValid( std::string name ) {
+	if ( name.length() <= 1 || name.length() > 200 )
+		return ( false );
+	else if ( name[ 0 ] != '#' && name[ 0 ] != '&' )
+		return ( false );
+
+	char	tmp[] = { ',', '?', '*', '\a' };
+	std::vector< char >	unallowedChar( tmp, tmp + sizeof( tmp ) / sizeof( tmp[ 0 ] ) );
+	for ( unsigned int i = 0; i < unallowedChar.size(); i++ ) {
+		size_t pos = name.find( unallowedChar[ i ] );
+		if ( pos != name.npos )
+			return ( false );
+	}
+	return ( true );
+}
+
 void	Command::joinCommand( const CommandData_t& data ) const {
 
 	Server	*server = Server::getInstance();
@@ -20,18 +36,21 @@ void	Command::joinCommand( const CommandData_t& data ) const {
 	}
 
 	for ( size_t i = 0; i < channels.size(); i++ ) {
+		g_vars[ "channel" ] = channels[ i ];
+		if ( !isChannelMaskValid( channels[ i ] ) ) {
+			sendReply( executor->getFD(), ERR_BADCHANMASK );
+			continue ;
+		} else if ( executor->getChannels().size() == Client::maxChannel )
+			return ( sendReply( executor->getFD(), ERR_TOOMANYCHANNELS ) );
+
 		if ( server->isChannelExist( channels[ i ] ) ) {
 			Channel	*channelObj = NULL;
 			LOGC( INFO ) << "Channel exist";
-			g_vars[ "channel" ] = channels[ i ];
 			channelObj = server->getChannel( channels[ i ] );
-			if ( !channelObj ) {
-				sendReply( executor->getFD(), ERR_NOSUCHCHANNEL );
-				continue ;
-			} else if ( channelObj->isInviteOnly() ) {
+			if ( channelObj->isInviteOnly() ) {
 				sendReply( executor->getFD(), ERR_INVITEONLYCHAN );
-			}
-			if ( channelObj->isPasswordSet() && ( i >= passwords.size() || !channelObj->isPasswordCorrect( passwords[ i ] ) ) ) {
+				continue  ;
+			} else if ( channelObj->isPasswordSet() && ( i >= passwords.size() || !channelObj->isPasswordCorrect( passwords[ i ] ) ) ) {
 				sendReply( executor->getFD(), ERR_BADCHANNELKEY );
 				continue;
 			}
