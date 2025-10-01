@@ -44,7 +44,7 @@ void	Command::modeCommand( const CommandData_t& data ) const {
 	char						sign = '+';
 	size_t						paramIdx = 3;
 	std::vector<std::string>	usedParams;
-	
+
 	for (size_t i = 0; i < modeString.size(); ++i) {
 		char c = modeString[i];
 		if (c == '+' || c == '-') {
@@ -52,7 +52,7 @@ void	Command::modeCommand( const CommandData_t& data ) const {
 			flagsApplied += c;
 			continue;
 		}
-	
+
 	if (!channel->isClientOperator( client )) {
 		sendReply( data.fd, ERR_CHANOPRIVSNEEDED );
 	} else {
@@ -95,9 +95,9 @@ void	Command::modeCommand( const CommandData_t& data ) const {
 					return sendReply( data.fd, ERR_NOTONCHANNEL );
 				}
 				if (sign == '+') {
-					channel->addOperator( client, *target );
+					channel->addOperator( *target );
 				} else if (sign == '-') {
-					channel->delOperator( client, *target );
+					channel->delOperator( *target );
 					usedParams.push_back( target->getNickname() );
 				}
 				flagsApplied += 'o';
@@ -120,7 +120,7 @@ void	Command::modeCommand( const CommandData_t& data ) const {
 			default:
 				return sendReply( data.fd, ERR_UMODEUNKNOWNFLAG );
 			}
-			
+
 			std::ostringstream oss;
 			oss << flagsApplied;
 			for (size_t i = 0; i < usedParams.size(); ++i) {
@@ -144,7 +144,7 @@ void	Command::modeCommand( const CommandData_t& data ) const {
 			//ERR_NOSUCHCHANNEL
 	//else if(!channel OR !flag/mods)
 		//ERR_NEEDMOREPARAMS
-	
+
 	//if (flags/modes != i OR j OR t OR o OR k OR l)
 		//ERR_UMODEUNKNOWNFLAG
 
@@ -177,7 +177,7 @@ void	Command::modeCommand( const CommandData_t& data ) const {
 		//else if ("+l")
 			//set user limit to limit : :irc.example.net MODE #chatroom +l 10
 		//else
-			//remove set limit 
+			//remove set limit
 
 /* MODE - Change the channel’s mode:
 · i: Set/remove Invite-only channel

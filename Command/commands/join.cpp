@@ -47,7 +47,16 @@ void	Command::joinCommand( const CommandData_t& data ) const {
 			Channel	*channelObj = NULL;
 			LOGC( INFO ) << "Channel exist";
 			channelObj = server->getChannel( channels[ i ] );
-			if ( channelObj->isInviteOnly() ) {
+			if ( channelObj->isClientUser( *executor ) ) {
+				sendReply( executor->getFD(), ERR_USERONCHANNEL );
+				continue ;
+			} else if ( channelObj->isClientBan( *executor ) ) {
+				sendReply( executor->getFD(), ERR_BANNEDFROMCHAN );
+				continue ;
+			} else if ( channelObj->getUserCount() >= channelObj->getUserLimit() ) {
+				sendReply( executor->getFD(), ERR_CHANNELISFULL );
+				continue ;
+			} else if ( channelObj->isInviteOnly() && !channelObj->hasAnInvitation( *executor ) ) {
 				sendReply( executor->getFD(), ERR_INVITEONLYCHAN );
 				continue  ;
 			} else if ( channelObj->isPasswordSet() && ( i >= passwords.size() || !channelObj->isPasswordCorrect( passwords[ i ] ) ) ) {

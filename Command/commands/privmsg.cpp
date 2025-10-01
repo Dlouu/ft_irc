@@ -34,7 +34,9 @@ void	Command::privmsgCommand( const CommandData_t& data ) const {
 	LOGC( INFO ) << "Message: " << message;
 
 	Channel	*channel = Server::getChannel( channelName );
-	if ( !channel )
-		return ;
-	channel->shareMessage( *executor, message, "PRIVMSG");
+	if ( channel )
+		channel->shareMessage( *executor, message, "PRIVMSG");
+	Client	*client = Server::getClientByNick( channelName );
+	if ( client )
+		client->shareMessage( *executor, message );
 }

@@ -18,6 +18,7 @@ class Channel {
 
 		std::vector< Client >	_users;
 		std::vector< Client >	_operators;
+		std::vector< Client >	_invits;
 		std::vector< Client >	_bans;
 
 		bool					_inviteOnly;
@@ -44,21 +45,21 @@ class Channel {
 		void						setTopicRestricted( const bool state );
 		void						setUserLimit( const unsigned long n );
 		void						setPassword( const std::string password );
-		void						setTopic( const Client &executor, const std::string topic );
+		void						setTopic( const std::string topic );
 
-		void						addUser( const Client &executor, Client &target );
 		void						addUser( Client &target );
-		void						delUser( const Client &executor, Client &target );
 		void						delUser( Client &target );
 
 		void						addOperator( const Client &executor, Client &target );
 		void						addOperator( Client &target );
-		void						delOperator( const Client &executor, Client &target );
+		void						delOperator( Client &target );
 
-		void						addBan( const Client &executor, Client &target );
 		void						addBan( Client &target );
-		void						delBan( const Client &executor, Client &target );
 		void						delBan( Client &target );
+
+		void						inviteSomeone( Client &target );
+		void						delInvitation( Client &target );
+		bool						hasAnInvitation( const Client &target );
 
 		bool						isClientUser( const Client &target );
 		bool						isClientOperator( const Client &target );
