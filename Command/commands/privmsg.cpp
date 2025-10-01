@@ -1,30 +1,6 @@
 #include "Command.hpp"
 
 void	Command::privmsgCommand( const CommandData_t& data ) const {
-	//if (no target)
-		//ERR_NORECIPIENT
-	//else if (not in channel OR client banned from channel OR (channel mode is invite only AND client isn't invited) OR (channel mode is +m AND client IS NOT (+o OR +v)))
-		//ERR_CANNOTSENDTOCHAN
-	//else if (channel prfix is wrong)
-		//ERR_WILDTOPLEVEL
-		//The “top-level” refers to the first character of the channel name — channels must start with valid prefixes like #, &, +, or ! and cannot start with a wildcard.
-	//else if (no channel prefix)
-		//ERR_NOTOPLEVEL
-	//else if (target nickname is not in database)
-		//ERR_NOSUCHNICK
-	//else if (<message> is empty)
-		//ERR_NOTEXTTOSEND
-	//else if (target count > channel allowed targets)
-		//ERR_TOOMANYTARGETS
-	//else {
-		//while (target count--) {
-			//send(msg to target)
-			//if (target is away)
-				//send(RPLY_AWAY to client);
-		//}
-	//}
-
-	LOGC( INFO ) << data.message;
 	Client	*executor = Server::getClientByFD( data.fd );
 	std::string	cleanMsg = data.message.substr( 7, data.message.size() - 7 );
 
@@ -59,11 +35,11 @@ void	Command::privmsgCommand( const CommandData_t& data ) const {
 		return ( sendReply( executor->getFD(), ERR_NOTEXTTOSEND ) );
 	std::string message = cleanMsg.substr( sepPos + 1, cleanMsg.size() - sepPos - 1 );
 
-	LOGC( INFO ) << "Message: " << message << ".";
+	// if chan, check if chan exist and if user is in chan, else check if user exist then send message
 	if ( isChan ) {
-		std::string	channelName = cleanMsg.substr( chanNameStartPos + 1, sepPos - chanNameStartPos - 2 );
-		LOGC( INFO ) << "Channel name: " << channelName << ".";
+		std::string	channelName = cleanMsg.substr( chanNameStartPos, sepPos - chanNameStartPos - 1 );
 		Channel	*channel = Server::getChannel( channelName );
+
 		if ( !channel ) {
 			return ( sendReply( executor->getFD(), ERR_NOSUCHCHANNEL ) );
 		} else if ( !channel->isClientUser( *executor ) ) {
@@ -72,7 +48,6 @@ void	Command::privmsgCommand( const CommandData_t& data ) const {
 		channel->shareMessage( *executor, message, "PRIVMSG" );
 	} else {
 		std::string clientNick = cleanMsg.substr( chanNameStartPos, sepPos - chanNameStartPos - 1 );
-		LOGC( INFO ) << "Client nick: " << clientNick << ".";
 		Client	*client = Server::getClientByNick( clientNick );
 		if ( !client )
 			return ( sendReply( executor->getFD(), ERR_NOSUCHNICK ) );

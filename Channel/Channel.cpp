@@ -6,7 +6,7 @@
 /*   By: tclaereb <tclaereb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/18 12:31:21 by tclaereb          #+#    #+#             */
-/*   Updated: 2025/10/01 09:29:37 by tclaereb         ###   ########.fr       */
+/*   Updated: 2025/10/01 12:24:14 by tclaereb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,10 @@ const std::string	&Channel::getName( void ) const {
 
 const std::string	&Channel::getTopic( void ) const {
 	return ( this->_topic );
+}
+
+std::vector< Client >	Channel::getUsers( void ) const {
+	return ( this->_users );
 }
 
 const std::string	&Channel::getPassword( void ) const {
@@ -108,6 +112,10 @@ void	Channel::setTopic( const std::string topic ) {
 
 
 void	Channel::addUser( Client &target ) {
+	if ( this->isClientUser( target ) )
+		return ;
+
+	LOGC( INFO ) << "Adding user " << target.getNickname() << " to channel " << this->_name;
 	this->delInvitation( target );
 	this->_users.push_back( target );
 	target.setChannels( this->_name );
@@ -122,7 +130,7 @@ void	Channel::delUser( Client &target ) {
 }
 
 void	Channel::addOperator( Client &target ) {
-	if ( this->isClientOperator( target ) )
+	if ( this->isClientOperator( target ) || !this->isClientOperator( target ) )
 		return ;
 
 	this->_operators.push_back( target );

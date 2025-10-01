@@ -126,5 +126,6 @@ void	Client::shareMessage( const Client &executor, const std::string &rawMsg ) {
 
 
 bool	Client::operator==( const Client &other ) const {
-	return ( this->getMask() == other.getMask() );
+	LOGC( INFO ) << this->getFD() << " other fd: " << other.getFD();
+	return ( this->getFD() == other.getFD() );
 }

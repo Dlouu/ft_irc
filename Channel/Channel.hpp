@@ -41,6 +41,8 @@ class Channel {
 		std::string					getChannelModes( void ) const;
 		std::string					getChannelParams( void ) const;
 
+		std::vector< Client >		getUsers( void ) const;
+
 		void						setInviteOnly( const bool state );
 		void						setTopicRestricted( const bool state );
 		void						setUserLimit( const unsigned long n );

@@ -159,11 +159,10 @@ std::map< int, Client >	Server::getClients( void ) {
 }
 
 Client	*Server::getClientByFD( const int fd ) {
-	try {
-		return ( &( getInstance()->_users[ fd ] ) );
-	} catch ( std::logic_error &e ) {
+	std::map<int, Client> ::iterator it = getInstance()->_users.find(fd);
+	if ( it == getInstance()->_users.end() )
 		return ( NULL );
-	}
+	return ( &(it->second) );
 }
 
 Client	*Server::getClientByNick( std::string nick ) {
@@ -239,11 +238,10 @@ const std::string&	Server::getServPass( void ) {
 }
 
 Channel	*Server::getChannel( const std::string &name ) {
-	try {
-		return ( &( getInstance()->_channels[ name ] ) );
-	} catch ( std::logic_error &e ) {
+	std::map< std::string, Channel >::iterator it = getInstance()->_channels.find( name );
+	if ( it == getInstance()->_channels.end() )
 		return ( NULL );
-	}
+	return ( &( it->second ) );
 }
 
 void	Server::addChannel( Channel& channel ) {
