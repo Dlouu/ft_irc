@@ -1,7 +1,6 @@
 #include "Command.hpp"
 
 void	Command::privmsgCommand( const CommandData_t& data ) const {
-	(void)data;
 	//if (no target)
 		//ERR_NORECIPIENT
 	//else if (not in channel OR client banned from channel OR (channel mode is invite only AND client isn't invited) OR (channel mode is +m AND client IS NOT (+o OR +v)))
@@ -25,18 +24,58 @@ void	Command::privmsgCommand( const CommandData_t& data ) const {
 		//}
 	//}
 
+	LOGC( INFO ) << data.message;
 	Client	*executor = Server::getClientByFD( data.fd );
-	std::string	cleanMsg = data.message.substr( 8, data.message.size() - 8 );
-	size_t	sepPos = cleanMsg.find( ':' );
-	std::string	channelName = cleanMsg.substr( 0, sepPos - 1 );
-	std::string	message = cleanMsg.substr( sepPos + 1, cleanMsg.size() - channelName.size() );
-	LOGC( INFO ) << "Channel name: " << channelName;
-	LOGC( INFO ) << "Message: " << message;
+	std::string	cleanMsg = data.message.substr( 7, data.message.size() - 7 );
 
-	Channel	*channel = Server::getChannel( channelName );
-	if ( channel )
-		channel->shareMessage( *executor, message, "PRIVMSG");
-	Client	*client = Server::getClientByNick( channelName );
-	if ( client )
+	// find start pos of the channel name
+	std::string::size_type chanNameStartPos = std::string::npos;
+	for ( unsigned int i = 0; i < cleanMsg.size(); i++ ) {
+		if ( cleanMsg[ i ] != ' ' && cleanMsg[ i ] != '\t' ) {
+			chanNameStartPos = i;
+			break ;
+		}
+	}
+	if ( chanNameStartPos == std::string::npos )
+		return ( sendReply( executor->getFD(), ERR_NORECIPIENT ) );
+
+	// Find the separator between chan name and the message, if not found then there is no message and we send back an error to the user
+	size_t	sepPos = cleanMsg.find( ':' );
+	if ( sepPos == std::string::npos )
+		return ( sendReply( executor->getFD(), ERR_NOTEXTTOSEND ) );
+
+	// check if first char is valid
+	char	tmp[] = { '#', '&', '+', '!' };
+	bool	isChan = false;
+	for ( unsigned int i = 0; i <= 3; i++ ) {
+		if ( cleanMsg[ chanNameStartPos ] == tmp[ i ] ) {
+			isChan = true;
+			break ;
+		}
+	}
+
+	// check if there is a message
+	if ( sepPos + 1 >= cleanMsg.size() )
+		return ( sendReply( executor->getFD(), ERR_NOTEXTTOSEND ) );
+	std::string message = cleanMsg.substr( sepPos + 1, cleanMsg.size() - sepPos - 1 );
+
+	LOGC( INFO ) << "Message: " << message << ".";
+	if ( isChan ) {
+		std::string	channelName = cleanMsg.substr( chanNameStartPos + 1, sepPos - chanNameStartPos - 2 );
+		LOGC( INFO ) << "Channel name: " << channelName << ".";
+		Channel	*channel = Server::getChannel( channelName );
+		if ( !channel ) {
+			return ( sendReply( executor->getFD(), ERR_NOSUCHCHANNEL ) );
+		} else if ( !channel->isClientUser( *executor ) ) {
+			return ( sendReply( executor->getFD(), ERR_CANNOTSENDTOCHAN ) );
+		}
+		channel->shareMessage( *executor, message, "PRIVMSG" );
+	} else {
+		std::string clientNick = cleanMsg.substr( chanNameStartPos, sepPos - chanNameStartPos - 1 );
+		LOGC( INFO ) << "Client nick: " << clientNick << ".";
+		Client	*client = Server::getClientByNick( clientNick );
+		if ( !client )
+			return ( sendReply( executor->getFD(), ERR_NOSUCHNICK ) );
 		client->shareMessage( *executor, message );
+	}
 }
