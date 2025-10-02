@@ -15,42 +15,54 @@ void	Command::privmsgCommand( const CommandData_t& data ) const {
 	if ( chanNameStartPos == std::string::npos )
 		return ( sendReply( executor->getFD(), ERR_NORECIPIENT ) );
 
-	// Find the separator between chan name and the message, if not found then there is no message and we send back an error to the user
-	size_t	sepPos = cleanMsg.find( ':' );
-	if ( sepPos == std::string::npos )
-		return ( sendReply( executor->getFD(), ERR_NOTEXTTOSEND ) );
-
-	// check if first char is valid
-	char	tmp[] = { '#', '&', '+', '!' };
-	bool	isChan = false;
-	for ( unsigned int i = 0; i <= 3; i++ ) {
-		if ( cleanMsg[ chanNameStartPos ] == tmp[ i ] ) {
-			isChan = true;
+	std::string ::size_type chanNameEndPos = std::string::npos;
+	for ( unsigned int i = chanNameStartPos; i < cleanMsg.size(); i++ ) {
+		if ( cleanMsg[ i ] == ' ' || cleanMsg[ i ] == '\t' ) {
+			chanNameEndPos = i;
 			break ;
 		}
 	}
 
-	// check if there is a message
-	if ( sepPos + 1 >= cleanMsg.size() )
+	// split channel names, if the request have a syntax error like having a space after a coma then all next targets will be ignored.
+	std::string chanNames = cleanMsg.substr( chanNameStartPos, chanNameEndPos - chanNameStartPos );
+	std::vector< std::string > chanList = this->split( cleanMsg.substr( chanNameStartPos, chanNameEndPos - chanNameStartPos ), ',' );
+
+	// Find the separator between chan name and the message, if not found then there is no message and we send back an error to the user
+	// also check if there is a char after the separator.
+	size_t	sepPos = cleanMsg.find( ':' );
+	if ( sepPos == std::string::npos || sepPos + 1 >= cleanMsg.size() )
 		return ( sendReply( executor->getFD(), ERR_NOTEXTTOSEND ) );
+
 	std::string message = cleanMsg.substr( sepPos + 1, cleanMsg.size() - sepPos - 1 );
 
-	// if chan, check if chan exist and if user is in chan, else check if user exist then send message
-	if ( isChan ) {
-		std::string	channelName = cleanMsg.substr( chanNameStartPos, sepPos - chanNameStartPos - 1 );
-		Channel	*channel = Server::getChannel( channelName );
-
-		if ( !channel ) {
-			return ( sendReply( executor->getFD(), ERR_NOSUCHCHANNEL ) );
-		} else if ( !channel->isClientUser( *executor ) ) {
-			return ( sendReply( executor->getFD(), ERR_CANNOTSENDTOCHAN ) );
+	for ( unsigned int i = 0; i < chanList.size(); i++ ) {
+		std::string name = chanList[ i ];
+		LOGC( INFO ) << "Managing query for " << name << ".";
+		// check if first char is valid
+		char	tmp[] = { '#', '&', '+', '!' };
+		bool	isChan = false;
+		for ( unsigned int j = 0; j <= 3; j++ ) {
+			if ( name[ 0 ] == tmp[ j ] ) {
+				isChan = true;
+				break ;
+			}
 		}
-		channel->shareMessage( *executor, message, "PRIVMSG" );
-	} else {
-		std::string clientNick = cleanMsg.substr( chanNameStartPos, sepPos - chanNameStartPos - 1 );
-		Client	*client = Server::getClientByNick( clientNick );
-		if ( !client )
-			return ( sendReply( executor->getFD(), ERR_NOSUCHNICK ) );
-		client->shareMessage( *executor, message );
+
+		// if chan, check if chan exist and if user is in chan, else check if user exist then send message
+		if ( isChan ) {
+			Channel	*channel = Server::getChannel( name );
+
+			if ( !channel ) {
+				return ( sendReply( executor->getFD(), ERR_NOSUCHCHANNEL ) );
+			} else if ( !channel->isClientUser( *executor ) ) {
+				return ( sendReply( executor->getFD(), ERR_CANNOTSENDTOCHAN ) );
+			}
+			channel->shareMessage( *executor, message, "PRIVMSG" );
+		} else {
+			Client	*client = Server::getClientByNick( name );
+			if ( !client )
+				return ( sendReply( executor->getFD(), ERR_NOSUCHNICK ) );
+			client->shareMessage( *executor, message );
+		}
 	}
 }
