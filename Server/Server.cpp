@@ -159,7 +159,7 @@ std::map< int, Client >	Server::getClients( void ) {
 }
 
 Client	*Server::getClientByFD( const int fd ) {
-	std::map<int, Client> ::iterator it = getInstance()->_users.find(fd);
+	std::map<int, Client> ::iterator it = getInstance()->_users.find( fd );
 	if ( it == getInstance()->_users.end() )
 		return ( NULL );
 	return ( &(it->second) );

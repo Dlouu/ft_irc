@@ -6,7 +6,7 @@
 /*   By: tclaereb <tclaereb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/18 12:31:21 by tclaereb          #+#    #+#             */
-/*   Updated: 2025/10/01 12:24:14 by tclaereb         ###   ########.fr       */
+/*   Updated: 2025/10/02 10:52:19 by tclaereb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,14 +130,14 @@ void	Channel::delUser( Client &target ) {
 }
 
 void	Channel::addOperator( Client &target ) {
-	if ( this->isClientOperator( target ) || !this->isClientOperator( target ) )
+	if ( this->isClientOperator( target ) )
 		return ;
 
 	this->_operators.push_back( target );
 }
 
 void	Channel::delOperator( Client &target ) {
-	if ( this->isClientOperator( target ) )
+	if ( !this->isClientOperator( target ) )
 		return ;
 
 	std::vector< Client >::iterator it = std::find( this->_operators.begin(), this->_operators.end(), target );
