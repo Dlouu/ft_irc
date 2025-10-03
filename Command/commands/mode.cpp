@@ -22,7 +22,7 @@ void	Command::modeCommand( const CommandData_t& data ) const {
 		}
 	} else {
 		channel = server->getChannel( params[1] );
-		if (!channel->getName().empty()) {
+		if (channel) {
 			g_vars[ "channel" ]	= channel->getName();
 			if (!channel->isClientUser( client )) {
 				return sendReply( data.fd, ERR_NOTONCHANNEL );
