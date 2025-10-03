@@ -1,0 +1,7 @@
+// pas de @ pour les modo
+// rentrer dans un channel : message ? pour soi ou pour les autres ?
+
+// std::string	oldnick = (*Server::getClientByFD(data.fd)).getNickname();
+// segfault du nick 43 qund tom a essaye avec telnet
+
+// faire quand client disconnected une fonction qui delete le user en fonction de son FD

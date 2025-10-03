@@ -70,6 +70,8 @@ void	Command::joinCommand( const CommandData_t& data ) const {
 			channelObj.addUser( *executor );
 			channelObj.addOperator( *executor );
 			server->addChannel( channelObj );
+			// a tester 
+			// return sendReply( data.fd, RPL_NAMREPLY );
 		}
 	}
 	//if (no client or no channel param)
