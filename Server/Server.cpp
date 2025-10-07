@@ -131,19 +131,19 @@ void	Server::loop() {
 							continue;
 						else if (!getInstance()->_users[clientFd].isPassOk()) {
 							std::cout << "* Client fd closed: bad password *\n";
-							close(clientFd);
+							delClient(clientFd);
 							break;
 						}
 					}
 				} else if (bytes == 0) {
 					std::cout << "* Client disconnected *\n";
 					clientBuffers.erase(clientFd);
-					close(clientFd);
+					delClient(clientFd);
 					epoll_ctl(_epoll, EPOLL_CTL_DEL, clientFd, NULL);
 				} else {
 					std::cout << "Error: recv()\n";
 					clientBuffers.erase(clientFd);
-					close(clientFd);
+					delClient(clientFd);
 					epoll_ctl(_epoll, EPOLL_CTL_DEL, clientFd, NULL);
 					break;
 				}
