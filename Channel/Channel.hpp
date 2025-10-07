@@ -52,7 +52,6 @@ class Channel {
 		void						addUser( Client &target );
 		void						delUser( Client &target );
 
-		void						addOperator( const Client &executor, Client &target );
 		void						addOperator( Client &target );
 		void						delOperator( Client &target );
 
