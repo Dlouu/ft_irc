@@ -31,6 +31,8 @@ void	Command::joinCommand( const CommandData_t& data ) const {
 	std::vector< std::string > channels = this->split( canalsData[ 0 ], ',' );
 	std::vector< std::string > passwords;
 
+	int fd = executor->getFD();
+
 	if ( canalsData.size() > 1 ) {
 		passwords = this->split( canalsData[ 1 ], ',' );
 	}
@@ -38,29 +40,41 @@ void	Command::joinCommand( const CommandData_t& data ) const {
 	for ( size_t i = 0; i < channels.size(); i++ ) {
 		g_vars[ "channel" ] = channels[ i ];
 		if ( !isChannelMaskValid( channels[ i ] ) ) {
-			sendReply( executor->getFD(), ERR_BADCHANMASK );
+			sendReply( fd, ERR_BADCHANMASK );
 			continue ;
 		} else if ( executor->getChannels().size() == Client::maxChannel )
-			return ( sendReply( executor->getFD(), ERR_TOOMANYCHANNELS ) );
+			return ( sendReply( fd, ERR_TOOMANYCHANNELS ) );
 
 		if ( server->isChannelExist( channels[ i ] ) ) {
 			Channel	*channelObj = NULL;
 			LOGC( INFO ) << "Channel exist";
 			channelObj = server->getChannel( channels[ i ] );
-			if ( channelObj->isInviteOnly() ) {
-				sendReply( executor->getFD(), ERR_INVITEONLYCHAN );
+			if ( channelObj->isClientUser( *executor ) ) {
+				sendReply( fd, ERR_USERONCHANNEL );
+				continue ;
+			} else if ( channelObj->isClientBan( *executor ) ) {
+				sendReply( fd, ERR_BANNEDFROMCHAN );
+				continue ;
+			} else if ( channelObj->getUserCount() >= channelObj->getUserLimit() ) {
+				sendReply( fd, ERR_CHANNELISFULL );
+				continue ;
+			} else if ( channelObj->isInviteOnly() && !channelObj->hasAnInvitation( *executor ) ) {
+				sendReply( fd, ERR_INVITEONLYCHAN );
 				continue  ;
 			} else if ( channelObj->isPasswordSet() && ( i >= passwords.size() || !channelObj->isPasswordCorrect( passwords[ i ] ) ) ) {
-				sendReply( executor->getFD(), ERR_BADCHANNELKEY );
+				sendReply( fd, ERR_BADCHANNELKEY );
 				continue;
 			}
 			channelObj->addUser( *executor );
+			channelObj->Welcome( *executor );
 		} else {
 			LOGC( INFO ) << "Channel doesn't exist";
 			Channel	channelObj = Channel( channels[ i ] );
 			channelObj.addUser( *executor );
 			channelObj.addOperator( *executor );
 			server->addChannel( channelObj );
+			// a tester
+			channelObj.Welcome( *executor );
 		}
 	}
 	//if (no client or no channel param)

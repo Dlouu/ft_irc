@@ -31,10 +31,10 @@ void	Command::inviteCommand( const CommandData_t& data ) const {
 		return sendReply( data.fd, ERR_CHANOPRIVSNEEDED );
 	} else if (!channel->isClientUser( client )) {
 		return sendReply( data.fd, ERR_NOTONCHANNEL );
-	} else if (channel->isClientUser( *invitee ) || channel->isClientOperator( *invitee )) {
+	} else if (channel->isClientUser( *invitee )) {
 		sendReply( data.fd, ERR_USERONCHANNEL );
 	} else {
-		//faut-il faire une liste d'invitees
+		channel->inviteSomeone( *invitee );
 		channel->shareMessage( client, *invitee, channel->getName(), "INVITE" );
 		sendReply( data.fd, RPL_INVITING );
 	}
@@ -49,6 +49,6 @@ void	Command::inviteCommand( const CommandData_t& data ) const {
 		//ERR_NOSUCHNICK
 	//else if (invitee already in channel)
 		//ERR_USERONCHANNEL
-	//else 
+	//else
 		//send(RPL_INVITING)
 }

@@ -22,6 +22,7 @@ typedef enum e_NumReply {
 	RPL_TOPIC				= 332,
 	RPL_INVITING			= 341,
 	RPL_NAMREPLY			= 353,
+	RPL_ENDOFNAMES			= 366,
 
 	RPL_MOTDSTART			= 375,
 	RPL_MOTD				= 372,

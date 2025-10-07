@@ -1,40 +1,68 @@
 #include "Command.hpp"
 
 void	Command::privmsgCommand( const CommandData_t& data ) const {
-	(void)data;
-	//if (no target)
-		//ERR_NORECIPIENT
-	//else if (not in channel OR client banned from channel OR (channel mode is invite only AND client isn't invited) OR (channel mode is +m AND client IS NOT (+o OR +v)))
-		//ERR_CANNOTSENDTOCHAN
-	//else if (channel prfix is wrong)
-		//ERR_WILDTOPLEVEL
-		//The “top-level” refers to the first character of the channel name — channels must start with valid prefixes like #, &, +, or ! and cannot start with a wildcard.
-	//else if (no channel prefix)
-		//ERR_NOTOPLEVEL
-	//else if (target nickname is not in database)
-		//ERR_NOSUCHNICK
-	//else if (<message> is empty)
-		//ERR_NOTEXTTOSEND
-	//else if (target count > channel allowed targets)
-		//ERR_TOOMANYTARGETS
-	//else {
-		//while (target count--) {
-			//send(msg to target)
-			//if (target is away)
-				//send(RPLY_AWAY to client);
-		//}
-	//}
-
 	Client	*executor = Server::getClientByFD( data.fd );
-	std::string	cleanMsg = data.message.substr( 8, data.message.size() - 8 );
-	size_t	sepPos = cleanMsg.find( ':' );
-	std::string	channelName = cleanMsg.substr( 0, sepPos - 1 );
-	std::string	message = cleanMsg.substr( sepPos + 1, cleanMsg.size() - channelName.size() );
-	LOGC( INFO ) << "Channel name: " << channelName;
-	LOGC( INFO ) << "Message: " << message;
+	std::string	cleanMsg = data.message.substr( 7, data.message.size() - 7 );
 
-	Channel	*channel = Server::getChannel( channelName );
-	if ( !channel )
-		return ;
-	channel->shareMessage( *executor, message, "PRIVMSG");
+	// find start pos of the channel name
+	std::string::size_type chanNameStartPos = std::string::npos;
+	for ( unsigned int i = 0; i < cleanMsg.size(); i++ ) {
+		if ( cleanMsg[ i ] != ' ' && cleanMsg[ i ] != '\t' ) {
+			chanNameStartPos = i;
+			break ;
+		}
+	}
+	if ( chanNameStartPos == std::string::npos )
+		return ( sendReply( executor->getFD(), ERR_NORECIPIENT ) );
+
+	std::string ::size_type chanNameEndPos = std::string::npos;
+	for ( unsigned int i = chanNameStartPos; i < cleanMsg.size(); i++ ) {
+		if ( cleanMsg[ i ] == ' ' || cleanMsg[ i ] == '\t' ) {
+			chanNameEndPos = i;
+			break ;
+		}
+	}
+
+	// split channel names, if the request have a syntax error like having a space after a coma then all next targets will be ignored.
+	std::string chanNames = cleanMsg.substr( chanNameStartPos, chanNameEndPos - chanNameStartPos );
+	std::vector< std::string > chanList = this->split( cleanMsg.substr( chanNameStartPos, chanNameEndPos - chanNameStartPos ), ',' );
+
+	// Find the separator between chan name and the message, if not found then there is no message and we send back an error to the user
+	// also check if there is a char after the separator.
+	size_t	sepPos = cleanMsg.find( ':' );
+	if ( sepPos == std::string::npos || sepPos + 1 >= cleanMsg.size() )
+		return ( sendReply( executor->getFD(), ERR_NOTEXTTOSEND ) );
+
+	std::string message = cleanMsg.substr( sepPos + 1, cleanMsg.size() - sepPos - 1 );
+
+	for ( unsigned int i = 0; i < chanList.size(); i++ ) {
+		std::string name = chanList[ i ];
+		LOGC( INFO ) << "Managing query for " << name << ".";
+		// check if first char is valid
+		char	tmp[] = { '#', '&', '+', '!' };
+		bool	isChan = false;
+		for ( unsigned int j = 0; j <= 3; j++ ) {
+			if ( name[ 0 ] == tmp[ j ] ) {
+				isChan = true;
+				break ;
+			}
+		}
+
+		// if chan, check if chan exist and if user is in chan, else check if user exist then send message
+		if ( isChan ) {
+			Channel	*channel = Server::getChannel( name );
+
+			if ( !channel ) {
+				return ( sendReply( executor->getFD(), ERR_NOSUCHCHANNEL ) );
+			} else if ( !channel->isClientUser( *executor ) ) {
+				return ( sendReply( executor->getFD(), ERR_CANNOTSENDTOCHAN ) );
+			}
+			channel->shareMessage( *executor, message, "PRIVMSG" );
+		} else {
+			Client	*client = Server::getClientByNick( name );
+			if ( !client )
+				return ( sendReply( executor->getFD(), ERR_NOSUCHNICK ) );
+			client->shareMessage( *executor, message );
+		}
+	}
 }

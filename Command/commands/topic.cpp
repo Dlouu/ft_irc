@@ -31,7 +31,7 @@ void	Command::topicCommand( const CommandData_t& data ) const {
 	} else if (!channel->isClientUser( client )) {
 		sendReply( data.fd, ERR_NOTONCHANNEL );
 	} else {
-		channel->setTopic( client, params[2].substr(1, params[2].size()) );
+		channel->setTopic( params[2].substr(1, params[2].size()) );
 		g_vars[ "topic" ] = channel->getTopic();
 		channel->shareMessage( client, channel->getTopic(), "TOPIC" );
 		sendReply( data.fd, RPL_TOPIC );

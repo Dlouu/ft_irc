@@ -4,6 +4,9 @@
 #include <string>
 #include <iostream>
 #include <vector>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include "Log.hpp"
 
 class Client
 {
@@ -53,6 +56,8 @@ class Client
 		bool							isNickSet( void );
 		bool							isUserSet( void );
 		bool							isWelcomed( void );
+
+		void							shareMessage( const Client &executor, const std::string &rawMsg );
 
 		bool							operator==( const Client &other ) const;
 };

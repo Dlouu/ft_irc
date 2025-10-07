@@ -131,19 +131,19 @@ void	Server::loop() {
 							continue;
 						else if (!getInstance()->_users[clientFd].isPassOk()) {
 							std::cout << "* Client fd closed: bad password *\n";
-							close(clientFd);
+							delClient(clientFd);
 							break;
 						}
 					}
 				} else if (bytes == 0) {
 					std::cout << "* Client disconnected *\n";
 					clientBuffers.erase(clientFd);
-					close(clientFd);
+					delClient(clientFd);
 					epoll_ctl(_epoll, EPOLL_CTL_DEL, clientFd, NULL);
 				} else {
 					std::cout << "Error: recv()\n";
 					clientBuffers.erase(clientFd);
-					close(clientFd);
+					delClient(clientFd);
 					epoll_ctl(_epoll, EPOLL_CTL_DEL, clientFd, NULL);
 					break;
 				}
@@ -159,11 +159,10 @@ std::map< int, Client >	Server::getClients( void ) {
 }
 
 Client	*Server::getClientByFD( const int fd ) {
-	try {
-		return ( &( getInstance()->_users[ fd ] ) );
-	} catch ( std::logic_error &e ) {
+	std::map<int, Client> ::iterator it = getInstance()->_users.find( fd );
+	if ( it == getInstance()->_users.end() )
 		return ( NULL );
-	}
+	return ( &(it->second) );
 }
 
 Client	*Server::getClientByNick( std::string nick ) {
@@ -239,11 +238,10 @@ const std::string&	Server::getServPass( void ) {
 }
 
 Channel	*Server::getChannel( const std::string &name ) {
-	try {
-		return ( &( getInstance()->_channels[ name ] ) );
-	} catch ( std::logic_error &e ) {
+	std::map< std::string, Channel >::iterator it = getInstance()->_channels.find( name );
+	if ( it == getInstance()->_channels.end() )
 		return ( NULL );
-	}
+	return ( &( it->second ) );
 }
 
 void	Server::addChannel( Channel& channel ) {
@@ -279,6 +277,14 @@ bool	Server::isChannelExist( const std::string& name ) {
 }
 
 void	Server::delClient(int fd) {
-	getInstance()->_users.erase(fd);
+	Server *instance = getInstance();
+	Client *user = instance->getClientByFD(fd);
+	std::vector<std::string> chans = user->getChannels();
+	if (chans.empty())
+		return;
+	for (std::vector<std::string>::iterator it = chans.begin(); it != chans.end(); ++it) {
+		instance->getChannel(*it)->delUser(*user);
+		instance->getChannel(*it)->shareMessage(":" + user->getMask() + " QUIT" + "\r\n");
+	}
 	close(fd);
 }

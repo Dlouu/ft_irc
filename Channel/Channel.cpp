@@ -6,7 +6,7 @@
 /*   By: tclaereb <tclaereb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/18 12:31:21 by tclaereb          #+#    #+#             */
-/*   Updated: 2025/09/18 12:25:56 by tclaereb         ###   ########.fr       */
+/*   Updated: 2025/10/07 16:45:23 by tclaereb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,10 @@ const std::string	&Channel::getName( void ) const {
 
 const std::string	&Channel::getTopic( void ) const {
 	return ( this->_topic );
+}
+
+std::vector< Client >	Channel::getUsers( void ) const {
+	return ( this->_users );
 }
 
 const std::string	&Channel::getPassword( void ) const {
@@ -102,125 +106,81 @@ void	Channel::setPassword( const std::string password ) {
 	this->_password = password;
 }
 
-void	Channel::setTopic( const Client &executor, const std::string topic ) {
-	if ( !this->isClientOperator( executor ) && this->_topicOperatorOnly )
-		return sendReply( executor.getFD(), ERR_CHANOPRIVSNEEDED );
-
+void	Channel::setTopic( const std::string topic ) {
 	this->_topic = topic;
 }
 
-void	Channel::addUser( const Client &executor, Client &target ) {
-	if ( !this->isClientOperator( executor ) )
-		return ( sendReply( executor.getFD(), ERR_CHANOPRIVSNEEDED ) );
-	else if ( this->isClientUser( target ) )
-		return ( sendReply( executor.getFD(), ERR_USERONCHANNEL ) );
-	else if ( this->isClientBan( target ) )
-		return ( sendReply(executor.getFD(), ERR_BANNEDFROMCHAN ) );
-	else if ( this->getUserCount() >= this->_userLimit )
-		return ( sendReply( executor.getFD(), ERR_CHANNELISFULL ) );
-
-	this->_users.push_back( target );
-	target.setChannels(this->_name);
-}
 
 void	Channel::addUser( Client &target ) {
 	if ( this->isClientUser( target ) )
-		return ( sendReply( target.getFD(), ERR_USERONCHANNEL ) );
-	else if ( this->isClientBan( target ) )
-		return ( sendReply(target.getFD(), ERR_BANNEDFROMCHAN ) );
-	else if ( this->getUserCount() >= this->_userLimit )
-		return ( sendReply( target.getFD(), ERR_CHANNELISFULL ) );
+		return ;
 
+	LOGC( INFO ) << "Adding user " << target.getNickname() << " to channel " << this->_name;
+	this->delInvitation( target );
 	this->_users.push_back( target );
-	target.setChannels(this->_name);
-}
+	target.setChannels( this->_name );
 
-void	Channel::delUser( const Client &executor, Client &target ) {
-	if ( !this->isClientOperator( executor ) )
-		return ( sendReply( executor.getFD(), ERR_CHANOPRIVSNEEDED ) );
-	else if ( !this->isClientUser( target ) )
-		return ( sendReply( executor.getFD(), ERR_NOSUCHNICK ) );
-
-	std::vector< Client >::iterator it = std::find(this->_users.begin(), this->_users.end(), target );
-	this->_users.erase( it );
-	this->delOperator( executor, target );
-	target.delChannel( this->_name );
 }
 
 void	Channel::delUser( Client &target ) {
-	if ( !this->isClientUser( target ) )
-		return ( sendReply( target.getFD(), ERR_NOSUCHNICK ) );
-
 	std::vector< Client >::iterator it = std::find(this->_users.begin(), this->_users.end(), target );
 	this->_users.erase( it );
-	this->delOperator( target, target );
+	this->delOperator( target );
 	target.delChannel( this->_name );
 }
 
-void	Channel::addOperator( const Client &executor, Client &target ) {
-	if ( !this->isClientOperator( executor ) )
-		return ( sendReply( executor.getFD(), ERR_CHANOPRIVSNEEDED ) );
-	else if ( !this->isClientUser( target ) )
-		return ( sendReply( executor.getFD(), ERR_NOSUCHNICK ) );
-	else if ( this->isClientOperator( target ) )
-		return ;
-
-	this->_operators.push_back( target );
-}
-
 void	Channel::addOperator( Client &target ) {
-	if ( !this->isClientUser( target ) )
-		return ( sendReply( target.getFD(), ERR_NOSUCHNICK ) );
-	else if ( this->isClientOperator( target ) )
+	if ( this->isClientOperator( target ) )
 		return ;
 
 	this->_operators.push_back( target );
 }
 
-void	Channel::delOperator( const Client &executor, Client &target ) {
-	if ( !this->isClientOperator( executor ) )
-		return ( sendReply( executor.getFD(), ERR_CHANOPRIVSNEEDED ) );
-	else if ( !this->isClientUser( target ) )
-		return ( sendReply( executor.getFD(), ERR_NOSUCHNICK ) );
-	else if ( this->isClientOperator( target ) )
+void	Channel::delOperator( Client &target ) {
+	if ( !this->isClientOperator( target ) )
 		return ;
 
 	std::vector< Client >::iterator it = std::find( this->_operators.begin(), this->_operators.end(), target );
 	this->_operators.erase( it );
 }
 
-void	Channel::addBan( const Client &executor, Client &target ) {
-	if ( !this->isClientOperator( executor ) )
-		return ( sendReply( executor.getFD(), ERR_CHANOPRIVSNEEDED ) );
-	else if ( this->isClientBan( target ) )
-		return ;
-	this->_bans.push_back( target );
-	this->delUser( executor, target );
-}
-
 void	Channel::addBan( Client &target ) {
 	if ( this->isClientBan( target ) )
 		return ;
+
 	this->_bans.push_back( target );
 	this->delUser( target );
-}
-
-void	Channel::delBan( const Client &executor, Client &target ) {
-	if ( !this->isClientOperator( executor ) )
-		return ( sendReply( executor.getFD(), ERR_CHANOPRIVSNEEDED ) );
-	else if ( !this->isClientBan( target ) )
-		return ;
-
-	std::vector< Client >::iterator it = std::find(this->_users.begin(), this->_users.end(), target );
-	this->_bans.erase( it );
 }
 
 void	Channel::delBan( Client &target ) {
 	if ( !this->isClientBan( target ) )
 		return ;
 
-	std::vector< Client >::iterator it = std::find(this->_users.begin(), this->_users.end(), target );
+	std::vector< Client >::iterator it = std::find( this->_users.begin(), this->_users.end(), target );
 	this->_bans.erase( it );
+}
+
+void	Channel::inviteSomeone( Client &target ) {
+	if ( this->hasAnInvitation( target ) )
+		return ;
+
+	this->_invits.push_back( target );
+}
+
+void	Channel::delInvitation( Client &target ) {
+	if ( !this->hasAnInvitation( target ) )
+		return ;
+
+	std::vector< Client >::iterator it = std::find( this->_invits.begin(), this->_invits.end(), target );
+	this->_invits.erase( it );
+}
+
+bool	Channel::hasAnInvitation( const Client &target ) {
+	std::vector< Client >::iterator it = std::find( this->_invits.begin(), this->_invits.end(), target );
+
+	if ( it == this->_invits.end() )
+		return ( false );
+	return ( true );
 }
 
 bool	Channel::isClientUser( const Client &target ) {
@@ -253,6 +213,23 @@ bool	Channel::isPasswordCorrect( const std::string &password ) const {
 	return ( false );
 }
 
+void	Channel::Welcome( const Client &client ) {
+	std::string	clientListMsg = "";
+	for ( unsigned int i = 0; i < this->_users.size(); i++ ) {
+		Client	&it = this->_users[ i ];
+		clientListMsg += ( this->isClientOperator( it ) ? "@" : "" ) + this->_users[ i ].getNickname() + ( i == this->_users.size() - 1 ? "" : " " );
+	}
+
+	g_vars[ "channel" ] = this->getName();
+	g_vars[ "names" ] = clientListMsg;
+
+	sendReply( client.getFD(), RPL_NAMREPLY );
+	sendReply( client.getFD(), RPL_ENDOFNAMES );
+
+	g_vars[ "topic" ] = this->_topic;
+	sendReply( client.getFD(), RPL_TOPIC );
+}
+
 void	Channel::shareMessage( const Client &executor, const Client &target, const std::string &rawMsg, const std::string &cmd ) {
 	std::string	msg = ":" + executor.getMask() + " " + cmd + " " + this->_name + " :" + rawMsg + "\r\n";
 	send( target.getFD(), msg.c_str(), msg.size(), 0 );
@@ -260,8 +237,6 @@ void	Channel::shareMessage( const Client &executor, const Client &target, const 
 }
 
 void	Channel::shareMessage( const Client &executor, const std::string &rawMsg, const std::string &cmd ) {
-	if ( !this->isClientUser( executor ) )
-		return ( sendReply( executor.getFD(), ERR_CANNOTSENDTOCHAN ) );
 	for ( size_t i = 0; i < this->_users.size(); i++ ) {
 		if ( cmd == "PRIVMSG" && executor.getFD() == this->_users[ i ].getFD() )
 			continue ;
