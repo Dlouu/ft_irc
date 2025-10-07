@@ -280,7 +280,8 @@ void	Server::delClient(int fd) {
 	Server *instance = getInstance();
 	Client *user = instance->getClientByFD(fd);
 	std::vector<std::string> chans = user->getChannels();
-
+	if (chans.empty())
+		return;
 	for (std::vector<std::string>::iterator it = chans.begin(); it != chans.end(); ++it) {
 		instance->getChannel(*it)->delUser(*user);
 		instance->getChannel(*it)->shareMessage(":" + user->getMask() + " QUIT" + "\r\n");
