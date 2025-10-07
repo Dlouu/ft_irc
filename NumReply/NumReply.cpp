@@ -15,6 +15,7 @@ std::map<int, std::string> createReplies() {
 	num[RPL_TOPIC]				= ":{server} 332 {nick} {channel} :{topic}\r\n";
 	num[RPL_INVITING]			= ":{server} 341 {nick} {target} {channel}\r\n";
 	num[RPL_NAMREPLY]			= ":{server} 353 {nick} = {channel} :{names}\r\n";
+	num[RPL_ENDOFNAMES]			= ":{server} 366 {nick} {channel} :End of /NAMES list\r\n";
 
 	num[RPL_MOTDSTART]			= ":{server} 375 {nick} :- {server} Message of the day -\r\n";
 	num[RPL_MOTD]				= ":{server} 372 {nick} :- {motd}\r\n";

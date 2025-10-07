@@ -6,7 +6,7 @@
 /*   By: tclaereb <tclaereb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/18 12:31:21 by tclaereb          #+#    #+#             */
-/*   Updated: 2025/10/02 10:52:19 by tclaereb         ###   ########.fr       */
+/*   Updated: 2025/10/07 16:45:23 by tclaereb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -211,6 +211,23 @@ bool	Channel::isPasswordCorrect( const std::string &password ) const {
 	if ( password == this->_password )
 		return ( true );
 	return ( false );
+}
+
+void	Channel::Welcome( const Client &client ) {
+	std::string	clientListMsg = "";
+	for ( unsigned int i = 0; i < this->_users.size(); i++ ) {
+		Client	&it = this->_users[ i ];
+		clientListMsg += ( this->isClientOperator( it ) ? "@" : "" ) + this->_users[ i ].getNickname() + ( i == this->_users.size() - 1 ? "" : " " );
+	}
+
+	g_vars[ "channel" ] = this->getName();
+	g_vars[ "names" ] = clientListMsg;
+
+	sendReply( client.getFD(), RPL_NAMREPLY );
+	sendReply( client.getFD(), RPL_ENDOFNAMES );
+
+	g_vars[ "topic" ] = this->_topic;
+	sendReply( client.getFD(), RPL_TOPIC );
 }
 
 void	Channel::shareMessage( const Client &executor, const Client &target, const std::string &rawMsg, const std::string &cmd ) {

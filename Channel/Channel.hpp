@@ -68,6 +68,8 @@ class Channel {
 		bool						isClientBan( const Client &target );
 		bool						isPasswordCorrect( const std::string &password ) const;
 
+		void						Welcome( const Client &client );
+
 		void						shareMessage( const std::string &msg );
 		void						shareMessage( const Client &executor, const std::string &rawMsg, const std::string &cmd, std::string reason );
 		void						shareMessage( const Client &executor, const Client &target, const std::string &rawMsg, const std::string &cmd );
