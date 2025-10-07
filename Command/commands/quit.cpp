@@ -5,7 +5,8 @@ void	Command::quitCommand( const CommandData_t& data ) const {
 	Client *user = instance->getClientByFD(data.fd);
 	std::vector<std::string> chans = user->getChannels();
 	std::vector<std::string> msg = split(data.message, ':');
-
+	if (chans.empty())
+		return;
 	for (std::vector<std::string>::iterator it = chans.begin(); it != chans.end(); ++it) {
 		instance->getChannel(*it)->delUser(*user);
 		instance->getChannel(*it)->shareMessage(":" + user->getMask() + " QUIT :" + msg[1] + "\r\n");
