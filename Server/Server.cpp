@@ -1,10 +1,5 @@
 #include "Server.hpp"
 
-/*
-Faut qu'on test le try and catch s'il fonctionne
-GetClientByFD
-*/
-
 Server			*Server::_instance;
 std::string		Server::_name;
 std::string		Server::_password;
@@ -279,6 +274,9 @@ bool	Server::isChannelExist( const std::string& name ) {
 void	Server::delClient(int fd) {
 	Server *instance = getInstance();
 	Client *user = instance->getClientByFD(fd);
+
+	if (!user)
+		return ;
 	std::vector<std::string> chans = user->getChannels();
 	if (chans.empty())
 		return;
