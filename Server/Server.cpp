@@ -113,6 +113,7 @@ void	Server::loop() {
 					client_event.data.fd = clientSocket;
 					epoll_ctl(_epoll, EPOLL_CTL_ADD, clientSocket, &client_event);
 				}
+				close(clientSocket);
 			} else {
 				int clientFd = _events[i].data.fd;
 				int bytes = recv(clientFd, &buffer[0], buffer.size() - 1, 0);
