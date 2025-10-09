@@ -96,7 +96,8 @@ void	Server::loop() {
 		buffer.resize(1024);
 		int n_events = epoll_wait(_epoll, _events, 10, -1);
 		if (n_events == -1) {
-			std::cerr << "Error: epoll_wait()\n";
+			if (!sig_caught)
+				std::cerr << "Error: epoll_wait()\n";
 			break;
 		}
 		for (int i = 0; i < n_events; ++i) {
