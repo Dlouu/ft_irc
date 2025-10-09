@@ -120,7 +120,7 @@ bool	Client::isWelcomed( void ) {
 
 void	Client::shareMessage( const Client &executor, const std::string &rawMsg ) {
 	std::string	msg = ":" + executor.getMask() + " PRIVMSG " + this->_nickname + " :" + rawMsg + "\r\n";
-	send( this->getFD(), msg.c_str(), msg.size(), 0 );
+	send( this->getFD(), msg.c_str(), msg.size(), MSG_DONTWAIT );
 	LOGC( SERVER ) << msg;
 }
 

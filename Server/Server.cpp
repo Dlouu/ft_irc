@@ -1,6 +1,6 @@
 #include "Server.hpp"
 
-Server			*Server::_instance;
+Server			*Server::_instance = NULL;
 std::string		Server::_name;
 std::string		Server::_password;
 
@@ -16,17 +16,17 @@ std::vector<std::string> extractMessages(std::string& buffer) {
 }
 
 Server *Server::getInstance( void ) {
-    if ( Server::_instance == NULL ) {
-        Server::_instance = new Server();
-    }
-    return Server::_instance;
+	if ( Server::_instance == NULL ) {
+		Server::_instance = new Server();
+	}
+	return Server::_instance;
 }
 
 void	Server::destroyInstance( void ) {
-	if (_instance)
+	if (_instance) {
 		delete _instance;
-	_instance = NULL;
-	return;
+		_instance = NULL;
+	}
 }
 
 Server::Server( void ) {}
@@ -45,12 +45,8 @@ void	Server::init(int port, std::string password) {
 	datetime = date.substr(0, date.length() - 1);
 	g_vars = fillPermanentVars();
 
-	if ((_socket = socket(AF_INET, SOCK_STREAM, 6)) == -1)
+	if ((_socket = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 6)) == -1)
 		std::cerr << "Error during socket creation\n";
-	if (fcntl(_socket, F_SETFL, O_NONBLOCK) == -1) {
-		std::cerr << "Error: serverSocker: fnctl()\n";
-		return;
-	}
 
 	_address.sin_family = AF_INET;
 	_address.sin_port = htons(port);
@@ -107,16 +103,14 @@ void	Server::loop() {
 			if (_events[i].data.fd == _socket) {
 				clientSocket = accept(_socket, NULL, NULL);
 				if (clientSocket != -1) {
-					fcntl(clientSocket, F_SETFL, O_NONBLOCK);
 					epoll_event client_event;
 					client_event.events = EPOLLIN;
 					client_event.data.fd = clientSocket;
 					epoll_ctl(_epoll, EPOLL_CTL_ADD, clientSocket, &client_event);
 				}
-				close(clientSocket);
 			} else {
 				int clientFd = _events[i].data.fd;
-				int bytes = recv(clientFd, &buffer[0], buffer.size() - 1, 0);
+				int bytes = recv(clientFd, &buffer[0], buffer.size() - 1, MSG_DONTWAIT);
 				if (bytes > 0) {
 					buffer.resize(bytes);
 					clientBuffers[clientFd] += buffer;
@@ -146,8 +140,6 @@ void	Server::loop() {
 			}
 		}
 	}
-	if (clientSocket != -1)
-		close(clientSocket);
 }
 
 std::map< int, Client >	Server::getClients( void ) {
@@ -276,14 +268,15 @@ void	Server::delClient(int fd) {
 	Server *instance = getInstance();
 	Client *user = instance->getClientByFD(fd);
 
+	close(fd);
 	if (!user)
 		return ;
 	std::vector<std::string> chans = user->getChannels();
-	if (chans.empty())
-		return;
-	for (std::vector<std::string>::iterator it = chans.begin(); it != chans.end(); ++it) {
-		instance->getChannel(*it)->delUser(*user);
-		instance->getChannel(*it)->shareMessage(":" + user->getMask() + " QUIT" + "\r\n");
+	if (!chans.empty()) {
+		for (std::vector<std::string>::iterator it = chans.begin(); it != chans.end(); ++it) {
+			instance->getChannel(*it)->delUser(*user);
+			instance->getChannel(*it)->shareMessage(":" + user->getMask() + " QUIT" + "\r\n");
+		}
 	}
-	close(fd);
+	instance->_users.erase(fd);
 }

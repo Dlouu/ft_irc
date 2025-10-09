@@ -74,7 +74,7 @@ void	Command::nickCommand( const CommandData_t& data ) const {
 				+ "!" + (*Server::getClientByFD( data.fd )).getUsername()
 				+ "@" + (*Server::getClientByFD( data.fd )).getHostname()
 				+ " NICK " + (*Server::getClientByFD( data.fd )).getNickname() + "\r\n";
-			send( data.fd, reply.c_str(), reply.size(), 0 );
+			send( data.fd, reply.c_str(), reply.size(), MSG_DONTWAIT );
 			LOGC( SERVER ) << reply;
 		}
 	}
@@ -91,7 +91,7 @@ void	Command::nickCommand( const CommandData_t& data ) const {
 			// It contains disallowed special characters (varies per server, but often excludes , * ? ! @ . : # & at certain positions).
 			// It starts with a character not allowed (most servers require it to start with a letter or special symbol like _ or [ but not a number).
 			// It exceeds the maximum length (commonly 9 or 30 characters, depending on server config).
-			// It violates server-specific nickname rules. 
+			// It violates server-specific nickname rules.
 		//ERR_ERRONEUSNICKNAME
 			// It violates server-specific nickname rules.
 		//return sendReply( data.fd, ERR_ERRONEUSNICKNAME );
