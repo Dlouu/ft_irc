@@ -62,14 +62,14 @@ void	Command::joinCommand( const CommandData_t& data ) const {
 			}
 			channelObj->addUser( *executor );
 			channelObj->Welcome( *executor );
-			LOGC( CLIENT ) << "User '" << executor->getMask() << "' joined the channel " << channelObj->getName();
+			LOGC( DEBUG ) << "User '" << executor->getMask() << "' joined the channel " << channelObj->getName();
 		} else {
 			Channel	channelObj = Channel( channels[ i ] );
 			channelObj.addUser( *executor );
 			channelObj.addOperator( *executor );
 			Server::addChannel( channelObj );
 			channelObj.Welcome( *executor );
-			LOGC( CLIENT ) << "User '" << executor->getMask() << "' created the channel " << channelObj.getName();
+			LOGC( DEBUG ) << "User '" << executor->getMask() << "' created the channel " << channelObj.getName();
 		}
 	}
 	//if (no client or no channel param)

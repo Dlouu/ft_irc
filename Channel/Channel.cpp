@@ -6,7 +6,7 @@
 /*   By: tclaereb <tclaereb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/18 12:31:21 by tclaereb          #+#    #+#             */
-/*   Updated: 2025/10/10 09:13:25 by tclaereb         ###   ########.fr       */
+/*   Updated: 2025/10/10 13:33:17 by tclaereb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,12 +119,18 @@ void	Channel::addUser( Client &target ) {
 	this->_users.push_back( target );
 	target.setChannels( this->_name );
 
+	this->shareMessage(":" + target.getMask() + " PART " + this->_name + "\r\n");
 }
 
 void	Channel::delUser( Client &target ) {
 	std::vector< Client >::iterator it = std::find(this->_users.begin(), this->_users.end(), target );
-	this->_users.erase( it );
 	this->delOperator( target );
+
+	if ( it == this->_users.end() )
+		return ;
+
+	this->shareMessage( ":" + target.getMask() + " PART " + this->_name + "\r\n" );
+	this->_users.erase( it );
 	target.delChannel( this->_name );
 
 	if ( this->_users.size() < 1 )
@@ -143,23 +149,11 @@ void	Channel::delOperator( Client &target ) {
 		return ;
 
 	std::vector< Client >::iterator it = std::find( this->_operators.begin(), this->_operators.end(), target );
+
+	if ( it == this->_operators.end() )
+		return ;
+
 	this->_operators.erase( it );
-}
-
-void	Channel::addBan( Client &target ) {
-	if ( this->isClientBan( target ) )
-		return ;
-
-	this->_bans.push_back( target );
-	this->delUser( target );
-}
-
-void	Channel::delBan( Client &target ) {
-	if ( !this->isClientBan( target ) )
-		return ;
-
-	std::vector< Client >::iterator it = std::find( this->_users.begin(), this->_users.end(), target );
-	this->_bans.erase( it );
 }
 
 void	Channel::inviteSomeone( Client &target ) {
@@ -174,6 +168,10 @@ void	Channel::delInvitation( Client &target ) {
 		return ;
 
 	std::vector< Client >::iterator it = std::find( this->_invits.begin(), this->_invits.end(), target );
+
+	if ( it == this->_invits.end() )
+		return ;
+
 	this->_invits.erase( it );
 }
 
@@ -278,7 +276,12 @@ Channel	&Channel::operator=( const Channel &other ) {
 	return ( *this );
 }
 
+bool	Channel::operator==( const Channel &other ) const {
+	return ( this->_name == other._name );
+}
+
 std::ostream	&operator<<( std::ostream &os, const Channel &add ) {
-	os << "Channel name: " << add.getName() << "\n";
+	os << "Channel name: " << add.getName();
 	return ( os );
 }
+

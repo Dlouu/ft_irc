@@ -27,7 +27,6 @@ class Channel {
 	public:
 		Channel( void );
 		Channel( const std::string &name );
-		Channel						&operator=( const Channel &other );
 
 		const std::string			&getName( void ) const;
 		const std::string			&getTopic( void ) const;
@@ -55,9 +54,6 @@ class Channel {
 		void						addOperator( Client &target );
 		void						delOperator( Client &target );
 
-		void						addBan( Client &target );
-		void						delBan( Client &target );
-
 		void						inviteSomeone( Client &target );
 		void						delInvitation( Client &target );
 		bool						hasAnInvitation( const Client &target );
@@ -73,6 +69,9 @@ class Channel {
 		void						shareMessage( const Client &executor, const std::string &rawMsg, const std::string &cmd, std::string reason );
 		void						shareMessage( const Client &executor, const Client &target, const std::string &rawMsg, const std::string &cmd );
 		void						shareMessage( const Client &executor, const std::string &rawMsg, const std::string &cmd );
+
+		Channel						&operator=( const Channel &other );
+		bool						operator==( const Channel &other ) const;
 };
 
 std::ostream	&operator<<( std::ostream &os, const Channel &add );

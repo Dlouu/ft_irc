@@ -41,7 +41,7 @@ void	Command::kickCommand( const CommandData_t& data ) const {
 		return sendReply( data.fd, ERR_USERNOTINCHANNEL );
 	} else {
 		//kick from server
-		LOGC( INFO ) << "SUPPRIMER L'UTILISATEUR DE LA LISTE DES FD DU CHANNEL";
+		LOGC( DEBUG ) << "SUPPRIMER L'UTILISATEUR DE LA LISTE DES FD DU CHANNEL";
 		sendMessage( target.getFD(), ":" + client.getMask() + " KICK {channel} {target} :{reason}" );
 		channel->shareMessage( client, target.getNickname(), "KICK", g_vars["reason"]);
 		channel->delUser( target );

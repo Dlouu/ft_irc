@@ -148,7 +148,7 @@ std::map< int, Client >	Server::getClients( void ) {
 }
 
 Client	*Server::getClientByFD( const int fd ) {
-	
+
 	std::map<int, Client> ::iterator it = getInstance()->_users.find( fd );
 	if ( it == getInstance()->_users.end() )
 		return ( NULL );
@@ -244,19 +244,19 @@ void	Server::addChannel( Channel& channel ) {
 		}
 	}
 	server->_channels[ name ] = channel;
-	LOGC( INFO ) << "New channel added to the server: " << channel;
+	LOGC( DEBUG ) << "New channel added to the server: " << channel;
 }
 
 void	Server::delChannel( Channel& channel ) {
 	Server *server = Server::getInstance();
 
-	for( std::map< std::string, Channel >::iterator it = server->_channels.begin(); it != server->_channels.end(); it++ ) {
-		if ( it->first == channel.getName() ) {
-			LOGC( SERVER ) << "Channel '" << channel.getName() << "' have been deleted.";
-			server->_channels.erase( it );
-			return ;
-		}
-	}
+	std::map< std::string, Channel >::iterator it = server->_channels.find( channel.getName() );
+
+	if ( it == server->_channels.end() )
+		return ;
+
+	LOGC( DEBUG ) << "Channel '" << channel.getName() << "' have been deleted.";
+	server->_channels.erase( it->first );
 }
 
 bool	Server::DoesChannelExist( const Channel& channel ) {
@@ -285,8 +285,11 @@ void	Server::delClient(int fd) {
 	std::vector<std::string> chans = user->getChannels();
 	if (!chans.empty()) {
 		for (std::vector<std::string>::iterator it = chans.begin(); it != chans.end(); ++it) {
-			instance->getChannel(*it)->delUser(*user);
-			instance->getChannel(*it)->shareMessage(":" + user->getMask() + " QUIT" + "\r\n");
+
+			Channel	*channelObj = instance->getChannel(*it);
+			if ( !channelObj )
+				continue ;
+			channelObj->delUser(*user);
 		}
 	}
 	instance->_users.erase(fd);

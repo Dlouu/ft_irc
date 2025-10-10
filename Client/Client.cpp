@@ -45,12 +45,12 @@ void	Client::setChannels( const std::string& chan) {
 }
 
 void	Client::delChannel(const std::string& chan) {
-	for (std::vector<std::string>::iterator it = this->_channels.begin(); it != this->_channels.end(); ++it) {
-		if (*it == chan) {
-			this->_channels.erase(it);
-			return;
-		}
-	}
+	std::vector< std::string >::iterator it = std::find( this->_channels.begin(), this->_channels.end(), chan );
+
+	if ( it == this->_channels.end() )
+		return ;
+
+	this->_channels.erase( it );
 }
 
 const std::string&	Client::getNickname( void ) const {

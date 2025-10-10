@@ -4,6 +4,7 @@
 #include <string>
 #include <iostream>
 #include <vector>
+#include <algorithm>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include "Log.hpp"
