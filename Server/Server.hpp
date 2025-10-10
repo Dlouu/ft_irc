@@ -4,7 +4,6 @@
 #include <sys/epoll.h>
 #include <netinet/in.h>
 #include <unistd.h>
-#include <fcntl.h>
 #include <string>
 #include <iostream>
 #include <sstream>
