@@ -58,10 +58,10 @@ class Server
 		static const std::string&			getServPass( void );
 		static Channel						*getChannel( const std::string &name );
 
-		void								addChannel( Channel& channel );
-		void								delChannel( Channel& channel );
-		bool								isChannelExist( const Channel& channel );
-		bool								isChannelExist( const std::string& name );
+		static void								addChannel( Channel& channel );
+		static void								delChannel( Channel& channel );
+		static bool								DoesChannelExist( const Channel& channel );
+		static bool								DoesChannelExist( const std::string& name );
 
 		static void							setNicknameByFD( const int fd, const std::string& nickname );
 		static void							setHostnameByFD( const int fd, const std::string& hostname );

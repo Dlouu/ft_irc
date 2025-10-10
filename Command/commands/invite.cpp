@@ -1,8 +1,7 @@
 #include "Command.hpp"
 
 void	Command::inviteCommand( const CommandData_t& data ) const {
-	Server		*server		= Server::getInstance();
-	Client		&client		= *server->getClientByFD( data.fd );
+	Client		&client		= *Server::getClientByFD( data.fd );
 	Client		*invitee	= NULL;
 	Channel		*channel	= NULL;
 
@@ -16,14 +15,14 @@ void	Command::inviteCommand( const CommandData_t& data ) const {
 	else if (params.size() >= 3) {
 		g_vars[ "target" ] = params[1];
 		g_vars[ "channel" ] = params[2];
-		if (server->isChannelExist( params[2] ) == false) {
+		if (Server::DoesChannelExist( params[2] ) == false) {
 			return sendReply( data.fd, ERR_NOSUCHCHANNEL );
 		}
-		channel = server->getChannel( params[2] );
-		if (server->getClientByNick( params[1] ) == NULL) {
+		channel = Server::getChannel( params[2] );
+		if (Server::getClientByNick( params[1] ) == NULL) {
 			return sendReply( data.fd, ERR_NOSUCHNICK );
 		}
-		invitee = server->getClientByNick( params[1] );
+		invitee = Server::getClientByNick( params[1] );
 	}
 
 	//manage invite

@@ -6,7 +6,7 @@
 /*   By: tclaereb <tclaereb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/18 12:31:21 by tclaereb          #+#    #+#             */
-/*   Updated: 2025/10/10 08:50:46 by tclaereb         ###   ########.fr       */
+/*   Updated: 2025/10/10 09:13:25 by tclaereb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,6 +126,9 @@ void	Channel::delUser( Client &target ) {
 	this->_users.erase( it );
 	this->delOperator( target );
 	target.delChannel( this->_name );
+
+	if ( this->_users.size() < 1 )
+		Server::delChannel( *this );
 }
 
 void	Channel::addOperator( Client &target ) {

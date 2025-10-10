@@ -1,8 +1,7 @@
 #include "Command.hpp"
 
 void	Command::topicCommand( const CommandData_t& data ) const {
-	Server		*server		= Server::getInstance();
-	Client		&client		= *server->getClientByFD( data.fd );
+	Client		&client		= *Server::getClientByFD( data.fd );
 	Channel		*channel	= NULL;
 	std::string	topic		= "";
 	size_t		topicPos	= 0;
@@ -20,10 +19,10 @@ void	Command::topicCommand( const CommandData_t& data ) const {
 	}
 	else if (params.size() >= 2) {
 		g_vars[ "channel" ] = params[1];
-		if (server->isChannelExist( params[1] ) == false) {
+		if (Server::DoesChannelExist( params[1] ) == false) {
 			return sendReply( data.fd, ERR_NOSUCHCHANNEL );
 		}
-		channel = server->getChannel( params[1] );
+		channel = Server::getChannel( params[1] );
 	}
 
 	//manage topic

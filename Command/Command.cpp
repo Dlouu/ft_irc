@@ -62,7 +62,8 @@ std::vector< std::string > Command::split( const std::string &str, const char de
 	std::istringstream			iss( str );
 
 	while( std::getline( iss, token, delimiter ) ) {
-		container.push_back( token );
+		if ( !token.empty() )
+			container.push_back( token );
 	}
 
 	return ( container );

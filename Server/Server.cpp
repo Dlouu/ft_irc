@@ -148,6 +148,7 @@ std::map< int, Client >	Server::getClients( void ) {
 }
 
 Client	*Server::getClientByFD( const int fd ) {
+	
 	std::map<int, Client> ::iterator it = getInstance()->_users.find( fd );
 	if ( it == getInstance()->_users.end() )
 		return ( NULL );
@@ -234,33 +235,42 @@ Channel	*Server::getChannel( const std::string &name ) {
 }
 
 void	Server::addChannel( Channel& channel ) {
+	Server *server = Server::getInstance();
 	std::string	name = channel.getName();
-	for( std::map< std::string, Channel >::iterator it = this->_channels.begin(); it != this->_channels.end(); it++ ) {
+
+	for( std::map< std::string, Channel >::iterator it = server->_channels.begin(); it != server->_channels.end(); it++ ) {
 		if ( it->first == name ) {
 			return ;
 		}
 	}
-	this->_channels[ name ] = channel;
+	server->_channels[ name ] = channel;
 	LOGC( INFO ) << "New channel added to the server: " << channel;
 }
 
 void	Server::delChannel( Channel& channel ) {
-	for( std::map< std::string, Channel >::iterator it = this->_channels.begin(); it != this->_channels.end(); it++ ) {
+	Server *server = Server::getInstance();
+
+	for( std::map< std::string, Channel >::iterator it = server->_channels.begin(); it != server->_channels.end(); it++ ) {
 		if ( it->first == channel.getName() ) {
-			this->_channels.erase( it );
+			LOGC( SERVER ) << "Channel '" << channel.getName() << "' have been deleted.";
+			server->_channels.erase( it );
 			return ;
 		}
 	}
 }
 
-bool	Server::isChannelExist( const Channel& channel ) {
-	if ( this->_channels.find( channel.getName() ) != this->_channels.end() )
+bool	Server::DoesChannelExist( const Channel& channel ) {
+	Server *server = Server::getInstance();
+
+	if ( server->_channels.find( channel.getName() ) != server->_channels.end() )
 		return ( true );
 	return ( false );
 }
 
-bool	Server::isChannelExist( const std::string& name ) {
-	if ( this->_channels.find( name ) != this->_channels.end() )
+bool	Server::DoesChannelExist( const std::string& name ) {
+	Server *server = Server::getInstance();
+
+	if ( server->_channels.find( name ) != server->_channels.end() )
 		return ( true );
 	return ( false );
 }

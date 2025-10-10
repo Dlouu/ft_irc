@@ -2,7 +2,6 @@
 
 void	Command::modeCommand( const CommandData_t& data ) const {
 	Client	&client = *Server::getClientByFD( data.fd );
-	Server	*server = Server::getInstance();
 	Client	*target;
 	Channel	*channel;
 
@@ -21,7 +20,7 @@ void	Command::modeCommand( const CommandData_t& data ) const {
 			return ;
 		}
 	} else {
-		channel = server->getChannel( params[1] );
+		channel = Server::getChannel( params[1] );
 		if (channel) {
 			g_vars[ "channel" ]	= channel->getName();
 			if (!channel->isClientUser( client )) {
@@ -89,7 +88,7 @@ void	Command::modeCommand( const CommandData_t& data ) const {
 				if (paramIdx >= params.size()) {
 					return sendReply( data.fd, ERR_NEEDMOREPARAMS );
 				}
-				target = server->getClientByNick( params[paramIdx] );
+				target = Server::getClientByNick( params[paramIdx] );
 				paramIdx++;
 				if (!channel->isClientUser( *target )) {
 					return sendReply( data.fd, ERR_NOTONCHANNEL );

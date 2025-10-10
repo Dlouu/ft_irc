@@ -1,8 +1,7 @@
 #include "Command.hpp"
 
 void	Command::kickCommand( const CommandData_t& data ) const {
-	Server		*server		= Server::getInstance();
-	Client		&client		= *server->getClientByFD( data.fd );
+	Client		&client		= *Server::getClientByFD( data.fd );
 	Channel		*channel	= NULL;
 
 	std::vector<std::string> params = split( data.message, ' ' );
@@ -23,15 +22,15 @@ void	Command::kickCommand( const CommandData_t& data ) const {
 		} else {
 			g_vars[ "reason" ] = "";
 		}
-		if (server->isChannelExist( params[1] ) == false) {
+		if (Server::DoesChannelExist( params[1] ) == false) {
 			return sendReply( data.fd, ERR_NOSUCHCHANNEL );
 		}
-		channel = server->getChannel( params[1] );
-		if (server->getClientByNick( params[2] ) == NULL) {
+		channel = Server::getChannel( params[1] );
+		if (Server::getClientByNick( params[2] ) == NULL) {
 			return sendReply( data.fd, ERR_NOSUCHNICK );
 		}
 	}
-	Client	&target = *server->getClientByNick( params[2] );
+	Client	&target = *Server::getClientByNick( params[2] );
 
 	//manage kick
 	if (!channel->isClientOperator( client )) {
@@ -55,7 +54,7 @@ void	Command::kickCommand( const CommandData_t& data ) const {
 	//ERR_BADCHANMASK														// Begins with # or &
 																			// Has 1–200 characters
 																			// Cannot contain spaces, ASCII BEL (0x07), comma ,, or the channel type prefixes # / & / + / ! inside
-																			// Wildcards (*, ?) are generally not allowed unless specifically implemented for masks 
+																			// Wildcards (*, ?) are generally not allowed unless specifically implemented for masks
 																			//source : chat gpt t'inquiete
 //else if (client not on channel)
 	//ERR_NOTONCHANNEL
@@ -63,6 +62,6 @@ void	Command::kickCommand( const CommandData_t& data ) const {
 	//ERR_NOSUCHCHANNEL
 //else if (client is OP on channel)
 	//ERR_CHANOPRIVSNEEDED
-//else 
+//else
 	//kick target from server data
 	//send(<kicker>!<user>@<host> KICK <channel> <target> :<reason>)

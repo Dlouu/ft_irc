@@ -18,16 +18,16 @@ void	Command::partCommand(const CommandData_t& data) const {
 
 	std::vector< std::string > chansData = this->split( raw, ' ' );
 	std::vector< std::string > chans = this->split( chansData[ 0 ], ',' );
-	
+
 	if (chansData.size() > 1) {
 		for (size_t i = 1; i < chansData.size(); ++i) {
 			lastWord += chansData[i];
 		}
 	}
 	for (std::vector<std::string>::iterator it = chans.begin(); it != chans.end(); ++it) {
-		if (Server::getInstance()->isChannelExist(*it)) {
+		if (Server::getInstance()->DoesChannelExist(*it)) {
 			isItGood(*it, lastWord, data.fd);
-		} else if (!Server::getInstance()->isChannelExist(*it)) {
+		} else if (!Server::getInstance()->DoesChannelExist(*it)) {
 			sendReply(data.fd, ERR_NOSUCHCHANNEL);
 		}
 	}

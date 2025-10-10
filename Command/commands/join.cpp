@@ -17,9 +17,7 @@ bool	isChannelMaskValid( std::string name ) {
 }
 
 void	Command::joinCommand( const CommandData_t& data ) const {
-
-	Server	*server = Server::getInstance();
-	Client	*executor = server->getClientByFD( data.fd );
+	Client	*executor = Server::getClientByFD( data.fd );
 	if ( !executor )
 		return ( sendReply( data.fd, ERR_NEEDMOREPARAMS ) );
 
@@ -43,9 +41,9 @@ void	Command::joinCommand( const CommandData_t& data ) const {
 		} else if ( executor->getChannels().size() == Client::maxChannel )
 			return ( sendReply( fd, ERR_TOOMANYCHANNELS ) );
 
-		if ( server->isChannelExist( channels[ i ] ) ) {
+		if ( Server::DoesChannelExist( channels[ i ] ) ) {
 			Channel	*channelObj = NULL;
-			channelObj = server->getChannel( channels[ i ] );
+			channelObj = Server::getChannel( channels[ i ] );
 			if ( channelObj->isClientUser( *executor ) ) {
 				sendReply( fd, ERR_USERONCHANNEL );
 				continue ;
@@ -69,7 +67,7 @@ void	Command::joinCommand( const CommandData_t& data ) const {
 			Channel	channelObj = Channel( channels[ i ] );
 			channelObj.addUser( *executor );
 			channelObj.addOperator( *executor );
-			server->addChannel( channelObj );
+			Server::addChannel( channelObj );
 			channelObj.Welcome( *executor );
 			LOGC( CLIENT ) << "User '" << executor->getMask() << "' created the channel " << channelObj.getName();
 		}
