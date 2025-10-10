@@ -6,7 +6,7 @@
 /*   By: tclaereb <tclaereb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/18 12:31:21 by tclaereb          #+#    #+#             */
-/*   Updated: 2025/10/09 13:44:36 by tclaereb         ###   ########.fr       */
+/*   Updated: 2025/10/10 08:50:46 by tclaereb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,7 +115,6 @@ void	Channel::addUser( Client &target ) {
 	if ( this->isClientUser( target ) )
 		return ;
 
-	LOGC( INFO ) << "Adding user " << target.getNickname() << " to channel " << this->_name;
 	this->delInvitation( target );
 	this->_users.push_back( target );
 	target.setChannels( this->_name );
@@ -231,33 +230,36 @@ void	Channel::Welcome( const Client &client ) {
 }
 
 void	Channel::shareMessage( const Client &executor, const Client &target, const std::string &rawMsg, const std::string &cmd ) {
-	std::string	msg = ":" + executor.getMask() + " " + cmd + " " + this->_name + " :" + rawMsg + "\r\n";
-	send( target.getFD(), msg.c_str(), msg.size(), MSG_DONTWAIT );
+	std::string	msg = ":" + executor.getMask() + " " + cmd + " " + this->_name + " :" + rawMsg;
 	LOGC( SERVER ) << msg;
+	msg += "\r\n";
+	send( target.getFD(), msg.c_str(), msg.size(), MSG_DONTWAIT );
 }
 
 void	Channel::shareMessage( const Client &executor, const std::string &rawMsg, const std::string &cmd ) {
 	for ( size_t i = 0; i < this->_users.size(); i++ ) {
 		if ( cmd == "PRIVMSG" && executor.getFD() == this->_users[ i ].getFD() )
 			continue ;
-		std::string	msg = ":" + executor.getMask() + " " + cmd + " " + this->_name + " :" + rawMsg + "\r\n";
-		send( this->_users[ i ].getFD(), msg.c_str(), msg.size(), MSG_DONTWAIT );
+		std::string	msg = ":" + executor.getMask() + " " + cmd + " " + this->_name + " :" + rawMsg;
 		LOGC( SERVER ) << msg;
+		msg += "\r\n";
+		send( this->_users[ i ].getFD(), msg.c_str(), msg.size(), MSG_DONTWAIT );
 	}
 }
 
 void	Channel::shareMessage( const Client &executor, const std::string &rawMsg, const std::string &cmd, std::string reason ) {
 	for ( size_t i = 0; i < this->_users.size(); i++ ) {
-		std::string	msg = ":" + executor.getMask() + " " + cmd + " " + this->_name + " " + rawMsg + " :" + reason + "\r\n";
-		send( this->_users[ i ].getFD(), msg.c_str(), msg.size(), MSG_DONTWAIT );
+		std::string	msg = ":" + executor.getMask() + " " + cmd + " " + this->_name + " " + rawMsg + " :" + reason;
 		LOGC( SERVER ) << msg;
+		msg += "\r\n";
+		send( this->_users[ i ].getFD(), msg.c_str(), msg.size(), MSG_DONTWAIT );
 	}
 }
 
 void	Channel::shareMessage( const std::string &msg ) {
 	for ( size_t i = 0; i < this->_users.size(); i++ ) {
 		send( this->_users[ i ].getFD(), msg.c_str(), msg.size(), MSG_DONTWAIT );
-		LOGC( SERVER ) << msg;
+		LOGC( SERVER ) << ( msg[ msg.length() - 1 ] == '\n' ? msg.substr( 0, msg.length() - 2 ) : msg );
 	}
 }
 

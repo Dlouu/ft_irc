@@ -37,7 +37,6 @@ void	Command::privmsgCommand( const CommandData_t& data ) const {
 
 	for ( unsigned int i = 0; i < chanList.size(); i++ ) {
 		std::string name = chanList[ i ];
-		LOGC( INFO ) << "Managing query for " << name << ".";
 		// check if first char is valid
 		char	tmp[] = { '#', '&', '+', '!' };
 		bool	isChan = false;

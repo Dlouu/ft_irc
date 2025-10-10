@@ -119,13 +119,13 @@ bool	Client::isWelcomed( void ) {
 }
 
 void	Client::shareMessage( const Client &executor, const std::string &rawMsg ) {
-	std::string	msg = ":" + executor.getMask() + " PRIVMSG " + this->_nickname + " :" + rawMsg + "\r\n";
-	send( this->getFD(), msg.c_str(), msg.size(), MSG_DONTWAIT );
+	std::string	msg = ":" + executor.getMask() + " PRIVMSG " + this->_nickname + " :" + rawMsg;
 	LOGC( SERVER ) << msg;
+	msg += "\r\n";
+	send( this->getFD(), msg.c_str(), msg.size(), MSG_DONTWAIT );
 }
 
 
 bool	Client::operator==( const Client &other ) const {
-	LOGC( INFO ) << this->getFD() << " other fd: " << other.getFD();
 	return ( this->getFD() == other.getFD() );
 }

@@ -24,8 +24,6 @@ void	Command::joinCommand( const CommandData_t& data ) const {
 		return ( sendReply( data.fd, ERR_NEEDMOREPARAMS ) );
 
 	std::string cleanMsg = data.message.substr( 5, data.message.size() - 5 );
-	LOGC( INFO ) << data.message;
-	LOGC( INFO ) << cleanMsg;
 
 	std::vector< std::string > canalsData = this->split( cleanMsg, ' ' );
 	std::vector< std::string > channels = this->split( canalsData[ 0 ], ',' );
@@ -47,7 +45,6 @@ void	Command::joinCommand( const CommandData_t& data ) const {
 
 		if ( server->isChannelExist( channels[ i ] ) ) {
 			Channel	*channelObj = NULL;
-			LOGC( INFO ) << "Channel exist";
 			channelObj = server->getChannel( channels[ i ] );
 			if ( channelObj->isClientUser( *executor ) ) {
 				sendReply( fd, ERR_USERONCHANNEL );
@@ -67,14 +64,14 @@ void	Command::joinCommand( const CommandData_t& data ) const {
 			}
 			channelObj->addUser( *executor );
 			channelObj->Welcome( *executor );
+			LOGC( CLIENT ) << "User '" << executor->getMask() << "' joined the channel " << channelObj->getName();
 		} else {
-			LOGC( INFO ) << "Channel doesn't exist";
 			Channel	channelObj = Channel( channels[ i ] );
 			channelObj.addUser( *executor );
 			channelObj.addOperator( *executor );
 			server->addChannel( channelObj );
-			// a tester
 			channelObj.Welcome( *executor );
+			LOGC( CLIENT ) << "User '" << executor->getMask() << "' created the channel " << channelObj.getName();
 		}
 	}
 	//if (no client or no channel param)

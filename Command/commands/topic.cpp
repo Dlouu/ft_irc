@@ -9,7 +9,7 @@ void	Command::topicCommand( const CommandData_t& data ) const {
 
 	if ((topicPos = data.message.find(":") + 1) == std::string::npos)
 		return sendReply( data.fd, ERR_NEEDMOREPARAMS );
-	topic = data.message.substr( topicPos, data.message.length() );
+	topic = data.message.substr( topicPos, data.message.length() - topicPos );
 
 	std::vector<std::string> params = split( data.message, ' ' );
 	g_vars[ "command" ] = params[0];
@@ -37,7 +37,7 @@ void	Command::topicCommand( const CommandData_t& data ) const {
 	} else if (!channel->isClientUser( client )) {
 		sendReply( data.fd, ERR_NOTONCHANNEL );
 	} else {
-		channel->setTopic( topic.substr(1, topic.size()) );
+		channel->setTopic( topic.substr(0, topic.size()) );
 		g_vars[ "topic" ] = channel->getTopic();
 		channel->shareMessage( client, channel->getTopic(), "TOPIC" );
 		sendReply( data.fd, RPL_TOPIC );

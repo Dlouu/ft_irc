@@ -73,9 +73,10 @@ void	Command::nickCommand( const CommandData_t& data ) const {
 			std::string	reply = ":" + oldnick
 				+ "!" + (*Server::getClientByFD( data.fd )).getUsername()
 				+ "@" + (*Server::getClientByFD( data.fd )).getHostname()
-				+ " NICK " + (*Server::getClientByFD( data.fd )).getNickname() + "\r\n";
-			send( data.fd, reply.c_str(), reply.size(), MSG_DONTWAIT );
+				+ " NICK " + (*Server::getClientByFD( data.fd )).getNickname();
 			LOGC( SERVER ) << reply;
+			reply += "\r\n";
+			send( data.fd, reply.c_str(), reply.size(), MSG_DONTWAIT );
 		}
 	}
 }
