@@ -11,18 +11,18 @@ class Server;
 
 class Channel {
 	private:
-		std::string				_name;
-		std::string				_topic;
-		std::string				_password;
-		unsigned long			_userLimit;
+		std::string					_name;
+		std::string					_topic;
+		std::string					_password;
+		unsigned long				_userLimit;
 
-		std::vector< Client >	_users;
-		std::vector< Client >	_operators;
-		std::vector< Client >	_invits;
-		std::vector< Client >	_bans;
+		std::vector< Client >		_users;
+		std::vector< Client >		_operators;
+		std::vector< Client >		_invits;
+		std::vector< Client >		_bans;
 
-		bool					_inviteOnly;
-		bool					_topicOperatorOnly;
+		bool						_inviteOnly;
+		bool						_topicOperatorOnly;
 
 	public:
 		Channel( void );
@@ -74,4 +74,4 @@ class Channel {
 		bool						operator==( const Channel &other ) const;
 };
 
-std::ostream	&operator<<( std::ostream &os, const Channel &add );
+std::ostream						&operator<<( std::ostream &os, const Channel &add );
