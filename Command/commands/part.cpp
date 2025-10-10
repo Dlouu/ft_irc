@@ -1,15 +1,20 @@
 #include "Command.hpp"
 
 static void	isItGood(std::string chan, std::string lastWord, int fd) {
-	if (!Server::getInstance()->getChannel(chan)->isClientUser(*Server::getInstance()->getClientByFD(fd))) {
+	Server *instance = Server::getInstance();
+	if (!instance)
+		return;
+	std::string mask = instance->getClientByFD(fd)->getMask();
+	if (!instance->getChannel(chan)->isClientUser(*instance->getClientByFD(fd))) {
 		sendReply(fd, ERR_NOTONCHANNEL);
 		return;
 	}
-	std::string msg = ":" + Server::getInstance()->getClientByFD(fd)->getMask() + " PART " + chan + " " + lastWord + "\r\n";
-	Server::getInstance()->getChannel(chan)->shareMessage(msg);	//shareMessage(user PART #*it lasword);
-	g_vars[ "channel" ] = Server::getInstance()->getChannel(chan)->getName();
-	sendMessage( fd, ":" + Server::getInstance()->getClientByFD(fd)->getMask() + " KICK {channel} {nick} :{reason}" );
-	Server::getInstance()->getChannel(chan)->delUser(*Server::getInstance()->getClientByFD(fd));
+	std::string msg = ":" + mask + " PART " + chan + " " + lastWord + "\r\n";
+
+	instance->getChannel(chan)->shareMessage(msg);	//shareMessage(user PART #*it lasword);
+	g_vars[ "channel" ] = instance->getChannel(chan)->getName();
+	sendMessage( fd, ":" + mask + " KICK {channel} {nick} :{reason}" );
+	instance->getChannel(chan)->delUser(*instance->getClientByFD(fd));
 }
 
 void	Command::partCommand(const CommandData_t& data) const {
