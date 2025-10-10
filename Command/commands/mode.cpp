@@ -115,6 +115,9 @@ void	Command::modeCommand( const CommandData_t& data ) const {
 				}
 				flagsApplied += 'l';
 				break;
+			
+			case 'b':
+				return;
 
 			default:
 				return sendReply( data.fd, ERR_UMODEUNKNOWNFLAG );

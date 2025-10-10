@@ -7,8 +7,8 @@ void	Command::quitCommand( const CommandData_t& data ) const {
 	if (chans.empty())
 		return;
 	for (std::vector<std::string>::iterator it = chans.begin(); it != chans.end(); ++it) {
-		Server::getChannel(*it)->delUser(*user);
 		Server::getChannel(*it)->shareMessage(":" + user->getMask() + " QUIT :" + msg[1] + "\r\n");
+		Server::getChannel(*it)->delUser(*user);
 	}
 	Server::delClient(data.fd);
 }
