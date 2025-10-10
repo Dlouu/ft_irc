@@ -37,17 +37,4 @@ void	Command::inviteCommand( const CommandData_t& data ) const {
 		channel->shareMessage( client, *invitee, channel->getName(), "INVITE" );
 		sendReply( data.fd, RPL_INVITING );
 	}
-
-	//if (!invitee || !channel)
-		//ERR_NEEDMOREPARAMS
-	//if (client not on channel)
-		//ERR_NOTONCHANNEL
-	//else if (client not OP in channel in mode +i)
-		//ERR_CHANOPRIVSNEEDED
-	//else if (invitee not in databse)
-		//ERR_NOSUCHNICK
-	//else if (invitee already in channel)
-		//ERR_USERONCHANNEL
-	//else
-		//send(RPL_INVITING)
 }

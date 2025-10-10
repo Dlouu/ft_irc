@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Channel.cpp                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: tclaereb <tclaereb@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/18 12:31:21 by tclaereb          #+#    #+#             */
-/*   Updated: 2025/10/10 13:33:17 by tclaereb         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "Channel.hpp"
 
 Channel::Channel( void ) : _name( "" ), _password( "" ), _userLimit( 100 ), _inviteOnly( false ), _topicOperatorOnly( true ) {}
@@ -119,7 +107,7 @@ void	Channel::addUser( Client &target ) {
 	this->_users.push_back( target );
 	target.setChannels( this->_name );
 
-	this->shareMessage(":" + target.getMask() + " PART " + this->_name + "\r\n");
+	this->shareMessage(":" + target.getMask() + " JOIN " + this->_name + "\r\n");
 }
 
 void	Channel::delUser( Client &target ) {
@@ -128,8 +116,7 @@ void	Channel::delUser( Client &target ) {
 
 	if ( it == this->_users.end() )
 		return ;
-
-	this->shareMessage( ":" + target.getMask() + " PART " + this->_name + "\r\n" );
+	this->shareMessage( ":" + target.getMask() + " PART " + this->_name + " " + g_vars[ "reason" ] + "\r\n" );
 	this->_users.erase( it );
 	target.delChannel( this->_name );
 

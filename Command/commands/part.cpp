@@ -1,20 +1,16 @@
 #include "Command.hpp"
 
 static void	isItGood(std::string chan, std::string lastWord, int fd) {
-	Server *instance = Server::getInstance();
-	if (!instance)
-		return;
-	std::string mask = instance->getClientByFD(fd)->getMask();
-	if (!instance->getChannel(chan)->isClientUser(*instance->getClientByFD(fd))) {
-		sendReply(fd, ERR_NOTONCHANNEL);
-		return;
-	}
-	std::string msg = ":" + mask + " PART " + chan + " " + lastWord + "\r\n";
+	Channel	*channel = Server::getChannel(chan);
+	if (!channel)
+		return sendReply(fd, ERR_NOSUCHCHANNEL);
+	Client	*client = Server::getClientByFD(fd);
+	if (!client || !channel->isClientUser(*client))
+		return sendReply(fd, ERR_NOTONCHANNEL);		
 
-	instance->getChannel(chan)->shareMessage(msg);	//shareMessage(user PART #*it lasword);
-	g_vars[ "channel" ] = instance->getChannel(chan)->getName();
-	sendMessage( fd, ":" + mask + " KICK {channel} {nick} :{reason}" );
-	instance->getChannel(chan)->delUser(*instance->getClientByFD(fd));
+	g_vars[ "reason" ] = lastWord;
+	g_vars[ "channel" ] = channel->getName();
+	channel->delUser(*client);
 }
 
 void	Command::partCommand(const CommandData_t& data) const {
@@ -38,7 +34,3 @@ void	Command::partCommand(const CommandData_t& data) const {
 	}
 }
 
-/* Numeric Replies:
-
-           ERR_NEEDMOREPARAMS (irssi check en amont)
-		    */

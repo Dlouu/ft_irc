@@ -42,20 +42,3 @@ void	Command::topicCommand( const CommandData_t& data ) const {
 		sendReply( data.fd, RPL_TOPIC );
 	}
 }
-
-	//if (<channel> is empty)
-		//ERR_NEEDMOREPARAMS
-	//if (<channel> doesn't exist)
-		//ERR_NOSUCHCHANNEL
-	//else if (<topic> empty AND topic data is empty)
-		//RPL_NOTOPIC
-	//else if (channel mode +t AND client not OP)
-		//ERR_CHANOPRIVSNEEDED
-	//else if (client not in channel)
-		//ERR_NOTONCHANNEL
-	//else
-		//change topic message in database
-		//RPL_TOPIC
-
-	//	If the <topic> parameter is an empty string, the
-	//	topic for that channel will be removed
