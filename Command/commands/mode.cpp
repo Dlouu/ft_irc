@@ -46,6 +46,8 @@ void	Command::modeCommand( const CommandData_t& data ) const {
 
 	for (size_t i = 0; i < modeString.size(); ++i) {
 		char c = modeString[i];
+		if (c == 'b')
+			return ;
 		if (c == '+' || c == '-') {
 			sign = c;
 			flagsApplied += c;
@@ -115,9 +117,6 @@ void	Command::modeCommand( const CommandData_t& data ) const {
 				}
 				flagsApplied += 'l';
 				break;
-			
-			case 'b':
-				return;
 
 			default:
 				return sendReply( data.fd, ERR_UMODEUNKNOWNFLAG );
