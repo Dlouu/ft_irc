@@ -54,7 +54,6 @@ void	Command::privmsgCommand( const CommandData_t& data ) const {
 		// if chan, check if chan exist and if user is in chan, else check if user exist then send message
 		if ( isChan ) {
 			Channel	*channel = Server::getChannel( name );
-
 			if ( !channel ) {
 				return ( sendReply( executor->getFD(), ERR_NOSUCHCHANNEL ) );
 			} else if ( !channel->isClientUser( *executor ) ) {

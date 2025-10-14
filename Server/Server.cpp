@@ -85,6 +85,10 @@ Server::~Server() {
 		close(_socket);
 	if (_epoll != -1)
 		close(_epoll);
+
+	for (std::map<int, Client>::iterator it = this->_users.begin(); it != this->_users.end(); it++) {
+		close(it->second.getFD());
+	}
 }
 
 void	Server::loop() {
