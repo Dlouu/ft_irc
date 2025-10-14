@@ -125,7 +125,7 @@ void	Server::loop() {
 						if (*it == "CAP LS\r\n")
 							continue;
 						else if (!getInstance()->_users[clientFd].isPassOk()) {
-							std::cout << "* Client fd closed: bad password *\n";
+							std::cout << "* Client fd closed *\n";
 							delClient(clientFd);
 							break;
 						}
