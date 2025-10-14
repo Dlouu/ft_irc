@@ -271,4 +271,3 @@ std::ostream	&operator<<( std::ostream &os, const Channel &add ) {
 	os << "Channel name: " << add.getName();
 	return ( os );
 }
-
