@@ -115,10 +115,10 @@ std::string formatReply( const int code, const std::map<std::string, std::string
 void sendReply( const int fd, int code ) {
 	g_vars = fillVars( fd , g_vars );
 	std::string reply = formatReply( code, g_vars );
-	if ( send( fd, reply.c_str(), reply.length(), 0 ) == -1 ) {
+	if ( send( fd, reply.c_str(), reply.length(), MSG_DONTWAIT ) == -1 ) {
 		std::cerr << RED "Error sending response" END << std::endl;
 	}
-	LOGC( SERVER ) << reply;
+	LOGC( SERVER ) << reply.substr( 0, reply.length() - 2 );
 }
 
 std::string formatMessage( std::string message, const std::map<std::string, std::string> &vars ) {
@@ -139,9 +139,10 @@ std::string formatMessage( std::string message, const std::map<std::string, std:
 
 void sendMessage( const int fd, std::string str ) {
 	g_vars = fillVars( fd , g_vars );
-	std::string message = formatMessage( str + "\r\n", g_vars );
-	if ( send( fd, message.c_str(), message.length(), 0 ) == -1 ) {
+	std::string message = formatMessage( str, g_vars );
+	LOGC( SERVER ) << message;
+	message += "\r\n";
+	if ( send( fd, message.c_str(), message.length(), MSG_DONTWAIT ) == -1 ) {
 		std::cerr << RED "Error sending response" END << std::endl;
 	}
-	LOGC( SERVER ) << message;
 }

@@ -11,23 +11,22 @@ class Server;
 
 class Channel {
 	private:
-		std::string				_name;
-		std::string				_topic;
-		std::string				_password;
-		unsigned long			_userLimit;
+		std::string					_name;
+		std::string					_topic;
+		std::string					_password;
+		unsigned long				_userLimit;
 
-		std::vector< Client >	_users;
-		std::vector< Client >	_operators;
-		std::vector< Client >	_invits;
-		std::vector< Client >	_bans;
+		std::vector< Client >		_users;
+		std::vector< Client >		_operators;
+		std::vector< Client >		_invits;
+		std::vector< Client >		_bans;
 
-		bool					_inviteOnly;
-		bool					_topicOperatorOnly;
+		bool						_inviteOnly;
+		bool						_topicOperatorOnly;
 
 	public:
 		Channel( void );
 		Channel( const std::string &name );
-		Channel						&operator=( const Channel &other );
 
 		const std::string			&getName( void ) const;
 		const std::string			&getTopic( void ) const;
@@ -55,9 +54,6 @@ class Channel {
 		void						addOperator( Client &target );
 		void						delOperator( Client &target );
 
-		void						addBan( Client &target );
-		void						delBan( Client &target );
-
 		void						inviteSomeone( Client &target );
 		void						delInvitation( Client &target );
 		bool						hasAnInvitation( const Client &target );
@@ -73,6 +69,9 @@ class Channel {
 		void						shareMessage( const Client &executor, const std::string &rawMsg, const std::string &cmd, std::string reason );
 		void						shareMessage( const Client &executor, const Client &target, const std::string &rawMsg, const std::string &cmd );
 		void						shareMessage( const Client &executor, const std::string &rawMsg, const std::string &cmd );
+
+		Channel						&operator=( const Channel &other );
+		bool						operator==( const Channel &other ) const;
 };
 
-std::ostream	&operator<<( std::ostream &os, const Channel &add );
+std::ostream						&operator<<( std::ostream &os, const Channel &add );

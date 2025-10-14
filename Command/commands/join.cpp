@@ -17,15 +17,11 @@ bool	isChannelMaskValid( std::string name ) {
 }
 
 void	Command::joinCommand( const CommandData_t& data ) const {
-
-	Server	*server = Server::getInstance();
-	Client	*executor = server->getClientByFD( data.fd );
+	Client	*executor = Server::getClientByFD( data.fd );
 	if ( !executor )
 		return ( sendReply( data.fd, ERR_NEEDMOREPARAMS ) );
 
 	std::string cleanMsg = data.message.substr( 5, data.message.size() - 5 );
-	LOGC( INFO ) << data.message;
-	LOGC( INFO ) << cleanMsg;
 
 	std::vector< std::string > canalsData = this->split( cleanMsg, ' ' );
 	std::vector< std::string > channels = this->split( canalsData[ 0 ], ',' );
@@ -45,10 +41,9 @@ void	Command::joinCommand( const CommandData_t& data ) const {
 		} else if ( executor->getChannels().size() == Client::maxChannel )
 			return ( sendReply( fd, ERR_TOOMANYCHANNELS ) );
 
-		if ( server->isChannelExist( channels[ i ] ) ) {
+		if ( Server::DoesChannelExist( channels[ i ] ) ) {
 			Channel	*channelObj = NULL;
-			LOGC( INFO ) << "Channel exist";
-			channelObj = server->getChannel( channels[ i ] );
+			channelObj = Server::getChannel( channels[ i ] );
 			if ( channelObj->isClientUser( *executor ) ) {
 				sendReply( fd, ERR_USERONCHANNEL );
 				continue ;
@@ -67,36 +62,14 @@ void	Command::joinCommand( const CommandData_t& data ) const {
 			}
 			channelObj->addUser( *executor );
 			channelObj->Welcome( *executor );
+			LOGC( DEBUG ) << "User '" << executor->getMask() << "' joined the channel " << channelObj->getName();
 		} else {
-			LOGC( INFO ) << "Channel doesn't exist";
 			Channel	channelObj = Channel( channels[ i ] );
 			channelObj.addUser( *executor );
 			channelObj.addOperator( *executor );
-			server->addChannel( channelObj );
-			// a tester
+			Server::addChannel( channelObj );
 			channelObj.Welcome( *executor );
+			LOGC( DEBUG ) << "User '" << executor->getMask() << "' created the channel " << channelObj.getName();
 		}
 	}
-	//if (no client or no channel param)
-		//ERR_NEEDMOREPARAMS
-	//else if (channel mode is +i (invite only))
-		//ERR_INVITEONLYCHAN
-	//else if (channel doesn't exit)
-		//ERR_NOSUCHCHANNEL
-	//else if (channel name isn't in good format (e.g. no '#' before channel name)) A valid channel name typically:
-		//ERR_BADCHANMASK	// Begins with # or &
-							// Has 1–200 characters
-							// Cannot contain spaces, ASCII BEL (0x07), comma ,, or the channel type prefixes # / & / + / ! inside
-							// Wildcards (*, ?) are generally not allowed unless specifically implemented for masks
-							//source : chat gpt t'inquiete
-	//else if (channel is full)
-		//ERR_CHANNELISFULL
-	//else if (client is in ban list of the channel)
-		//ERR_BANNEDFROMCHAN
-	//else if (password is wrong)
-		//ERR_BADCHANNELKEY
-	//else if (client joined too many channels (>10?))
-		//ERR_TOOMANYCHANNELS
-	//else
-		//RPL_TOPIC and RPL_NAMREPLY
 }

@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Channel.cpp                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: tclaereb <tclaereb@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/18 12:31:21 by tclaereb          #+#    #+#             */
-/*   Updated: 2025/10/07 16:45:23 by tclaereb         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "Channel.hpp"
 
 Channel::Channel( void ) : _name( "" ), _password( "" ), _userLimit( 100 ), _inviteOnly( false ), _topicOperatorOnly( true ) {}
@@ -115,18 +103,25 @@ void	Channel::addUser( Client &target ) {
 	if ( this->isClientUser( target ) )
 		return ;
 
-	LOGC( INFO ) << "Adding user " << target.getNickname() << " to channel " << this->_name;
 	this->delInvitation( target );
 	this->_users.push_back( target );
 	target.setChannels( this->_name );
 
+	this->shareMessage(":" + target.getMask() + " JOIN " + this->_name + "\r\n");
 }
 
 void	Channel::delUser( Client &target ) {
 	std::vector< Client >::iterator it = std::find(this->_users.begin(), this->_users.end(), target );
-	this->_users.erase( it );
 	this->delOperator( target );
+
+	if ( it == this->_users.end() )
+		return ;
+	this->shareMessage( ":" + target.getMask() + " PART " + this->_name + " " + g_vars[ "reason" ] + "\r\n" );
+	this->_users.erase( it );
 	target.delChannel( this->_name );
+
+	if ( this->_users.size() < 1 )
+		Server::delChannel( *this );
 }
 
 void	Channel::addOperator( Client &target ) {
@@ -141,23 +136,11 @@ void	Channel::delOperator( Client &target ) {
 		return ;
 
 	std::vector< Client >::iterator it = std::find( this->_operators.begin(), this->_operators.end(), target );
+
+	if ( it == this->_operators.end() )
+		return ;
+
 	this->_operators.erase( it );
-}
-
-void	Channel::addBan( Client &target ) {
-	if ( this->isClientBan( target ) )
-		return ;
-
-	this->_bans.push_back( target );
-	this->delUser( target );
-}
-
-void	Channel::delBan( Client &target ) {
-	if ( !this->isClientBan( target ) )
-		return ;
-
-	std::vector< Client >::iterator it = std::find( this->_users.begin(), this->_users.end(), target );
-	this->_bans.erase( it );
 }
 
 void	Channel::inviteSomeone( Client &target ) {
@@ -172,6 +155,10 @@ void	Channel::delInvitation( Client &target ) {
 		return ;
 
 	std::vector< Client >::iterator it = std::find( this->_invits.begin(), this->_invits.end(), target );
+
+	if ( it == this->_invits.end() )
+		return ;
+
 	this->_invits.erase( it );
 }
 
@@ -231,33 +218,36 @@ void	Channel::Welcome( const Client &client ) {
 }
 
 void	Channel::shareMessage( const Client &executor, const Client &target, const std::string &rawMsg, const std::string &cmd ) {
-	std::string	msg = ":" + executor.getMask() + " " + cmd + " " + this->_name + " :" + rawMsg + "\r\n";
-	send( target.getFD(), msg.c_str(), msg.size(), 0 );
+	std::string	msg = ":" + executor.getMask() + " " + cmd + " " + this->_name + " :" + rawMsg;
 	LOGC( SERVER ) << msg;
+	msg += "\r\n";
+	send( target.getFD(), msg.c_str(), msg.size(), MSG_DONTWAIT );
 }
 
 void	Channel::shareMessage( const Client &executor, const std::string &rawMsg, const std::string &cmd ) {
 	for ( size_t i = 0; i < this->_users.size(); i++ ) {
 		if ( cmd == "PRIVMSG" && executor.getFD() == this->_users[ i ].getFD() )
 			continue ;
-		std::string	msg = ":" + executor.getMask() + " " + cmd + " " + this->_name + " :" + rawMsg + "\r\n";
-		send( this->_users[ i ].getFD(), msg.c_str(), msg.size(), 0 );
+		std::string	msg = ":" + executor.getMask() + " " + cmd + " " + this->_name + " :" + rawMsg;
 		LOGC( SERVER ) << msg;
+		msg += "\r\n";
+		send( this->_users[ i ].getFD(), msg.c_str(), msg.size(), MSG_DONTWAIT );
 	}
 }
 
 void	Channel::shareMessage( const Client &executor, const std::string &rawMsg, const std::string &cmd, std::string reason ) {
 	for ( size_t i = 0; i < this->_users.size(); i++ ) {
-		std::string	msg = ":" + executor.getMask() + " " + cmd + " " + this->_name + " " + rawMsg + " :" + reason + "\r\n";
-		send( this->_users[ i ].getFD(), msg.c_str(), msg.size(), 0 );
+		std::string	msg = ":" + executor.getMask() + " " + cmd + " " + this->_name + " " + rawMsg + " :" + reason;
 		LOGC( SERVER ) << msg;
+		msg += "\r\n";
+		send( this->_users[ i ].getFD(), msg.c_str(), msg.size(), MSG_DONTWAIT );
 	}
 }
 
 void	Channel::shareMessage( const std::string &msg ) {
 	for ( size_t i = 0; i < this->_users.size(); i++ ) {
-		send( this->_users[ i ].getFD(), msg.c_str(), msg.size(), 0 );
-		LOGC( SERVER ) << msg;
+		send( this->_users[ i ].getFD(), msg.c_str(), msg.size(), MSG_DONTWAIT );
+		LOGC( SERVER ) << ( msg[ msg.length() - 1 ] == '\n' ? msg.substr( 0, msg.length() - 2 ) : msg );
 	}
 }
 
@@ -273,7 +263,11 @@ Channel	&Channel::operator=( const Channel &other ) {
 	return ( *this );
 }
 
+bool	Channel::operator==( const Channel &other ) const {
+	return ( this->_name == other._name );
+}
+
 std::ostream	&operator<<( std::ostream &os, const Channel &add ) {
-	os << "Channel name: " << add.getName() << "\n";
+	os << "Channel name: " << add.getName();
 	return ( os );
 }

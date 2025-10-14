@@ -2,6 +2,10 @@
 
 void	Command::privmsgCommand( const CommandData_t& data ) const {
 	Client	*executor = Server::getClientByFD( data.fd );
+
+	if ( !executor )
+		return ;
+
 	std::string	cleanMsg = data.message.substr( 7, data.message.size() - 7 );
 
 	// find start pos of the channel name
@@ -37,7 +41,6 @@ void	Command::privmsgCommand( const CommandData_t& data ) const {
 
 	for ( unsigned int i = 0; i < chanList.size(); i++ ) {
 		std::string name = chanList[ i ];
-		LOGC( INFO ) << "Managing query for " << name << ".";
 		// check if first char is valid
 		char	tmp[] = { '#', '&', '+', '!' };
 		bool	isChan = false;
@@ -51,7 +54,6 @@ void	Command::privmsgCommand( const CommandData_t& data ) const {
 		// if chan, check if chan exist and if user is in chan, else check if user exist then send message
 		if ( isChan ) {
 			Channel	*channel = Server::getChannel( name );
-
 			if ( !channel ) {
 				return ( sendReply( executor->getFD(), ERR_NOSUCHCHANNEL ) );
 			} else if ( !channel->isClientUser( *executor ) ) {

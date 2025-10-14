@@ -4,7 +4,6 @@
 #include <sys/epoll.h>
 #include <netinet/in.h>
 #include <unistd.h>
-#include <fcntl.h>
 #include <string>
 #include <iostream>
 #include <sstream>
@@ -18,9 +17,12 @@
 #include "NumReply.hpp"
 #include "signal.hpp"
 
-# define MAX_EVENTS 10
-# define SERVER_VERSION "ft_irc-1.0"
-# define SERVER_NAME "server.irc.uwu"
+#define RED "\033[0;31m"
+#define END "\033[m"
+
+#define MAX_EVENTS 10
+#define SERVER_VERSION "ft_irc-1.0"
+#define SERVER_NAME "server.irc.uwu"
 
 std::vector<std::string> extractMessages(std::string& buffer);
 
@@ -52,16 +54,16 @@ class Server
 		static void							destroyInstance( void );
 
 		static std::map<int, Client>		getClients( void );
-		static Client						*getClientByFD( const int fd );
-		static Client						*getClientByNick( std::string nick );
 		static const std::string&			getServername( void );
 		static const std::string&			getServPass( void );
+		static Client						*getClientByFD( const int fd );
+		static Client						*getClientByNick( std::string nick );
 		static Channel						*getChannel( const std::string &name );
 
-		void								addChannel( Channel& channel );
-		void								delChannel( Channel& channel );
-		bool								isChannelExist( const Channel& channel );
-		bool								isChannelExist( const std::string& name );
+		static void							addChannel( Channel& channel );
+		static void							delChannel( Channel& channel );
+		static bool							DoesChannelExist( const Channel& channel );
+		static bool							DoesChannelExist( const std::string& name );
 
 		static void							setNicknameByFD( const int fd, const std::string& nickname );
 		static void							setHostnameByFD( const int fd, const std::string& hostname );

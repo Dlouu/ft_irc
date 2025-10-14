@@ -47,9 +47,3 @@ void	Command::userCommand( const CommandData_t& data ) const {
 		}
 	}
 }
-
-	//NOTES:
-	//if (!<username> OR !<hostname> OR !<servername> OR !<realname>)
-		//ERR_NEEDMOREPARAMS
-	//else if (user already connected)
-		//ERR_ALREADYREGISTRED

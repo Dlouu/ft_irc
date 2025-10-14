@@ -1,8 +1,7 @@
 #include "Command.hpp"
 
 void	Command::kickCommand( const CommandData_t& data ) const {
-	Server		*server		= Server::getInstance();
-	Client		&client		= *server->getClientByFD( data.fd );
+	Client		&client		= *Server::getClientByFD( data.fd );
 	Channel		*channel	= NULL;
 
 	std::vector<std::string> params = split( data.message, ' ' );
@@ -23,46 +22,26 @@ void	Command::kickCommand( const CommandData_t& data ) const {
 		} else {
 			g_vars[ "reason" ] = "";
 		}
-		if (server->isChannelExist( params[1] ) == false) {
+		if (Server::DoesChannelExist( params[1] ) == false) {
 			return sendReply( data.fd, ERR_NOSUCHCHANNEL );
 		}
-		channel = server->getChannel( params[1] );
-		if (server->getClientByNick( params[2] ) == NULL) {
+		channel = Server::getChannel( params[1] );
+		if (Server::getClientByNick( params[2] ) == NULL) {
 			return sendReply( data.fd, ERR_NOSUCHNICK );
 		}
 	}
-	Client	&target = *server->getClientByNick( params[2] );
+	Client	*target = Server::getClientByNick( params[2] );
 
 	//manage kick
 	if (!channel->isClientOperator( client )) {
 		return sendReply( data.fd, ERR_CHANOPRIVSNEEDED );
 	} else if (!channel->isClientUser( client )) {
 		return sendReply( data.fd, ERR_NOTONCHANNEL );
-	} else if (!channel->isClientUser( target )) {
+	} else if (!channel->isClientUser( *target )) {
 		return sendReply( data.fd, ERR_USERNOTINCHANNEL );
 	} else {
-		//kick from server
-		LOGC( INFO ) << "SUPPRIMER L'UTILISATEUR DE LA LISTE DES FD DU CHANNEL";
-		sendMessage( target.getFD(), ":" + client.getMask() + " KICK {channel} {target} :{reason}" );
-		channel->shareMessage( client, target.getNickname(), "KICK", g_vars["reason"]);
-		channel->delUser( target );
+		sendMessage( target->getFD(), ":" + client.getMask() + " KICK {channel} {target} :{reason}" );
+		channel->shareMessage( client, target->getNickname(), "KICK", g_vars["reason"]);
+		channel->delUser( *target );
 	}
 }
-
-//if (no target or no channel)
-	//ERR_NEEDMOREPARAMS
-//else if (channel name isn't in good format (e.g. no '#' before channel name)) A valid channel name typically:
-	//ERR_BADCHANMASK														// Begins with # or &
-																			// Has 1–200 characters
-																			// Cannot contain spaces, ASCII BEL (0x07), comma ,, or the channel type prefixes # / & / + / ! inside
-																			// Wildcards (*, ?) are generally not allowed unless specifically implemented for masks 
-																			//source : chat gpt t'inquiete
-//else if (client not on channel)
-	//ERR_NOTONCHANNEL
-//else if (channel not in data)
-	//ERR_NOSUCHCHANNEL
-//else if (client is OP on channel)
-	//ERR_CHANOPRIVSNEEDED
-//else 
-	//kick target from server data
-	//send(<kicker>!<user>@<host> KICK <channel> <target> :<reason>)

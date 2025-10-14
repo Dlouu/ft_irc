@@ -45,12 +45,12 @@ void	Client::setChannels( const std::string& chan) {
 }
 
 void	Client::delChannel(const std::string& chan) {
-	for (std::vector<std::string>::iterator it = this->_channels.begin(); it != this->_channels.end(); ++it) {
-		if (*it == chan) {
-			this->_channels.erase(it);
-			return;
-		}
-	}
+	std::vector< std::string >::iterator it = std::find( this->_channels.begin(), this->_channels.end(), chan );
+
+	if ( it == this->_channels.end() )
+		return ;
+
+	this->_channels.erase( it );
 }
 
 const std::string&	Client::getNickname( void ) const {
@@ -119,13 +119,13 @@ bool	Client::isWelcomed( void ) {
 }
 
 void	Client::shareMessage( const Client &executor, const std::string &rawMsg ) {
-	std::string	msg = ":" + executor.getMask() + " PRIVMSG " + this->_nickname + " :" + rawMsg + "\r\n";
-	send( this->getFD(), msg.c_str(), msg.size(), 0 );
+	std::string	msg = ":" + executor.getMask() + " PRIVMSG " + this->_nickname + " :" + rawMsg;
 	LOGC( SERVER ) << msg;
+	msg += "\r\n";
+	send( this->getFD(), msg.c_str(), msg.size(), MSG_DONTWAIT );
 }
 
 
 bool	Client::operator==( const Client &other ) const {
-	LOGC( INFO ) << this->getFD() << " other fd: " << other.getFD();
 	return ( this->getFD() == other.getFD() );
 }

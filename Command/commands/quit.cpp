@@ -1,15 +1,21 @@
 #include "Command.hpp"
 
 void	Command::quitCommand( const CommandData_t& data ) const {
-	Server *instance = Server::getInstance();
-	Client *user = instance->getClientByFD(data.fd);
+	Client *user = Server::getClientByFD(data.fd);
+	if (!user)
+		return;
 	std::vector<std::string> chans = user->getChannels();
 	std::vector<std::string> msg = split(data.message, ':');
 	if (chans.empty())
 		return;
 	for (std::vector<std::string>::iterator it = chans.begin(); it != chans.end(); ++it) {
-		instance->getChannel(*it)->delUser(*user);
-		instance->getChannel(*it)->shareMessage(":" + user->getMask() + " QUIT :" + msg[1] + "\r\n");
+		if (!Server::DoesChannelExist(*it)) {
+			g_vars[ "channel" ] = *it;
+			sendReply(user->getFD(), ERR_NOSUCHCHANNEL);
+			continue;
+		}
+		Server::getChannel(*it)->shareMessage(":" + user->getMask() + " QUIT :" + msg[1] + "\r\n");
+		Server::getChannel(*it)->delUser(*user);
 	}
-	instance->delClient(data.fd);
+	Server::delClient(data.fd);
 }

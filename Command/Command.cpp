@@ -52,7 +52,7 @@ void Command::processIRCMessage( int fd, const std::string& message ) {
 	if ( cleanMessage.size() >= 2 && cleanMessage.substr( cleanMessage.size() - 2 ) == "\r\n" ) {
 		cleanMessage = cleanMessage.substr( 0, cleanMessage.size() - 2 );
 	}
-	LOGC( CLIENT ) << message;
+	LOGC( CLIENT ) << cleanMessage;
 	getInstance()->handleCommand( ( CommandData_t ){ cleanMessage, fd } );
 }
 
@@ -62,7 +62,8 @@ std::vector< std::string > Command::split( const std::string &str, const char de
 	std::istringstream			iss( str );
 
 	while( std::getline( iss, token, delimiter ) ) {
-		container.push_back( token );
+		if ( !token.empty() )
+			container.push_back( token );
 	}
 
 	return ( container );

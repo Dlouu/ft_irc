@@ -1,11 +1,6 @@
 #include "Server.hpp"
 
-/*
-Faut qu'on test le try and catch s'il fonctionne
-GetClientByFD
-*/
-
-Server			*Server::_instance;
+Server			*Server::_instance = NULL;
 std::string		Server::_name;
 std::string		Server::_password;
 
@@ -21,17 +16,17 @@ std::vector<std::string> extractMessages(std::string& buffer) {
 }
 
 Server *Server::getInstance( void ) {
-    if ( Server::_instance == NULL ) {
-        Server::_instance = new Server();
-    }
-    return Server::_instance;
+	if ( Server::_instance == NULL ) {
+		Server::_instance = new Server();
+	}
+	return Server::_instance;
 }
 
 void	Server::destroyInstance( void ) {
-	if (_instance)
+	if (_instance) {
 		delete _instance;
-	_instance = NULL;
-	return;
+		_instance = NULL;
+	}
 }
 
 Server::Server( void ) {}
@@ -50,12 +45,8 @@ void	Server::init(int port, std::string password) {
 	datetime = date.substr(0, date.length() - 1);
 	g_vars = fillPermanentVars();
 
-	if ((_socket = socket(AF_INET, SOCK_STREAM, 6)) == -1)
+	if ((_socket = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 6)) == -1)
 		std::cerr << "Error during socket creation\n";
-	if (fcntl(_socket, F_SETFL, O_NONBLOCK) == -1) {
-		std::cerr << "Error: serverSocker: fnctl()\n";
-		return;
-	}
 
 	_address.sin_family = AF_INET;
 	_address.sin_port = htons(port);
@@ -94,6 +85,10 @@ Server::~Server() {
 		close(_socket);
 	if (_epoll != -1)
 		close(_epoll);
+
+	for (std::map<int, Client>::iterator it = this->_users.begin(); it != this->_users.end(); it++) {
+		close(it->second.getFD());
+	}
 }
 
 void	Server::loop() {
@@ -105,14 +100,14 @@ void	Server::loop() {
 		buffer.resize(1024);
 		int n_events = epoll_wait(_epoll, _events, 10, -1);
 		if (n_events == -1) {
-			std::cerr << "Error: epoll_wait()\n";
+			if (!sig_caught)
+				std::cerr << "Error: epoll_wait()\n";
 			break;
 		}
 		for (int i = 0; i < n_events; ++i) {
 			if (_events[i].data.fd == _socket) {
 				clientSocket = accept(_socket, NULL, NULL);
 				if (clientSocket != -1) {
-					fcntl(clientSocket, F_SETFL, O_NONBLOCK);
 					epoll_event client_event;
 					client_event.events = EPOLLIN;
 					client_event.data.fd = clientSocket;
@@ -120,7 +115,7 @@ void	Server::loop() {
 				}
 			} else {
 				int clientFd = _events[i].data.fd;
-				int bytes = recv(clientFd, &buffer[0], buffer.size() - 1, 0);
+				int bytes = recv(clientFd, &buffer[0], buffer.size() - 1, MSG_DONTWAIT);
 				if (bytes > 0) {
 					buffer.resize(bytes);
 					clientBuffers[clientFd] += buffer;
@@ -150,8 +145,6 @@ void	Server::loop() {
 			}
 		}
 	}
-	if (clientSocket != -1)
-		close(clientSocket);
 }
 
 std::map< int, Client >	Server::getClients( void ) {
@@ -159,6 +152,7 @@ std::map< int, Client >	Server::getClients( void ) {
 }
 
 Client	*Server::getClientByFD( const int fd ) {
+
 	std::map<int, Client> ::iterator it = getInstance()->_users.find( fd );
 	if ( it == getInstance()->_users.end() )
 		return ( NULL );
@@ -245,33 +239,42 @@ Channel	*Server::getChannel( const std::string &name ) {
 }
 
 void	Server::addChannel( Channel& channel ) {
+	Server *server = Server::getInstance();
 	std::string	name = channel.getName();
-	for( std::map< std::string, Channel >::iterator it = this->_channels.begin(); it != this->_channels.end(); it++ ) {
+
+	for( std::map< std::string, Channel >::iterator it = server->_channels.begin(); it != server->_channels.end(); it++ ) {
 		if ( it->first == name ) {
 			return ;
 		}
 	}
-	this->_channels[ name ] = channel;
-	LOGC( INFO ) << "New channel added to the server: " << channel;
+	server->_channels[ name ] = channel;
+	LOGC( DEBUG ) << "New channel added to the server: " << channel;
 }
 
 void	Server::delChannel( Channel& channel ) {
-	for( std::map< std::string, Channel >::iterator it = this->_channels.begin(); it != this->_channels.end(); it++ ) {
-		if ( it->first == channel.getName() ) {
-			this->_channels.erase( it );
-			return ;
-		}
-	}
+	Server *server = Server::getInstance();
+
+	std::map< std::string, Channel >::iterator it = server->_channels.find( channel.getName() );
+
+	if ( it == server->_channels.end() )
+		return ;
+
+	LOGC( DEBUG ) << "Channel '" << channel.getName() << "' have been deleted.";
+	server->_channels.erase( it->first );
 }
 
-bool	Server::isChannelExist( const Channel& channel ) {
-	if ( this->_channels.find( channel.getName() ) != this->_channels.end() )
+bool	Server::DoesChannelExist( const Channel& channel ) {
+	Server *server = Server::getInstance();
+
+	if ( server->_channels.find( channel.getName() ) != server->_channels.end() )
 		return ( true );
 	return ( false );
 }
 
-bool	Server::isChannelExist( const std::string& name ) {
-	if ( this->_channels.find( name ) != this->_channels.end() )
+bool	Server::DoesChannelExist( const std::string& name ) {
+	Server *server = Server::getInstance();
+
+	if ( server->_channels.find( name ) != server->_channels.end() )
 		return ( true );
 	return ( false );
 }
@@ -279,12 +282,19 @@ bool	Server::isChannelExist( const std::string& name ) {
 void	Server::delClient(int fd) {
 	Server *instance = getInstance();
 	Client *user = instance->getClientByFD(fd);
-	std::vector<std::string> chans = user->getChannels();
-	if (chans.empty())
-		return;
-	for (std::vector<std::string>::iterator it = chans.begin(); it != chans.end(); ++it) {
-		instance->getChannel(*it)->delUser(*user);
-		instance->getChannel(*it)->shareMessage(":" + user->getMask() + " QUIT" + "\r\n");
-	}
+
 	close(fd);
+	if (!user)
+		return ;
+	std::vector<std::string> chans = user->getChannels();
+	if (!chans.empty()) {
+		for (std::vector<std::string>::iterator it = chans.begin(); it != chans.end(); ++it) {
+
+			Channel	*channelObj = instance->getChannel(*it);
+			if ( !channelObj )
+				continue ;
+			channelObj->delUser(*user);
+		}
+	}
+	instance->_users.erase(fd);
 }

@@ -1,15 +1,16 @@
 #include "Command.hpp"
 
 static void	isItGood(std::string chan, std::string lastWord, int fd) {
-	if (!Server::getInstance()->getChannel(chan)->isClientUser(*Server::getInstance()->getClientByFD(fd))) {
-		sendReply(fd, ERR_NOTONCHANNEL);
-		return;
-	}
-	std::string msg = ":" + Server::getInstance()->getClientByFD(fd)->getMask() + " PART " + chan + " " + lastWord + "\r\n";
-	Server::getInstance()->getChannel(chan)->shareMessage(msg);	//shareMessage(user PART #*it lasword);
-	g_vars[ "channel" ] = Server::getInstance()->getChannel(chan)->getName();
-	sendMessage( fd, ":" + Server::getInstance()->getClientByFD(fd)->getMask() + " KICK {channel} {nick} :{reason}" );
-	Server::getInstance()->getChannel(chan)->delUser(*Server::getInstance()->getClientByFD(fd));
+	Channel	*channel = Server::getChannel(chan);
+	if (!channel)
+		return sendReply(fd, ERR_NOSUCHCHANNEL);
+	Client	*client = Server::getClientByFD(fd);
+	if (!client || !channel->isClientUser(*client))
+		return sendReply(fd, ERR_NOTONCHANNEL);
+
+	g_vars[ "reason" ] = lastWord;
+	g_vars[ "channel" ] = channel->getName();
+	channel->delUser(*client);
 }
 
 void	Command::partCommand(const CommandData_t& data) const {
@@ -18,22 +19,18 @@ void	Command::partCommand(const CommandData_t& data) const {
 
 	std::vector< std::string > chansData = this->split( raw, ' ' );
 	std::vector< std::string > chans = this->split( chansData[ 0 ], ',' );
-	
+
 	if (chansData.size() > 1) {
 		for (size_t i = 1; i < chansData.size(); ++i) {
 			lastWord += chansData[i];
 		}
 	}
 	for (std::vector<std::string>::iterator it = chans.begin(); it != chans.end(); ++it) {
-		if (Server::getInstance()->isChannelExist(*it)) {
+		if (Server::getInstance()->DoesChannelExist(*it)) {
 			isItGood(*it, lastWord, data.fd);
-		} else if (!Server::getInstance()->isChannelExist(*it)) {
+		} else if (!Server::getInstance()->DoesChannelExist(*it)) {
 			sendReply(data.fd, ERR_NOSUCHCHANNEL);
 		}
 	}
 }
 
-/* Numeric Replies:
-
-           ERR_NEEDMOREPARAMS (irssi check en amont)
-		    */
