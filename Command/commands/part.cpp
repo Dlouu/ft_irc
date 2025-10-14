@@ -15,16 +15,16 @@ static void	isItGood(std::string chan, std::string lastWord, int fd) {
 
 void	Command::partCommand(const CommandData_t& data) const {
 	std::string lastWord;
+	size_t		lastWordPos	= 0;
+
 	std::string raw = data.message.substr(5, data.message.length());
+
+	if ((lastWordPos = data.message.find(":")) != std::string::npos)
+		lastWord = data.message.substr( lastWordPos, data.message.length() - lastWordPos );
 
 	std::vector< std::string > chansData = this->split( raw, ' ' );
 	std::vector< std::string > chans = this->split( chansData[ 0 ], ',' );
 
-	if (chansData.size() > 1) {
-		for (size_t i = 1; i < chansData.size(); ++i) {
-			lastWord += chansData[i];
-		}
-	}
 	for (std::vector<std::string>::iterator it = chans.begin(); it != chans.end(); ++it) {
 		if (Server::getInstance()->DoesChannelExist(*it)) {
 			isItGood(*it, lastWord, data.fd);
@@ -33,4 +33,3 @@ void	Command::partCommand(const CommandData_t& data) const {
 		}
 	}
 }
-
