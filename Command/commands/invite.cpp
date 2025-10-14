@@ -1,9 +1,12 @@
 #include "Command.hpp"
 
 void	Command::inviteCommand( const CommandData_t& data ) const {
-	Client		&client		= *Server::getClientByFD( data.fd );
+	Client		*client		= Server::getClientByFD( data.fd );
 	Client		*invitee	= NULL;
 	Channel		*channel	= NULL;
+
+	if ( !client )
+		return ;
 
 	std::vector<std::string> params = split( data.message, ' ' );
 	g_vars[ "command" ] = params[0];
@@ -26,15 +29,15 @@ void	Command::inviteCommand( const CommandData_t& data ) const {
 	}
 
 	//manage invite
-	if (!channel->isClientOperator( client )) {
+	if (!channel->isClientOperator( *client )) {
 		return sendReply( data.fd, ERR_CHANOPRIVSNEEDED );
-	} else if (!channel->isClientUser( client )) {
+	} else if (!channel->isClientUser( *client )) {
 		return sendReply( data.fd, ERR_NOTONCHANNEL );
 	} else if (channel->isClientUser( *invitee )) {
 		sendReply( data.fd, ERR_USERONCHANNEL );
 	} else {
 		channel->inviteSomeone( *invitee );
-		channel->shareMessage( client, *invitee, channel->getName(), "INVITE" );
+		channel->shareMessage( *client, *invitee, channel->getName(), "INVITE" );
 		sendReply( data.fd, RPL_INVITING );
 	}
 }

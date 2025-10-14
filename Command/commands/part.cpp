@@ -6,7 +6,7 @@ static void	isItGood(std::string chan, std::string lastWord, int fd) {
 		return sendReply(fd, ERR_NOSUCHCHANNEL);
 	Client	*client = Server::getClientByFD(fd);
 	if (!client || !channel->isClientUser(*client))
-		return sendReply(fd, ERR_NOTONCHANNEL);		
+		return sendReply(fd, ERR_NOTONCHANNEL);
 
 	g_vars[ "reason" ] = lastWord;
 	g_vars[ "channel" ] = channel->getName();

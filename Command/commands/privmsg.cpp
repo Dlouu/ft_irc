@@ -2,6 +2,10 @@
 
 void	Command::privmsgCommand( const CommandData_t& data ) const {
 	Client	*executor = Server::getClientByFD( data.fd );
+
+	if ( !executor )
+		return ;
+
 	std::string	cleanMsg = data.message.substr( 7, data.message.size() - 7 );
 
 	// find start pos of the channel name

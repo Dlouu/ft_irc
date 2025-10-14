@@ -30,21 +30,19 @@ void	Command::kickCommand( const CommandData_t& data ) const {
 			return sendReply( data.fd, ERR_NOSUCHNICK );
 		}
 	}
-	Client	&target = *Server::getClientByNick( params[2] );
+	Client	*target = Server::getClientByNick( params[2] );
 
 	//manage kick
 	if (!channel->isClientOperator( client )) {
 		return sendReply( data.fd, ERR_CHANOPRIVSNEEDED );
 	} else if (!channel->isClientUser( client )) {
 		return sendReply( data.fd, ERR_NOTONCHANNEL );
-	} else if (!channel->isClientUser( target )) {
+	} else if (!channel->isClientUser( *target )) {
 		return sendReply( data.fd, ERR_USERNOTINCHANNEL );
 	} else {
-		//kick from server
-		LOGC( DEBUG ) << "SUPPRIMER L'UTILISATEUR DE LA LISTE DES FD DU CHANNEL";
-		sendMessage( target.getFD(), ":" + client.getMask() + " KICK {channel} {target} :{reason}" );
-		channel->shareMessage( client, target.getNickname(), "KICK", g_vars["reason"]);
-		channel->delUser( target );
+		sendMessage( target->getFD(), ":" + client.getMask() + " KICK {channel} {target} :{reason}" );
+		channel->shareMessage( client, target->getNickname(), "KICK", g_vars["reason"]);
+		channel->delUser( *target );
 	}
 }
 

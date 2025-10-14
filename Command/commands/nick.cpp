@@ -40,7 +40,12 @@ static int	alreadyRegistered( const std::string& nickname ) {
 
 void	Command::nickCommand( const CommandData_t& data ) const {
 	std::string nickname = data.message.substr( 5, data.message.length() );
-	std::string	oldnick = (*Server::getClientByFD(data.fd)).getNickname();
+	Client	*client = Server::getClientByFD(data.fd);
+
+	if (!client)
+		return;
+
+	std::string	oldnick = client->getNickname();
 
 	if (!Server::isClientPass(data.fd))
 		return;
@@ -50,12 +55,12 @@ void	Command::nickCommand( const CommandData_t& data ) const {
 		return sendReply( data.fd, ERR_ERRONEUSNICKNAME );
 	} else {
 		while (alreadyRegistered( nickname )) {
-			Server::setNicknameByFD( data.fd, "* " + nickname );
+			client->setNickname( "* " + nickname );
 			return (sendReply( data.fd, ERR_NICKNAMEINUSE ));
 		}
-		Server::setNicknameByFD( data.fd, nickname );
-		Server::getClientByFD( data.fd )->setFD( data.fd );
-		Server::setNickSetByFD( data.fd, true );
+		client->setNickname( nickname );
+		client->setFD( data.fd );
+		client->setNickSet( true );
 	}
 	if (Server::isClientRegistered( data.fd )) {
 		if (Server::isClientWelcomed( data.fd ) == false) {
@@ -68,12 +73,12 @@ void	Command::nickCommand( const CommandData_t& data ) const {
 			sendReply( data.fd, RPL_MOTDSTART );
 			sendReply( data.fd, RPL_MOTD );
 			sendReply( data.fd, RPL_ENDOFMOTD );
-			Server::setWelcomeStatusByFD( data.fd, true );
+			client->setWelcomeStatus( true );
 		} else {
 			std::string	reply = ":" + oldnick
-				+ "!" + (*Server::getClientByFD( data.fd )).getUsername()
-				+ "@" + (*Server::getClientByFD( data.fd )).getHostname()
-				+ " NICK " + (*Server::getClientByFD( data.fd )).getNickname();
+				+ "!" + client->getUsername()
+				+ "@" + client->getHostname()
+				+ " NICK " + client->getNickname();
 			LOGC( SERVER ) << reply;
 			reply += "\r\n";
 			send( data.fd, reply.c_str(), reply.size(), MSG_DONTWAIT );
