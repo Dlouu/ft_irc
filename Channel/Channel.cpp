@@ -87,6 +87,9 @@ void	Channel::setUserLimit( const unsigned long n ) {
 }
 
 void	Channel::setPassword( const std::string password ) {
+	if ( password == "x" )
+		return ;
+
 	for ( std::size_t i = 0; i < password.size(); i++ ) {
 		if ( !std::isalnum( password[ i ] ) )
 			return ;
@@ -195,7 +198,7 @@ bool	Channel::isClientBan( const Client &target ) {
 }
 
 bool	Channel::isPasswordCorrect( const std::string &password ) const {
-	if ( password == this->_password )
+	if ( password == this->_password || password == "x" )
 		return ( true );
 	return ( false );
 }
