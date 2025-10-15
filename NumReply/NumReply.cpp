@@ -39,16 +39,16 @@ std::map<int, std::string> createReplies() {
 	num[ERR_USERONCHANNEL]		= ":{server} 443 {nick} {target} {channel} :is already on channel\r\n";
 	num[ERR_NEEDMOREPARAMS]		= ":{server} 461 {nick} {command} :Not enough parameters\r\n";
 	num[ERR_ALREADYREGISTRED]	= ":{server} 462 {nick} :You may not reregister\r\n";
-	num[ERR_KEYSET]				= ":{server} 467 {nick} {channel} :Channel key already set\r\n"; // a tester
-	num[ERR_CHANNELISFULL]		= ":{server} 471 {nick} {channel} :Cannot join channel (+l)\r\n"; // a tester
-	num[ERR_INVITEONLYCHAN]		= ":{server} 473 {nick} {channel} :Cannot join channel (+i)\r\n"; // a tester
-	num[ERR_BANNEDFROMCHAN]		= ":{server} 474 {nick} {channel} :Cannot join channel (+b)\r\n"; // a tester
-	num[ERR_BADCHANNELKEY]		= ":{server} 475 {nick} {channel} :Cannot join channel (+k)\r\n"; // a tester
-	num[ERR_BADCHANMASK]		= ":{server} 476 {nick} {channel} :Bad Channel Mask\r\n"; // a tester
+	num[ERR_KEYSET]				= ":{server} 467 {nick} {channel} :Channel key already set\r\n";
+	num[ERR_CHANNELISFULL]		= ":{server} 471 {nick} {channel} :Cannot join channel (+l)\r\n";
+	num[ERR_INVITEONLYCHAN]		= ":{server} 473 {nick} {channel} :Cannot join channel (+i)\r\n";
+	num[ERR_BANNEDFROMCHAN]		= ":{server} 474 {nick} {channel} :Cannot join channel (+b)\r\n";
+	num[ERR_BADCHANNELKEY]		= ":{server} 475 {nick} {channel} :Cannot join channel (+k)\r\n";
+	num[ERR_BADCHANMASK]		= ":{server} 476 {nick} {channel} :Bad Channel Mask\r\n";
 	num[ERR_CHANOPRIVSNEEDED]	= ":{server} 482 {channel} :You're not channel operator\r\n";
 	num[ERR_UMODEUNKNOWNFLAG]	= ":{server} 501 {nick} :Unknown MODE flag\r\n";
 
-    return num;
+	return num;
 }
 
 std::map<std::string, std::string> fillPermanentVars( void ) {
@@ -79,7 +79,7 @@ std::map<std::string, std::string> fillPermanentVars( void ) {
 							"⢑⢕⠃⡈⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢃⢕⢕⢕\n" \
 							"⣆⢕⠄⢱⣄⠛⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⢁⢕⢕⠕⢁\n" \
 							"⣿⣦⡀⣿⣿⣷⣶⣬⣍⣛⣛⣛⡛⠿⠿⠿⠛⠛⢛⣛⣉⣭⣤⣂⢜⠕⢑⣡⣴⣿\n";
-    return tab;
+	return tab;
 }
 
 std::map<std::string, std::string> fillVars( int clientFD, std::map<std::string, std::string> tab ) {
@@ -89,7 +89,7 @@ std::map<std::string, std::string> fillVars( int clientFD, std::map<std::string,
 	tab[ "user" ]	= client.getUsername();
 	tab[ "host" ]	= client.getHostname();
 	tab[ "mask" ]	= client.getMask();
-    return tab;
+	return tab;
 }
 
 std::string formatReply( const int code, const std::map<std::string, std::string> &vars ) {

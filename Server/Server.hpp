@@ -44,13 +44,13 @@ class Server
 		std::map< std::string, Channel >	_channels;
 
 	public:
+		~Server();
+
 		std::string							datetime;
 
 		void								loop();
 		void								init( int port, std::string password );
 		static Server*						getInstance( void );
-
-		~Server();
 		static void							destroyInstance( void );
 
 		static std::map<int, Client>		getClients( void );
@@ -59,7 +59,8 @@ class Server
 		static Client						*getClientByFD( const int fd );
 		static Client						*getClientByNick( std::string nick );
 		static Channel						*getChannel( const std::string &name );
-
+		static void							delClient(int fd);
+		
 		static void							addChannel( Channel& channel );
 		static void							delChannel( Channel& channel );
 		static bool							DoesChannelExist( const Channel& channel );
@@ -70,7 +71,7 @@ class Server
 		static void							setRealnameByFD( const int fd, const std::string& realname );
 		static void							setUsernameByFD( const int fd, const std::string& username );
 		static void							setServernameByFD( const int fd, const std::string& servername );
-
+		
 		static void							setPassByFD( const int fd, bool status );
 		static void							setNickSetByFD( const int fd, bool status );
 		static void							setUserSetByFD( const int fd, bool status );
@@ -79,5 +80,4 @@ class Server
 		static bool							isClientRegistered( const int fd );
 		static bool							isClientWelcomed( const int fd );
 
-		static void							delClient(int fd);
 };
